@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Building Your System — SiteCommand</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--border:#252525;--mid:#666;--light:#aaa;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:580px;width:100%;text-align:center}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;color:var(--accent);margin-bottom:2.5rem}
+    .build-icon{font-size:4rem;margin-bottom:1.25rem;display:inline-block;animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    h1{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.04em;margin-bottom:.5rem}
+    .sub{font-size:.92rem;color:var(--light);margin-bottom:2.5rem;line-height:1.7}
+    .company-name{color:var(--accent);font-weight:600}
+
+    /* PROGRESS STEPS */
+    .steps{display:flex;flex-direction:column;gap:.65rem;margin-bottom:2.5rem;text-align:left}
+    .step{display:flex;align-items:center;gap:1rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;transition:all .4s}
+    .step.active{border-color:var(--accent);background:rgba(200,169,110,.06)}
+    .step.done{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.06)}
+    .step-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:var(--dark);border:1.5px solid var(--border);transition:all .4s}
+    .step.active .step-icon{border-color:var(--accent);animation:pulse 1.5s infinite}
+    .step.done .step-icon{background:var(--green);border-color:var(--green);color:#000}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,169,110,.4)}50%{box-shadow:0 0 0 6px rgba(200,169,110,0)}}
+    .step-text{flex:1}
+    .step-title{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+    .step-sub{font-size:.76rem;color:var(--mid)}
+    .step.active .step-sub{color:var(--accent)}
+    .step.done .step-title{color:var(--green)}
+    .step-time{font-size:.72rem;color:var(--mid);flex-shrink:0}
+
+    /* PROGRESS BAR */
+    .progress-bar{background:var(--surface);border-radius:99px;height:6px;overflow:hidden;margin-bottom:.6rem}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#e8c887);border-radius:99px;transition:width 1.2s ease;width:0%}
+    .progress-label{font-size:.78rem;color:var(--mid);margin-bottom:2rem}
+
+    /* DONE STATE */
+    #doneSection{display:none}
+    .done-icon{font-size:4rem;margin-bottom:1rem}
+    .link-cards{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1.5rem 0;text-align:left}
+    .link-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem 1.1rem;text-decoration:none;transition:all .15s;display:block}
+    .link-card:hover{border-color:var(--accent)}
+    .link-card-icon{font-size:1.4rem;margin-bottom:.4rem}
+    .link-card-title{font-size:.86rem;font-weight:600;color:var(--white);margin-bottom:.15rem}
+    .link-card-url{font-size:.72rem;color:var(--accent);word-break:break-all}
+    .copy-btn{background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--accent);font-size:.7rem;font-weight:600;padding:.2rem .6rem;border-radius:99px;cursor:pointer;margin-top:.35rem;display:inline-block}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">SiteCommand</div>
+
+  <!-- BUILDING STATE -->
+  <div id="buildingSection">
+    <div class="build-icon">🏗️</div>
+    <h1>Building Your System</h1>
+    <p class="sub">Your complete contractor business system for <span class="company-name" id="companyDisplay">your company</span> is being built right now. This takes about 2 minutes.</p>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">Starting up...</div>
+
+    <div class="steps">
+      <div class="step" id="step1">
+        <div class="step-icon">🌐</div>
+        <div class="step-text"><div class="step-title">Creating your website</div><div class="step-sub" id="sub1">Generating branded HTML files...</div></div>
+        <div class="step-time">~20s</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-icon">📁</div>
+        <div class="step-text"><div class="step-title">Setting up GitHub repository</div><div class="step-sub" id="sub2">Creating private repo...</div></div>
+        <div class="step-time">~15s</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-icon">🚀</div>
+        <div class="step-text"><div class="step-title">Deploying to live URL</div><div class="step-sub" id="sub3">Enabling GitHub Pages...</div></div>
+        <div class="step-time">~30s</div>
+      </div>
+      <div class="step" id="step4">
+        <div class="step-icon">📞</div>
+        <div class="step-text"><div class="step-title">Assigning your phone number</div><div class="step-sub" id="sub4">Purchasing local number...</div></div>
+        <div class="step-time">~10s</div>
+      </div>
+      <div class="step" id="step5">
+        <div class="step-icon">📧</div>
+        <div class="step-text"><div class="step-title">Sending your welcome email</div><div class="step-sub" id="sub5">Delivering all your links...</div></div>
+        <div class="step-time">~5s</div>
+      </div>
+    </div>
+
+    <p style="font-size:.78rem;color:var(--mid)">Do not close this page. Your system will be ready in about 2 minutes.</p>
+  </div>
+
+  <!-- DONE STATE -->
+  <div id="doneSection">
+    <div class="done-icon">🎉</div>
+    <h1>Your System Is Live!</h1>
+    <p class="sub">Everything is ready for <span class="company-name" id="companyDone"></span>. All links have been sent to your email too.</p>
+    <div class="link-cards" id="linkCards"></div>
+    <p style="font-size:.82rem;color:var(--mid);margin-top:1rem">Website may take 5–10 minutes to fully propagate on GitHub Pages. If it shows a 404, wait a few minutes and refresh.</p>
+  </div>
+</div>
+
+<script>
+const signup = JSON.parse(localStorage.getItem('asc_saas_signup') || '{}');
+const email  = signup.email || '';
+const company= signup.companyName || 'Your Company';
+const server = localStorage.getItem('asc_phone_server') || '';
+
+document.getElementById('companyDisplay').textContent = company;
+document.getElementById('companyDone').textContent    = company;
+
+// Animate steps
+const stepTimings = [0, 5000, 12000, 22000, 35000];
+const stepSubs    = [
+  'Generating branded HTML files with your colors and services...',
+  'Creating GitHub repository and pushing all files...',
+  'Enabling GitHub Pages — your website is going live...',
+  'Purchasing a local phone number for your area...',
+  'Sending your welcome email with all your links...',
+];
+const progPcts = [15, 35, 55, 80, 95];
+
+stepTimings.forEach((delay, i) => {
+  setTimeout(() => {
+    // Mark previous as done
+    if (i > 0) {
+      const prev = document.getElementById('step' + i);
+      prev.classList.remove('active'); prev.classList.add('done');
+      prev.querySelector('.step-icon').textContent = '✓';
+    }
+    // Mark current as active
+    const cur = document.getElementById('step' + (i+1));
+    if (cur) {
+      cur.classList.add('active');
+      document.getElementById('sub' + (i+1)).textContent = stepSubs[i];
+    }
+    document.getElementById('progressFill').style.width = progPcts[i] + '%';
+    document.getElementById('progressLabel').textContent = stepSubs[i];
+  }, delay);
+});
+
+// Poll server for completion
+let pollCount = 0;
+let pollInterval;
+
+function startPolling() {
+  if (!server || !email) {
+    // No server — just show done after animation
+    setTimeout(showDoneState, 45000);
+    return;
+  }
+  pollInterval = setInterval(async () => {
+    pollCount++;
+    if (pollCount > 60) { clearInterval(pollInterval); showDoneState(); return; }
+    try {
+      const res  = await fetch(server + '/api/signup-status/' + encodeURIComponent(email),
+        { headers: {'ngrok-skip-browser-warning':'true'} });
+      const data = await res.json();
+      if (data.onboarded || data.status === 'active') {
+        clearInterval(pollInterval);
+        showDoneState(data);
+      }
+    } catch(e) {}
+  }, 5000);
+}
+
+function showDoneState(data) {
+  // Mark all steps done
+  for (let i = 1; i <= 5; i++) {
+    const s = document.getElementById('step' + i);
+    s.classList.remove('active'); s.classList.add('done');
+    s.querySelector('.step-icon').textContent = '✓';
+  }
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = 'All done!';
+
+  setTimeout(() => {
+    document.getElementById('buildingSection').style.display = 'none';
+    document.getElementById('doneSection').style.display     = 'block';
+
+    const websiteUrl = data?.websiteUrl  || '#';
+    const portalUrl  = data?.portalUrl   || websiteUrl + '/portal.html';
+    const crewUrl    = data?.crewUrl     || websiteUrl + '/crew.html';
+    const leadsUrl   = data?.leadsUrl    || websiteUrl + '/leads-dashboard.html';
+    const phone      = data?.phoneNumber || signup.bizPhone || '';
+
+    const links = [
+      { icon:'🌐', title:'Your Website',      url: websiteUrl, show: true },
+      { icon:'🏗️', title:'Client Portal',     url: portalUrl,  show: true },
+      { icon:'👷', title:'Crew App',           url: crewUrl,    show: true },
+      { icon:'📞', title:'AI Leads Dashboard', url: leadsUrl,   show: ['professional','elite'].includes(signup.plan) },
+      { icon:'📱', title:'Your Phone Number',  url: 'tel:' + phone, show: phone && signup.plan !== 'starter', label: phone },
+    ];
+
+    document.getElementById('linkCards').innerHTML = links
+      .filter(l => l.show)
+      .map(l => `
+        <a href="${l.url}" target="${l.url.startsWith('tel')?'_self':'_blank'}" class="link-card">
+          <div class="link-card-icon">${l.icon}</div>
+          <div class="link-card-title">${l.title}</div>
+          <div class="link-card-url">${l.label || l.url}</div>
+          <div class="copy-btn" onclick="event.preventDefault();navigator.clipboard.writeText('${l.label||l.url}');this.textContent='Copied!'">Copy Link</div>
+        </a>`).join('');
+  }, 1000);
+}
+
+startPolling();
+// Fallback: show done after 3 minutes regardless
+setTimeout(() => { clearInterval(pollInterval); showDoneState(); }, 180000);
+</script>
+</body>
+</html>

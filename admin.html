@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SiteCommand — Owner Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .header{height:60px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.06em;color:var(--accent)}
+    .header-right{margin-left:auto;display:flex;align-items:center;gap:.75rem;font-size:.8rem;color:var(--mid)}
+    .body{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:1.75rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+    .stat-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem}
+    .stat-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.4rem}
+    .stat-value{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.02em;line-height:1}
+    .stat-sub{font-size:.74rem;color:var(--mid);margin-top:.3rem}
+    .sv-accent{color:var(--accent)}.sv-green{color:var(--green)}.sv-blue{color:var(--blue)}.sv-orange{color:var(--orange)}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:1rem}
+    .signup-list{display:flex;flex-direction:column;gap:.65rem}
+    .signup-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;transition:border-color .15s}
+    .signup-card:hover{border-color:var(--accent)}
+    .signup-top{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .signup-avatar{width:42px;height:42px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--black);flex-shrink:0}
+    .signup-info{flex:1;min-width:0}
+    .signup-name{font-size:.96rem;font-weight:600}
+    .signup-company{font-size:.78rem;color:var(--mid);margin-top:.1rem}
+    .signup-right{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;flex-shrink:0}
+    .plan-badge{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .7rem;border-radius:99px}
+    .plan-starter{background:rgba(107,107,107,.2);color:var(--light);border:1px solid var(--border)}
+    .plan-professional{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+    .plan-elite{background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)}
+    .status-badge{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .7rem;border-radius:99px}
+    .status-trial{background:rgba(232,148,74,.15);color:var(--orange);border:1px solid rgba(232,148,74,.3)}
+    .status-active{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+    .status-pending{background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)}
+    .signup-details{margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem 1.5rem}
+    .detail-item{font-size:.78rem;color:var(--mid)}
+    .detail-item strong{color:var(--light);font-weight:500}
+    .signup-services{font-size:.74rem;color:var(--mid);margin-top:.5rem}
+    .action-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.85rem}
+    .action-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.74rem;font-weight:600;padding:.35rem .9rem;border-radius:5px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.3rem}
+    .action-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .action-btn.green{background:rgba(110,200,122,.1);border-color:rgba(110,200,122,.3);color:var(--green)}
+    .action-btn.green:hover{background:rgba(110,200,122,.2)}
+    .mrr-card{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(200,169,110,.04));border:1px solid rgba(200,169,110,.25);border-radius:14px;padding:1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+    .mrr-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--accent);letter-spacing:.02em;line-height:1}
+    .empty{text-align:center;padding:3rem;color:var(--mid);font-size:.88rem}
+    .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:680px){.stats-row{grid-template-columns:1fr 1fr}.signup-details{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">SiteCommand</div>
+  <span style="font-size:.75rem;background:rgba(200,169,110,.15);color:var(--accent);padding:.2rem .7rem;border-radius:99px;font-weight:600;border:1px solid rgba(200,169,110,.3)">Owner Dashboard</span>
+  <div class="header-right">
+    <span id="liveTime"></span>
+    <a href="index.html" style="color:var(--mid);font-size:.78rem">View Site →</a>
+  </div>
+</div>
+
+<div class="body">
+  <div class="page-title">Business Dashboard</div>
+
+  <!-- MRR CARD -->
+  <div class="mrr-card">
+    <div>
+      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.4rem">Monthly Recurring Revenue</div>
+      <div class="mrr-num" id="mrrTotal">$0</div>
+      <div style="font-size:.78rem;color:var(--mid);margin-top:.3rem">from <span id="mrrCount">0</span> active subscribers</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.4rem;margin-left:auto">
+      <div style="font-size:.8rem;color:var(--mid)">Starter ($97) × <span id="cntStarter">0</span> = <span id="revStarter" style="color:var(--accent)">$0</span></div>
+      <div style="font-size:.8rem;color:var(--mid)">Professional ($197) × <span id="cntPro">0</span> = <span id="revPro" style="color:var(--accent)">$0</span></div>
+      <div style="font-size:.8rem;color:var(--mid)">Elite ($297) × <span id="cntElite">0</span> = <span id="revElite" style="color:var(--accent)">$0</span></div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total Signups</div><div class="stat-value sv-accent" id="stTotal">0</div><div class="stat-sub">all time</div></div>
+    <div class="stat-card"><div class="stat-label">Active / Trial</div><div class="stat-value sv-green" id="stActive">0</div><div class="stat-sub">paying or in trial</div></div>
+    <div class="stat-card"><div class="stat-label">Pending Setup</div><div class="stat-value sv-orange" id="stPending">0</div><div class="stat-sub">need your action</div></div>
+    <div class="stat-card"><div class="stat-label">New This Week</div><div class="stat-value sv-blue" id="stWeek">0</div><div class="stat-sub">last 7 days</div></div>
+  </div>
+
+  <!-- SIGNUPS LIST -->
+  <div class="section-title">All Signups</div>
+  <div class="signup-list" id="signupList">
+    <div style="text-align:center;padding:2rem;color:var(--mid)"><div class="spinner"></div> Loading signups...</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, getDocs, updateDoc, doc, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey:"SITECOMMAND_FIREBASE_API_KEY",
+  authDomain:"sitecommand-saas.firebaseapp.com",
+  projectId:"sitecommand-saas",
+  storageBucket:"sitecommand-saas.firebasestorage.app",
+  messagingSenderId:"SITECOMMAND_MESSAGING_ID",
+  appId:"1:SITECOMMAND_MESSAGING_ID:web:SITECOMMAND_APP_ID"
+});
+const db = getFirestore(app);
+
+// Clock
+setInterval(() => {
+  document.getElementById('liveTime').textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}, 1000);
+
+async function loadSignups() {
+  try {
+    const snap = await getDocs(collection(db, 'saasSignups'));
+    const signups = [];
+    snap.forEach(ds => signups.push({ id: ds.id, ...ds.data() }));
+    signups.sort((a,b) => (b.submittedAt || '') > (a.submittedAt || '') ? 1 : -1);
+
+    // Stats
+    const total  = signups.length;
+    const now    = new Date();
+    const week   = signups.filter(s => s.submittedAt && (now - new Date(s.submittedAt)) < 7*86400000).length;
+    const active = signups.filter(s => ['active','trial'].includes(s.status || 'pending')).length;
+    const pend   = signups.filter(s => !s.status || s.status === 'pending').length;
+
+    document.getElementById('stTotal').textContent  = total;
+    document.getElementById('stActive').textContent = active;
+    document.getElementById('stPending').textContent= pend;
+    document.getElementById('stWeek').textContent   = week;
+
+    // MRR
+    const prices = { starter:97, professional:197, elite:297 };
+    let mrr=0, cs=0, cp=0, ce=0;
+    signups.filter(s => s.status === 'active').forEach(s => {
+      const p = s.plan || 'starter';
+      mrr += prices[p] || 0;
+      if (p === 'starter') cs++;
+      if (p === 'professional') cp++;
+      if (p === 'elite') ce++;
+    });
+    document.getElementById('mrrTotal').textContent  = '$' + mrr.toLocaleString();
+    document.getElementById('mrrCount').textContent  = signups.filter(s=>s.status==='active').length;
+    document.getElementById('cntStarter').textContent = cs;
+    document.getElementById('cntPro').textContent     = cp;
+    document.getElementById('cntElite').textContent   = ce;
+    document.getElementById('revStarter').textContent = '$' + (cs*97);
+    document.getElementById('revPro').textContent     = '$' + (cp*197);
+    document.getElementById('revElite').textContent   = '$' + (ce*297);
+
+    // Render list
+    const list = document.getElementById('signupList');
+    if (!signups.length) { list.innerHTML = '<div class="empty">No signups yet. Share your landing page to get started!</div>'; return; }
+    list.innerHTML = '';
+
+    signups.forEach(s => {
+      const initials = ((s.firstName||'?')[0] + (s.lastName||'?')[0]).toUpperCase();
+      const status   = s.status || 'pending';
+      const plan     = s.plan   || 'starter';
+      const date     = s.submittedAt ? new Date(s.submittedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'Unknown';
+      const card = document.createElement('div'); card.className = 'signup-card';
+      card.innerHTML = `
+        <div class="signup-top">
+          <div class="signup-avatar" style="background:${s.color||'var(--accent)'};color:${s.color?'#fff':'var(--black)'}">${initials}</div>
+          <div class="signup-info">
+            <div class="signup-name">${s.firstName||''} ${s.lastName||''}</div>
+            <div class="signup-company">${s.companyName||'—'} · ${s.city||''}, ${s.state||''}</div>
+          </div>
+          <div class="signup-right">
+            <span class="plan-badge plan-${plan}">${plan.charAt(0).toUpperCase()+plan.slice(1)}</span>
+            <span class="status-badge status-${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span>
+            <span style="font-size:.78rem;color:var(--mid)">${date}</span>
+          </div>
+        </div>
+        <div class="signup-details">
+          <div class="detail-item"><strong>Email:</strong> ${s.email||'—'}</div>
+          <div class="detail-item"><strong>Phone:</strong> ${s.phone||'—'}</div>
+          <div class="detail-item"><strong>Biz Phone:</strong> ${s.bizPhone||'—'}</div>
+          <div class="detail-item"><strong>Plan:</strong> ${s.planName||plan} — ${s.planPrice||'—'}</div>
+          <div class="detail-item"><strong>Color:</strong> <span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${s.color||'#c8a96e'};vertical-align:middle"></span> ${s.color||'#c8a96e'}</div>
+          <div class="detail-item"><strong>Signed up:</strong> ${date}</div>
+        </div>
+        ${s.tagline?`<div style="font-size:.8rem;color:var(--mid);margin-top:.5rem;font-style:italic">"${s.tagline}"</div>`:''}
+        ${s.services&&s.services.length?`<div class="signup-services">Services: ${s.services.join(', ')}</div>`:''}
+        ${s.notes?`<div style="font-size:.78rem;color:var(--mid);margin-top:.35rem">Notes: ${s.notes}</div>`:''}
+        <div class="action-row">
+          <button class="action-btn green" onclick="markStatus('${s.id}','active',this)">✓ Mark Active</button>
+          <button class="action-btn" onclick="markStatus('${s.id}','trial',this)">⏳ Mark Trial</button>
+          <button class="action-btn" onclick="markStatus('${s.id}','cancelled',this)">✕ Cancel</button>
+          <button class="action-btn" onclick="sendWelcomeEmail('${s.email}','${s.firstName}','${s.companyName}','${plan}')">📧 Send Welcome Email</button>
+          <a class="action-btn" href="mailto:${s.email}?subject=Your SiteCommand Setup is Ready!&body=Hi ${s.firstName||'there'},%0D%0A%0D%0AYour SiteCommand system is ready! Here are your links:%0D%0A%0D%0AWebsite: [YOUR LINK]%0D%0APortal: [YOUR LINK]%0D%0ACrew App: [YOUR LINK]%0D%0A%0D%0ALet me know if you have any questions!%0D%0A%0D%0ASiteCommand Team">📬 Email Client</a>
+        </div>`;
+      list.appendChild(card);
+    });
+  } catch(e) {
+    document.getElementById('signupList').innerHTML = '<div class="empty">Error loading signups: ' + e.message + '</div>';
+  }
+}
+
+window.markStatus = async (id, status, btn) => {
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  try {
+    await updateDoc(doc(db, 'saasSignups', id), { status });
+    await loadSignups();
+  } catch(e) { btn.textContent = 'Error'; btn.disabled = false; }
+};
+
+window.sendWelcomeEmail = (email, name, company, plan) => {
+  const subject = encodeURIComponent('Your SiteCommand System Is Ready!');
+  const body    = encodeURIComponent(
+    'Hi ' + (name||'there') + ',\n\n' +
+    'Welcome to SiteCommand! Your ' + plan + ' system for ' + (company||'your company') + ' is ready.\n\n' +
+    'Here are your links:\n' +
+    'Website: [ADD YOUR LINK]\n' +
+    'Client Portal: [ADD YOUR LINK]\n' +
+    'Crew App: [ADD YOUR LINK]\n' +
+    (plan !== 'starter' ? 'Leads Dashboard: [ADD YOUR LINK]\n' : '') +
+    (plan === 'elite' ? 'Permit Agent: [ADD YOUR LINK]\n' : '') +
+    '\nSetup guide attached.\n\n' +
+    'Your 14-day free trial has started. You will not be charged until day 15.\n\n' +
+    'Questions? Reply to this email anytime.\n\n' +
+    'SiteCommand Team\n' +
+    'support@sitecommand.com'
+  );
+  window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
+};
+
+loadSignups();
+</script>
+</body>
+</html>

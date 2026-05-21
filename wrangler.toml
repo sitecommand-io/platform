@@ -1,0 +1,21 @@
+# SiteCommand — Cloudflare Worker Configuration
+# Deploy: npx wrangler deploy
+
+name = "sitecommand"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Routes — handles all subdomains AND custom domains
+routes = [
+  { pattern = "*.sitecommand.io/*",    zone_name = "sitecommand.io" },
+  { pattern = "sitecommand.io/*",      zone_name = "sitecommand.io" },
+]
+
+# KV namespace for caching contractor data (optional — speeds things up)
+# Create with: npx wrangler kv:namespace create "CONTRACTOR_CACHE"
+# [[kv_namespaces]]
+# binding = "CONTRACTOR_CACHE"
+# id = "YOUR_KV_NAMESPACE_ID"
+
+[vars]
+FIREBASE_PROJECT = "sitecommand-saas"

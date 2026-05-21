@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Start Free Trial — SiteCommand</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased;display:grid;grid-template-columns:1fr 1fr}
+    input,select,textarea,button{font-family:inherit}
+
+    /* LEFT — FORM */
+    .form-side{padding:3rem 2.5rem;display:flex;flex-direction:column;justify-content:center;min-height:100vh;max-width:580px;margin:0 auto;width:100%}
+    .sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;margin-bottom:2.5rem}
+    .sc-logo span{color:var(--accent)}
+    .form-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.04em;margin-bottom:.4rem}
+    .form-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem;line-height:1.6}
+    .step-indicator{display:flex;gap:.3rem;margin-bottom:2rem}
+    .step-dot{height:3px;border-radius:99px;background:var(--border);flex:1;transition:background .3s}
+    .step-dot.active{background:var(--accent)}
+    .step-dot.done{background:var(--green)}
+
+    /* FORM FIELDS */
+    .fg{margin-bottom:1rem}
+    .fg label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.4rem}
+    .fg input,.fg select{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.92rem;padding:.72rem 1rem;transition:border-color .2s}
+    .fg input:focus,.fg select:focus{outline:none;border-color:var(--accent)}
+    .fg select option{background:var(--dark)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+    .services-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.4rem}
+    .svc{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.45rem .75rem;cursor:pointer;font-size:.82rem;color:var(--light);transition:all .15s}
+    .svc input{accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+    .svc.on{border-color:var(--accent);background:rgba(200,169,110,.07);color:var(--white)}
+    .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+    .cswatch{width:34px;height:34px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+    .cswatch.sel{border-color:var(--white);transform:scale(1.1)}
+
+    /* BUTTONS */
+    .next-btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.95rem;font-weight:700;padding:.9rem;cursor:pointer;transition:all .2s;letter-spacing:.02em;margin-top:.5rem}
+    .next-btn:hover{background:var(--accent2)}
+    .next-btn:disabled{opacity:.5;cursor:not-allowed}
+    .back-link{background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.75rem;display:block;text-align:center}
+    .back-link:hover{color:var(--white)}
+    .err{font-size:.8rem;color:#e08080;margin-top:.5rem;min-height:.9rem}
+
+    /* PLAN CARDS */
+    .plan-opts{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem}
+    .plan-opt{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;cursor:pointer;transition:all .15s}
+    .plan-opt:hover,.plan-opt.sel{border-color:var(--accent);background:rgba(200,169,110,.06)}
+    .plan-opt-left{display:flex;align-items:center;gap:.75rem}
+    .plan-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);transition:all .15s;flex-shrink:0}
+    .plan-opt.sel .plan-radio{border-color:var(--accent);background:var(--accent)}
+    .plan-price{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--accent)}
+    .plan-name{font-size:.92rem;font-weight:700}
+    .plan-desc{font-size:.74rem;color:var(--mid)}
+
+    /* TERMS */
+    .terms-check{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-size:.82rem;color:var(--light);margin-bottom:1rem}
+    .terms-check input{margin-top:.15rem;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+    .terms-check a{color:var(--accent)}
+
+    /* RIGHT — LIVE PREVIEW */
+    .preview-side{background:var(--dark);border-left:1px solid var(--border);padding:3rem 2rem;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;overflow:hidden}
+    .preview-label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .preview-label::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .preview-browser{background:var(--black);border:1px solid var(--border);border-radius:12px;overflow:hidden;flex:1}
+    .browser-bar{background:var(--surface);padding:.5rem .85rem;display:flex;align-items:center;gap:.5rem;border-bottom:1px solid var(--border)}
+    .browser-dots{display:flex;gap:.3rem}
+    .bdot{width:10px;height:10px;border-radius:50%}
+    .browser-url{flex:1;background:var(--card);border-radius:5px;padding:.28rem .75rem;font-size:.74rem;color:var(--mid);font-family:monospace}
+    .preview-website{padding:1.25rem;height:calc(100% - 40px);overflow:hidden}
+    .pw-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+    .pw-brand{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.05em}
+    .pw-cta-sm{font-size:.6rem;font-weight:700;padding:.2rem .55rem;border-radius:4px;color:#000}
+    .pw-hero{border-radius:8px;padding:1.25rem;margin-bottom:.75rem;text-align:center}
+    .pw-h1{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;line-height:1;margin-bottom:.35rem}
+    .pw-tagline{font-size:.68rem;color:var(--light);margin-bottom:.65rem}
+    .pw-svc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.35rem}
+    .pw-svc{background:var(--card);border-radius:5px;padding:.4rem .5rem;font-size:.58rem;color:var(--light);text-align:center}
+    .pw-svc-icon{font-size:.85rem;display:block;margin-bottom:.15rem}
+
+    /* WHAT THEY GET */
+    .getting-list{margin-top:1.5rem;display:flex;flex-direction:column;gap:.4rem}
+    .getting-item{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--light)}
+    .getting-item.ready{color:var(--green)}
+    .getting-item .gicon{font-size:.9rem;flex-shrink:0;width:20px;text-align:center}
+    .getting-item .gcheck{width:18px;height:18px;border-radius:50%;background:var(--green);color:#000;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* SUCCESS */
+    #successScreen{display:none;position:fixed;inset:0;background:var(--black);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+    .success-steps{display:flex;flex-direction:column;gap:.6rem;max-width:500px;width:100%;margin:2rem 0}
+    .ss-item{display:flex;align-items:center;gap:.85rem;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;transition:all .4s}
+    .ss-item.done{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.05)}
+    .ss-item.active{border-color:var(--accent)}
+    .ss-icon{width:32px;height:32px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:all .4s}
+    .ss-item.done .ss-icon{background:var(--green);border-color:var(--green);color:#000}
+    .ss-item.active .ss-icon{border-color:var(--accent);animation:pulse 1.5s infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,169,110,.4)}50%{box-shadow:0 0 0 6px rgba(200,169,110,0)}}
+    .ss-text{flex:1;text-align:left}
+    .ss-title{font-size:.9rem;font-weight:600}
+    .ss-sub{font-size:.74rem;color:var(--mid);margin-top:.1rem}
+    .progress-bar{width:100%;max-width:500px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin:.5rem 0}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .8s ease}
+    .go-btn{background:var(--accent);color:#000;border:none;border-radius:10px;font-size:1rem;font-weight:700;padding:1rem 2.5rem;cursor:pointer;margin-top:.5rem;display:none;transition:all .2s;letter-spacing:.02em}
+    .go-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+
+    @media(max-width:900px){
+      body{grid-template-columns:1fr}
+      .preview-side{display:none}
+      .form-side{padding:2rem 1.25rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- FORM SIDE -->
+<div class="form-side">
+  <div class="sc-logo"><span>Site</span>Command</div>
+
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1"></div>
+    <div class="step-dot" id="dot2"></div>
+    <div class="step-dot" id="dot3"></div>
+  </div>
+
+  <!-- STEP 1: Account -->
+  <div id="step1">
+    <div class="form-title">Create Account</div>
+    <div class="form-sub">14-day free trial. No credit card required. Everything is ready the moment you sign up.</div>
+    <div class="grid2">
+      <div class="fg"><label>First Name *</label><input id="fn" placeholder="John" oninput="updatePreview()"/></div>
+      <div class="fg"><label>Last Name *</label><input id="ln" placeholder="Smith"/></div>
+    </div>
+    <div class="fg"><label>Email Address *</label><input type="email" id="em" placeholder="john@smithroofing.com"/></div>
+    <div class="fg"><label>Mobile Phone *</label><input type="tel" id="ph" placeholder="(302) 000-0000"/></div>
+    <div class="fg"><label>Password * (min 8 chars)</label><input type="password" id="pw" placeholder="••••••••"/></div>
+    <div class="err" id="e1"></div>
+    <button class="next-btn" onclick="go1()">Continue →</button>
+  </div>
+
+  <!-- STEP 2: Business -->
+  <div id="step2" style="display:none">
+    <div class="form-title">Your Business</div>
+    <div class="form-sub">This is used to instantly build and brand your complete system.</div>
+    <div class="fg"><label>Company Name *</label><input id="co" placeholder="Smith Roofing LLC" oninput="updatePreview()"/></div>
+    <div class="grid2">
+      <div class="fg"><label>City *</label><input id="ci" placeholder="Wilmington" oninput="updatePreview()"/></div>
+      <div class="fg"><label>State *</label>
+        <select id="st">
+          <option value="">State</option>
+          <option value="DE">Delaware</option><option value="PA">Pennsylvania</option>
+          <option value="MD">Maryland</option><option value="NJ">New Jersey</option>
+          <option value="NY">New York</option><option value="VA">Virginia</option><option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Business Phone</label><input type="tel" id="bp" placeholder="(302) 000-0000" oninput="updatePreview()"/></div>
+    <div class="fg"><label>Tagline (optional)</label><input id="tl" placeholder="Quality work, honest price" oninput="updatePreview()"/></div>
+    <div class="fg"><label>Services (pick all that apply)</label>
+      <div class="services-grid">
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="General Contracting"> General Contracting</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Roofing"> Roofing</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Kitchen Remodeling"> Kitchen Remodeling</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Bathroom Remodeling"> Bathroom Remodeling</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Flooring"> Flooring</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Painting"> Painting</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="HVAC"> HVAC</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Electrical"> Electrical</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Plumbing"> Plumbing</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Siding"> Siding</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Additions"> Additions</label>
+        <label class="svc" onclick="ts(this)"><input type="checkbox" value="Buy Houses Cash"> Buy Houses Cash</label>
+      </div>
+    </div>
+    <div class="fg"><label>Brand Color</label>
+      <div class="color-row">
+        <div class="cswatch sel" style="background:#c8a96e" data-color="#c8a96e" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#4a9eff" data-color="#4a9eff" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#6ec87a" data-color="#6ec87a" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#e05252" data-color="#e05252" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#9b59b6" data-color="#9b59b6" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#e67e22" data-color="#e67e22" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#1abc9c" data-color="#1abc9c" onclick="sc(this)"></div>
+        <div class="cswatch" style="background:#e91e8c" data-color="#e91e8c" onclick="sc(this)"></div>
+      </div>
+    </div>
+    <div class="err" id="e2"></div>
+    <button class="next-btn" onclick="go2()">Continue →</button>
+    <button class="back-link" onclick="goTo(1)">← Back</button>
+  </div>
+
+  <!-- STEP 3: Plan -->
+  <div id="step3" style="display:none">
+    <div class="form-title">Choose Your Plan</div>
+    <div class="form-sub">Start free for 14 days. No charge until your trial ends.</div>
+    <div class="plan-opts">
+      <div class="plan-opt" id="po-starter" onclick="selPlan('starter')">
+        <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Starter</div><div class="plan-desc">Website · Portal · Crew App</div></div></div>
+        <div class="plan-price">$97/mo</div>
+      </div>
+      <div class="plan-opt sel" id="po-professional" onclick="selPlan('professional')">
+        <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Professional ⭐</div><div class="plan-desc">+ AI Phone · Leads · Email AI · Lead Finder</div></div></div>
+        <div class="plan-price">$197/mo</div>
+      </div>
+      <div class="plan-opt" id="po-elite" onclick="selPlan('elite')">
+        <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Elite</div><div class="plan-desc">+ Social Media AI · Permit Agent · Priority</div></div></div>
+        <div class="plan-price">$297/mo</div>
+      </div>
+    </div>
+    <label class="terms-check">
+      <input type="checkbox" id="tc"/>
+      I agree to the <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a>. I understand I will not be charged until day 15.
+    </label>
+    <div class="err" id="e3"></div>
+    <button class="next-btn" id="submitBtn" onclick="doSignup()">🚀 Create My Account — Free</button>
+    <button class="back-link" onclick="goTo(2)">← Back</button>
+    <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:.75rem">No credit card · Cancel anytime · Setup in seconds</p>
+  </div>
+</div>
+
+<!-- PREVIEW SIDE -->
+<div class="preview-side">
+  <div class="preview-label">Live Preview — Updates as you type</div>
+  <div class="preview-browser">
+    <div class="browser-bar">
+      <div class="browser-dots">
+        <div class="bdot" style="background:#ff5f57"></div>
+        <div class="bdot" style="background:#febc2e"></div>
+        <div class="bdot" style="background:#28c840"></div>
+      </div>
+      <div class="browser-url" id="previewUrl">yourcompany.sitecommand.io</div>
+    </div>
+    <div class="preview-website">
+      <div class="pw-nav">
+        <div class="pw-brand" id="prevBrand" style="color:#c8a96e">Your Company</div>
+        <div class="pw-cta-sm" id="prevCta" style="background:#c8a96e">Free Estimate</div>
+      </div>
+      <div class="pw-hero" id="prevHero" style="background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.15)">
+        <div class="pw-h1" id="prevH1">Your Company<br><span id="prevAccent" style="color:#c8a96e">Construction</span></div>
+        <div class="pw-tagline" id="prevTagline">Professional services in your area</div>
+        <div style="display:flex;gap:.4rem;justify-content:center">
+          <div style="background:#c8a96e;color:#000;font-size:.6rem;font-weight:700;padding:.2rem .6rem;border-radius:4px" id="prevBtn">Get Estimate</div>
+          <div style="border:1px solid #333;color:#aaa;font-size:.6rem;padding:.2rem .6rem;border-radius:4px">Call Us</div>
+        </div>
+      </div>
+      <div style="font-size:.58rem;color:var(--mid);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.06em">Services</div>
+      <div class="pw-svc-grid" id="prevServices">
+        <div class="pw-svc"><span class="pw-svc-icon">🏗️</span>General Contracting</div>
+        <div class="pw-svc"><span class="pw-svc-icon">🏠</span>Roofing</div>
+        <div class="pw-svc"><span class="pw-svc-icon">🔨</span>Remodeling</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT THEY GET INSTANTLY -->
+  <div class="getting-list">
+    <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.25rem">What you get instantly on signup:</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Professional 8-page website</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Client project portal</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Crew GPS time clock app</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Email AI assistant</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Lead finder agent</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Social media manager</div>
+    <div class="getting-item ready"><div class="gcheck">✓</div>Admin command center</div>
+    <div class="getting-item" id="phoneItem"><div class="gicon">📞</div>AI phone number (30s)</div>
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div id="successScreen">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.06em;margin-bottom:.25rem"><span style="color:var(--accent)">Site</span>Command</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.04em;margin-bottom:.35rem">Setting Up Your System</div>
+  <div style="font-size:.9rem;color:var(--mid);margin-bottom:1.5rem">Everything is being configured — takes about 30 seconds</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="success-steps" id="successSteps"></div>
+  <button class="go-btn" id="goBtn" onclick="goToDashboard()">Go to My Dashboard →</button>
+</div>
+
+<script type="module">
+import { initializeApp }                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword,
+         signInWithEmailAndPassword }   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc,
+         serverTimestamp }             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── REPLACE WITH YOUR SITECOMMAND FIREBASE CONFIG ──
+const FB = {
+  apiKey:            "SITECOMMAND_FIREBASE_API_KEY",
+  authDomain:        "sitecommand-saas.firebaseapp.com",
+  projectId:         "sitecommand-saas",
+  storageBucket:     "sitecommand-saas.appspot.com",
+  messagingSenderId: "SITECOMMAND_MESSAGING_ID",
+  appId:             "SITECOMMAND_APP_ID",
+};
+
+const TWILIO_SID   = 'ACd43a88cb857a96025e787ab8e450c7b7';  // Your Twilio SID
+const TWILIO_TOKEN = localStorage.getItem('sc_twilio_token') || '';
+const SERVER_URL   = localStorage.getItem('asc_phone_server') || '';
+
+const app  = initializeApp(FB, 'signup');
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentStep = 1;
+let selectedPlan = 'professional';
+let selectedColor = '#c8a96e';
+
+// ── NAVIGATION ──
+window.goTo = n => {
+  for (let i=1;i<=3;i++) {
+    document.getElementById('step'+i).style.display = i===n ? 'block' : 'none';
+    const dot = document.getElementById('dot'+i);
+    dot.className = 'step-dot' + (i<n?' done':i===n?' active':'');
+  }
+  currentStep = n;
+};
+
+window.go1 = () => {
+  const e = document.getElementById('e1');
+  e.textContent = '';
+  const fn=document.getElementById('fn').value.trim();
+  const ln=document.getElementById('ln').value.trim();
+  const em=document.getElementById('em').value.trim();
+  const ph=document.getElementById('ph').value.trim();
+  const pw=document.getElementById('pw').value;
+  if (!fn||!ln||!em||!ph||!pw) { e.textContent='All fields required.'; return; }
+  if (!/\S+@\S+\.\S+/.test(em)) { e.textContent='Enter a valid email.'; return; }
+  if (pw.length < 8) { e.textContent='Password must be at least 8 characters.'; return; }
+  goTo(2);
+};
+
+window.go2 = () => {
+  const e = document.getElementById('e2');
+  e.textContent = '';
+  const co=document.getElementById('co').value.trim();
+  const ci=document.getElementById('ci').value.trim();
+  const st=document.getElementById('st').value;
+  if (!co||!ci||!st) { e.textContent='Company name, city, and state required.'; return; }
+  goTo(3);
+};
+
+window.ts = l => setTimeout(()=>{l.classList.toggle('on',l.querySelector('input').checked);updatePreview();},0);
+window.sc = el => { document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('sel')); el.classList.add('sel'); selectedColor=el.dataset.color; updatePreview(); };
+window.selPlan = p => { selectedPlan=p; document.querySelectorAll('.plan-opt').forEach(o=>o.classList.remove('sel')); document.getElementById('po-'+p).classList.add('sel'); };
+
+// ── LIVE PREVIEW ──
+window.updatePreview = () => {
+  const co    = document.getElementById('co')?.value.trim() || 'Your Company';
+  const tl    = document.getElementById('tl')?.value.trim() || 'Professional services in your area';
+  const ci    = document.getElementById('ci')?.value.trim() || 'your area';
+  const slug  = makeSlug(co);
+  const svcs  = [...document.querySelectorAll('.svc input:checked')].map(c=>c.value);
+  const icons = ['🏗️','🏠','🔨','⚡','💧','🎨','🪟','🔧','🏡','🛁'];
+
+  document.getElementById('previewUrl').textContent   = slug + '.sitecommand.io';
+  document.getElementById('prevBrand').textContent    = co;
+  document.getElementById('prevBrand').style.color    = selectedColor;
+  document.getElementById('prevCta').style.background = selectedColor;
+  document.getElementById('prevBtn').style.background = selectedColor;
+  document.getElementById('prevAccent').style.color   = selectedColor;
+  document.getElementById('prevH1').innerHTML         = co.replace(/ /g,'<br>').slice(0,20) + '<br><span style="color:'+selectedColor+'">Construction</span>';
+  document.getElementById('prevTagline').textContent  = tl || 'Professional services in ' + ci;
+  document.getElementById('prevHero').style.background= selectedColor + '12';
+  document.getElementById('prevHero').style.borderColor= selectedColor + '33';
+
+  const displaySvcs = svcs.length ? svcs.slice(0,3) : ['General Contracting','Roofing','Remodeling'];
+  document.getElementById('prevServices').innerHTML = displaySvcs.map((s,i)=>`<div class="pw-svc"><span class="pw-svc-icon">${icons[i]||'🔧'}</span>${s}</div>`).join('');
+};
+
+// ── SIGNUP ──
+window.doSignup = async () => {
+  const e3  = document.getElementById('e3');
+  const btn = document.getElementById('submitBtn');
+  e3.textContent = '';
+  if (!document.getElementById('tc').checked) { e3.textContent='Please agree to Terms of Service.'; return; }
+
+  const fn=document.getElementById('fn').value.trim();
+  const ln=document.getElementById('ln').value.trim();
+  const em=document.getElementById('em').value.trim();
+  const ph=document.getElementById('ph').value.trim();
+  const pw=document.getElementById('pw').value;
+  const co=document.getElementById('co').value.trim();
+  const ci=document.getElementById('ci').value.trim();
+  const st=document.getElementById('st').value;
+  const bp=document.getElementById('bp').value.trim();
+  const tl=document.getElementById('tl').value.trim();
+  const svcs=[...document.querySelectorAll('.svc input:checked')].map(c=>c.value);
+  const slug=makeSlug(co);
+
+  btn.disabled=true; btn.textContent='Creating your account...';
+
+  // Show success screen immediately
+  showSuccessScreen();
+
+  try {
+    // Step 1 — Create Firebase auth account
+    updateSuccessStep(0);
+    const cred = await createUserWithEmailAndPassword(auth, em, pw);
+    completeSuccessStep(0);
+
+    // Step 2 — Save all contractor data to Firestore
+    updateSuccessStep(1);
+    const contractorData = {
+      uid: cred.user.uid,
+      slug,
+      firstName: fn, lastName: ln,
+      email: em, phone: ph,
+      companyName: co, bizPhone: bp,
+      city: ci, state: st, location: ci+', '+st,
+      tagline: tl || 'Professional '+( svcs[0]||'Construction')+' Services in '+ci+', '+st,
+      services: svcs.length ? svcs : ['General Contracting'],
+      color: selectedColor,
+      plan: selectedPlan,
+      // Default AI questions
+      questions: [
+        "Can I get your first and last name please?",
+        "What type of work are you looking to have done? For example roofing, renovation, flooring, or something else?",
+        "What is the property address where the work needs to be done?",
+        "Are you the homeowner or property owner?",
+        "What is your timeline? Looking to start immediately or still planning?",
+        "Do you have a rough budget in mind for the project?",
+        "Are you interested in potentially selling the property? We also purchase homes for cash.",
+      ],
+      greeting: `Thank you for calling ${co}. This is our AI assistant. I am going to ask you a few quick questions so our team can get back to you with the best response. Let's get started.`,
+      aiPhone: null,
+      customDomain: null,
+      status: 'trial',
+      trialStarted: serverTimestamp(),
+      createdAt: serverTimestamp(),
+    };
+    await setDoc(doc(db, 'contractors', cred.user.uid), contractorData);
+    completeSuccessStep(1);
+
+    // Step 3 — Website is live (Cloudflare Worker reads from Firebase — instant)
+    updateSuccessStep(2);
+    await new Promise(r=>setTimeout(r,800)); // tiny pause for effect
+    completeSuccessStep(2);
+
+    // Step 4 — Buy phone number in background
+    updateSuccessStep(3);
+    let phoneNumber = null;
+    if (TWILIO_TOKEN) {
+      phoneNumber = await buyPhoneNumber(st, slug);
+    }
+    if (phoneNumber) {
+      await setDoc(doc(db,'contractors',cred.user.uid),{aiPhone:phoneNumber},{merge:true});
+      document.getElementById('phoneItem').className='getting-item ready';
+      document.getElementById('phoneItem').innerHTML='<div class="gcheck">✓</div>AI phone number: '+phoneNumber;
+    }
+    completeSuccessStep(3);
+
+    // Step 5 — All tools ready
+    updateSuccessStep(4);
+    await new Promise(r=>setTimeout(r,500));
+    completeSuccessStep(4);
+
+    // Store for dashboard
+    localStorage.setItem('sc_uid',         cred.user.uid);
+    localStorage.setItem('sc_slug',        slug);
+    localStorage.setItem('sc_company',     co);
+    localStorage.setItem('sc_color',       selectedColor);
+    localStorage.setItem('sc_plan',        selectedPlan);
+    localStorage.setItem('sc_phone_number',phoneNumber||'');
+
+    // Show go button
+    document.getElementById('progressFill').style.width='100%';
+    setTimeout(()=>{
+      document.getElementById('goBtn').style.display='inline-block';
+    }, 500);
+
+  } catch(e) {
+    document.getElementById('successScreen').style.display='none';
+    btn.disabled=false; btn.textContent='🚀 Create My Account — Free';
+    const m={'auth/email-already-in-use':'An account with this email already exists. Sign in instead.','auth/weak-password':'Password must be at least 8 characters.'};
+    e3.textContent = m[e.code] || 'Error: '+e.message;
+  }
+};
+
+// ── SUCCESS SCREEN ──
+const STEPS = [
+  {icon:'🔐',title:'Creating your account',sub:'Secure Firebase authentication'},
+  {icon:'💾',title:'Saving your business profile',sub:'Company info, services, brand color'},
+  {icon:'🌐',title:'Your website is live',sub:'slug.sitecommand.io — ready right now'},
+  {icon:'📞',title:'Getting your phone number',sub:'Local number for your AI assistant'},
+  {icon:'✅',title:'All tools activated',sub:'Portal, crew app, email AI, lead finder'},
+];
+let stepIndex = 0;
+
+function showSuccessScreen() {
+  const ss = document.getElementById('successScreen');
+  ss.style.display='flex';
+  ss.innerHTML = ss.innerHTML; // reset
+  document.getElementById('successSteps').innerHTML = STEPS.map((s,i)=>`
+    <div class="ss-item" id="ssi-${i}">
+      <div class="ss-icon" id="ssicon-${i}">${s.icon}</div>
+      <div class="ss-text">
+        <div class="ss-title">${s.title}</div>
+        <div class="ss-sub" id="sssub-${i}">${s.sub}</div>
+      </div>
+    </div>`).join('');
+}
+
+function updateSuccessStep(i) {
+  stepIndex = i;
+  document.querySelectorAll('.ss-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('ssi-'+i)?.classList.add('active');
+  document.getElementById('progressFill').style.width = ((i/STEPS.length)*85)+'%';
+}
+
+function completeSuccessStep(i) {
+  const item = document.getElementById('ssi-'+i);
+  const icon = document.getElementById('ssicon-'+i);
+  if (item) item.classList.add('done');
+  if (icon) icon.textContent = '✓';
+}
+
+window.goToDashboard = () => {
+  window.location.href = 'platform.html';
+};
+
+// ── TWILIO PHONE PURCHASE ──
+async function buyPhoneNumber(state, slug) {
+  const areaCodes = {DE:'302',PA:'215',MD:'410',NJ:'201',NY:'212',VA:'571'};
+  const areaCode  = areaCodes[state] || '302';
+  const creds     = btoa(TWILIO_SID + ':' + TWILIO_TOKEN);
+  try {
+    const search = await fetch(
+      'https://api.twilio.com/2010-04-01/Accounts/'+TWILIO_SID+
+      '/AvailablePhoneNumbers/US/Local.json?AreaCode='+areaCode+'&SmsEnabled=true&VoiceEnabled=true',
+      {headers:{Authorization:'Basic '+creds}}
+    );
+    const sd = await search.json();
+    if (!sd.available_phone_numbers?.length) return null;
+    const num = sd.available_phone_numbers[0].phone_number;
+    const buy = await fetch(
+      'https://api.twilio.com/2010-04-01/Accounts/'+TWILIO_SID+'/IncomingPhoneNumbers.json',
+      {method:'POST',headers:{Authorization:'Basic '+creds,'Content-Type':'application/x-www-form-urlencoded'},
+       body:'PhoneNumber='+encodeURIComponent(num)+'&FriendlyName='+encodeURIComponent(slug)}
+    );
+    const bd = await buy.json();
+    return bd.phone_number || null;
+  } catch(e) { console.log('Phone purchase error:',e.message); return null; }
+}
+
+function makeSlug(name) {
+  return (name||'').toLowerCase()
+    .replace(/\b(llc|inc|co|corp|ltd|company|construction|contractors?|services?|group|solutions?)\b/gi,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,30) || 'my-company';
+}
+
+// Init preview
+updatePreview();
+</script>
+</body>
+</html>
