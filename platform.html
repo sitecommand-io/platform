@@ -219,38 +219,50 @@
         <div class="dash-card" onclick="openExternal('website')">
           <div class="dc-icon">🌐</div>
           <div class="dc-title">Your Website</div>
-          <div class="dc-desc">Your public-facing website with your branding, services, and contact form.</div>
+          <div class="dc-desc">Your live public website at your SiteCommand domain. Share it with clients now.</div>
           <div class="dc-arrow">View Website →</div>
         </div>
         <div class="dash-card" onclick="openExternal('portal')">
           <div class="dc-icon">🏗️</div>
           <div class="dc-title">Client Portal</div>
-          <div class="dc-desc">Track projects, upload photos, manage checklists, send auto-texts to clients.</div>
-          <div class="dc-arrow">Open Portal →</div>
+          <div class="dc-desc">Your clients sign in here to see project progress, photos, expenses, and updates.</div>
+          <div class="dc-arrow">Open Client Portal →</div>
         </div>
         <div class="dash-card" onclick="openExternal('crew')">
           <div class="dc-icon">👷</div>
           <div class="dc-title">Crew App</div>
-          <div class="dc-desc">GPS clock-in/out, task assignments, daily reports with photos.</div>
+          <div class="dc-desc">GPS clock-in/out, task assignments, and daily photo reports for your crew.</div>
           <div class="dc-arrow">Open Crew App →</div>
         </div>
-        <div class="dash-card" onclick="openExternal('leads')" id="cardLeads" style="display:none">
-          <div class="dc-icon">📞</div>
-          <div class="dc-title">Leads Dashboard</div>
-          <div class="dc-desc">Every phone lead with full transcript, AI summary, and follow-up tracking.</div>
-          <div class="dc-arrow">View Leads →</div>
+        <div class="dash-card" onclick="openExternal('email')">
+          <div class="dc-icon">📧</div>
+          <div class="dc-title">Email AI</div>
+          <div class="dc-desc">Connect Gmail or Outlook. AI reads every email, flags important ones, drafts replies.</div>
+          <div class="dc-arrow">Open Email AI →</div>
         </div>
-        <div class="dash-card" onclick="openExternal('permits')" id="cardPermits" style="display:none">
-          <div class="dc-icon">🏛️</div>
-          <div class="dc-title">Permit Agent</div>
-          <div class="dc-desc">Get every permit required for any project in Delaware and Pennsylvania automatically.</div>
-          <div class="dc-arrow">Open Permit Agent →</div>
+        <div class="dash-card" onclick="openExternal('leads')" id="cardLeads">
+          <div class="dc-icon">🔍</div>
+          <div class="dc-title">Lead Finder</div>
+          <div class="dc-desc">AI scans Zillow, Facebook, Craigslist daily for motivated sellers and renovation jobs.</div>
+          <div class="dc-arrow">Find Leads →</div>
         </div>
         <div class="dash-card" onclick="showSection('aisetup',null)">
           <div class="dc-icon">🤖</div>
           <div class="dc-title">AI Phone Setup</div>
-          <div class="dc-desc">Customize your AI's questions. Add, remove, and reorder what your AI asks callers.</div>
+          <div class="dc-desc">Customize the questions your AI asks every caller. Add, remove, reorder anytime.</div>
           <div class="dc-arrow">Customize AI →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('social')">
+          <div class="dc-icon">📱</div>
+          <div class="dc-title">Social Media AI</div>
+          <div class="dc-desc">Auto-post project photos to Google Business and Facebook with AI-written captions.</div>
+          <div class="dc-arrow">Open Social Media →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('permits')" id="cardPermits">
+          <div class="dc-icon">🏛️</div>
+          <div class="dc-title">Permit Agent</div>
+          <div class="dc-desc">Enter any US address and get every permit required, codes, fees, and direct apply links.</div>
+          <div class="dc-arrow">Open Permit Agent →</div>
         </div>
       </div>
     </div>
@@ -490,7 +502,7 @@ function renderPlatform() {
   const d = userData || {};
   const coName = d.companyName || currentUser.email;
   document.getElementById('headerCompany').textContent = coName;
-  document.getElementById('welcomeMsg').textContent    = 'Welcome, ' + (d.ownerName||'').split(' ')[0] + '!';
+  document.getElementById('welcomeMsg').textContent    = 'Welcome, ' + (d.firstName || (d.ownerName||'').split(' ')[0] || currentUser.email.split('@')[0]) + '!';
   document.getElementById('welcomeSub').textContent    = coName + ' · SiteCommand Dashboard';
 
   // Phone
@@ -541,7 +553,7 @@ function renderPlatform() {
 
 function renderLinks(d, slug) {
   const plan       = d.plan || 'starter';
-  const portalBase = 'https://mahousing2025.github.io/alisignatureconstruction';
+  const portalBase = 'https://sitecommand-io.github.io/platform/platform.html';
   const links = [
     { icon:'🌐', label:'Your Public Website',     url: BASE_URL + '/site.html?id=' + slug,        show: true },
     { icon:'🏗️', label:'Client Portal',           url: portalBase + '/portal.html?co=' + slug,    show: true },
@@ -774,13 +786,16 @@ window.copyText = (text, btn) => {
 window.openExternal = type => {
   const d    = userData || {};
   const slug = d.slug || makeSlug(d.companyName||'');
-  const base = 'https://mahousing2025.github.io/alisignatureconstruction';
+  const mysite = 'https://' + slug + '.sitecommand.net';
+  const platform = 'https://sitecommand-io.github.io/platform';
   const urls = {
-    website: BASE_URL + '/site.html?id=' + slug,
-    portal:  base + '/portal.html',
-    crew:    base + '/crew.html',
-    leads:   base + '/leads-dashboard.html',
-    permits: base + '/permits.html',
+    website: mysite,
+    portal:  mysite + '/portal',
+    crew:    mysite + '/crew',
+    leads:   platform + '/lead-finder.html',
+    email:   platform + '/email-ai.html',
+    social:  platform + '/social-media.html',
+    permits: platform + '/permits.html',
   };
   if (urls[type]) window.open(urls[type], '_blank');
 };
