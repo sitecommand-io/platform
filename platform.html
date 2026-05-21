@@ -553,14 +553,17 @@ function renderPlatform() {
 
 function renderLinks(d, slug) {
   const plan       = d.plan || 'starter';
-  const portalBase = 'https://sitecommand-io.github.io/platform/platform.html';
+  const mysite     = 'https://' + slug + '.sitecommand.net';
+  const platform   = 'https://sitecommand-io.github.io/platform';
   const links = [
-    { icon:'🌐', label:'Your Public Website',     url: BASE_URL + '/site.html?id=' + slug,        show: true },
-    { icon:'🏗️', label:'Client Portal',           url: portalBase + '/portal.html?co=' + slug,    show: true },
-    { icon:'👷', label:'Crew App',                url: portalBase + '/crew.html?co=' + slug,       show: true },
-    { icon:'📞', label:'Leads Dashboard',         url: portalBase + '/leads-dashboard.html?co=' + slug, show: plan !== 'starter' },
-    { icon:'🏛️', label:'Permit Agent',            url: portalBase + '/permits.html?co=' + slug,   show: plan === 'elite' },
-    { icon:'📱', label:'AI Phone Number',         url: 'tel:' + (d.aiPhone||''), label2: d.aiPhone || 'Not set up yet', show: true },
+    { icon:'🌐', label:'Your Website',       url: mysite,                             show: true },
+    { icon:'🏗️', label:'Client Portal',      url: mysite + '/portal',                 show: true },
+    { icon:'👷', label:'Crew App',            url: mysite + '/crew',                   show: true },
+    { icon:'📧', label:'Email AI',            url: platform + '/email-ai.html',        show: plan !== 'starter' },
+    { icon:'🔍', label:'Lead Finder',         url: platform + '/lead-finder.html',     show: plan !== 'starter' },
+    { icon:'📱', label:'Social Media AI',     url: platform + '/social-media.html',    show: plan === 'elite' },
+    { icon:'🏛️', label:'Permit Agent',        url: mysite + '/permits',                show: true },
+    { icon:'☎️', label:'AI Phone Number',         url: 'tel:' + (d.aiPhone||''), label2: d.aiPhone || 'Not set up yet', show: true },
   ];
   document.getElementById('linksGrid').innerHTML = links.filter(l=>l.show).map(l => `
     <div class="link-item">
@@ -784,10 +787,10 @@ window.copyText = (text, btn) => {
 };
 
 window.openExternal = type => {
-  const d    = userData || {};
-  const slug = d.slug || makeSlug(d.companyName||'');
-  const mysite = 'https://' + slug + '.sitecommand.net';
-  const platform = 'https://sitecommand-io.github.io/platform';
+  const d       = userData || {};
+  const slug    = d.slug || makeSlug(d.companyName||'');
+  const mysite  = 'https://' + slug + '.sitecommand.net';
+  const platform= 'https://sitecommand-io.github.io/platform';
   const urls = {
     website: mysite,
     portal:  mysite + '/portal',
@@ -795,7 +798,7 @@ window.openExternal = type => {
     leads:   platform + '/lead-finder.html',
     email:   platform + '/email-ai.html',
     social:  platform + '/social-media.html',
-    permits: platform + '/permits.html',
+    permits: mysite + '/permits',
   };
   if (urls[type]) window.open(urls[type], '_blank');
 };
