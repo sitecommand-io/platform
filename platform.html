@@ -852,4 +852,782 @@ function updateSubdomainDisplay() {
 }
 </script>
 </body>
+</html>    .panel-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem}
+    .panel-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
+    .question-list{display:flex;flex-direction:column;gap:.5rem}
+    .q-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;display:flex;align-items:center;gap:.75rem;transition:border-color .2s}
+    .q-item:hover{border-color:var(--muted)}
+    .q-num{width:26px;height:26px;border-radius:50%;background:rgba(200,169,110,.15);border:1px solid rgba(200,169,110,.3);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--accent);flex-shrink:0}
+    .q-input{flex:1;background:none;border:none;color:var(--white);font-size:.88rem;outline:none}
+    .q-input::placeholder{color:var(--mid)}
+    .q-drag{color:var(--border);cursor:grab;font-size:1.1rem;flex-shrink:0}
+    .q-del{background:none;border:none;color:var(--mid);cursor:pointer;font-size:.9rem;padding:.2rem;transition:color .15s;flex-shrink:0}
+    .q-del:hover{color:var(--red)}
+    .add-q-row{display:flex;gap:.5rem;margin-top:.75rem}
+    .add-q-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.86rem;padding:.6rem .9rem;transition:border-color .2s}
+    .add-q-input:focus{outline:none;border-color:var(--accent)}
+    .add-q-btn{background:var(--accent);color:var(--black);border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.6rem 1.1rem;cursor:pointer;white-space:nowrap}
+    .save-btn{background:var(--accent);color:var(--black);border:none;border-radius:7px;font-size:.82rem;font-weight:700;padding:.6rem 1.4rem;cursor:pointer;transition:background .2s;margin-top:.85rem}
+    .save-btn:hover{background:var(--accent2)}
+    .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+    .cswatch{width:30px;height:30px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+    .cswatch.sel{border-color:var(--white)}
+    .info-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.88rem;padding:.62rem .9rem;transition:border-color .2s;margin-bottom:.6rem}
+    .info-input:focus{outline:none;border-color:var(--accent)}
+    .ok-msg{font-size:.8rem;color:var(--green);margin-top:.4rem}
+    .err-msg{font-size:.8rem;color:#e08080;margin-top:.4rem}
+
+    /* ── PUBLIC WEBSITE PREVIEW ── */
+    #sitePreview{width:100%;height:600px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+
+    /* ── LOADING ── */
+    .spin{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-full{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:1rem}
+    .loading-full .spin{width:32px;height:32px;border-width:3px}
+
+    /* ── PHONE SETUP ── */
+    .phone-setup{background:rgba(110,200,122,.06);border:1px solid rgba(110,200,122,.25);border-radius:10px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .phone-setup-icon{font-size:2rem;flex-shrink:0}
+    .phone-setup h3{font-size:.96rem;font-weight:700;margin-bottom:.25rem}
+    .phone-setup p{font-size:.8rem;color:var(--mid);line-height:1.5}
+    .buy-phone-btn{background:var(--green);color:#000;border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.55rem 1.2rem;cursor:pointer;white-space:nowrap;margin-left:auto;transition:opacity .2s}
+    .buy-phone-btn:hover{opacity:.85}
+    .buy-phone-btn:disabled{opacity:.5;cursor:not-allowed}
+
+    @media(max-width:680px){.dash-grid{grid-template-columns:1fr 1fr}.stat-row{grid-template-columns:1fr 1fr}.links-grid{grid-template-columns:1fr}.p-nav{display:none}.p-body{padding:1.25rem .85rem}}
+  </style>
+</head>
+<body>
+
+<!-- ── AUTH ── -->
+<div id="authWrap">
+  <div class="auth-box">
+    <div class="sc-logo">
+      <div class="sc-mark"><span>Site</span>Command</div>
+      <div class="sc-sub">Contractor Business Platform</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="showTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabSignup" onclick="showTab('signup')">Start Free Trial</button>
+    </div>
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="you@company.com"/></div>
+      <div class="fg"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <div class="auth-err" id="loginErr"></div>
+      <p style="text-align:center;margin-top:.75rem"><a href="#" onclick="doReset()" style="font-size:.76rem;color:var(--accent)">Forgot password?</a></p>
+    </div>
+    <!-- SIGNUP -->
+    <div id="signupForm" style="display:none">
+      <div class="fg"><label>Company Name *</label><input id="sigCo" placeholder="Smith Roofing LLC"/></div>
+      <div class="fg"><label>Your Name *</label><input id="sigName" placeholder="John Smith"/></div>
+      <div class="fg"><label>Email *</label><input type="email" id="sigEmail" placeholder="john@smithroofing.com"/></div>
+      <div class="fg"><label>Phone *</label><input type="tel" id="sigPhone" placeholder="(302) 000-0000"/></div>
+      <div class="fg"><label>State *</label>
+        <select id="sigState">
+          <option value="">Select state</option>
+          <option value="DE">Delaware</option><option value="PA">Pennsylvania</option>
+          <option value="MD">Maryland</option><option value="NJ">New Jersey</option>
+          <option value="NY">New York</option><option value="VA">Virginia</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Plan</label>
+        <select id="sigPlan">
+          <option value="starter">Starter — $97/month</option>
+          <option value="professional" selected>Professional — $197/month</option>
+          <option value="elite">Elite — $297/month</option>
+        </select>
+      </div>
+      <div class="fg"><label>Password *</label><input type="password" id="sigPass" placeholder="Min 8 characters"/></div>
+      <button class="auth-btn" id="signupBtn" onclick="doSignup()">Start 14-Day Free Trial →</button>
+      <div class="auth-err" id="signupErr"></div>
+      <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:.75rem">No credit card required · Cancel anytime</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── PLATFORM ── -->
+<div id="platform">
+  <div class="p-header">
+    <div class="p-logo"><span>Site</span>Command</div>
+    <div class="p-company" id="headerCompany"></div>
+    <div class="p-nav">
+      <button class="p-nav-btn active" onclick="showSection('dashboard',this)">Dashboard</button>
+      <button class="p-nav-btn" onclick="showSection('links',this)">My Links</button>
+      <button class="p-nav-btn" onclick="showSection('aisetup',this)">AI Setup</button>
+      <button class="p-nav-btn" onclick="showSection('domain',this)">Domain</button>
+      <button class="p-nav-btn" onclick="showSection('settings',this)">Settings</button>
+    </div>
+    <div class="p-right">
+      <div class="phone-pill" id="headerPhone">📞 Loading...</div>
+      <button class="logout-btn" onclick="doLogout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="p-body">
+
+    <!-- DASHBOARD -->
+    <div class="p-section active" id="sec-dashboard">
+      <div class="welcome-bar">
+        <h2 id="welcomeMsg">Welcome back!</h2>
+        <p id="welcomeSub">Your SiteCommand dashboard</p>
+      </div>
+
+      <!-- Phone number setup banner -->
+      <div id="phoneSetupBanner" class="phone-setup" style="margin-bottom:1.5rem;display:none">
+        <div class="phone-setup-icon">📞</div>
+        <div>
+          <h3>Get Your AI Phone Number</h3>
+          <p>Your AI will answer calls 24/7, qualify leads, and save them to your dashboard — automatically.</p>
+        </div>
+        <button class="buy-phone-btn" id="buyPhoneBtn" onclick="buyPhoneNumber()">Get My Number →</button>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-mini"><div class="sm-label">Total Leads</div><div class="sm-value" id="stLeads">0</div></div>
+        <div class="stat-mini"><div class="sm-label">Active Projects</div><div class="sm-value" id="stProjects">0</div></div>
+        <div class="stat-mini"><div class="sm-label">Crew On Site</div><div class="sm-value" id="stCrew">0</div></div>
+        <div class="stat-mini"><div class="sm-label">New Today</div><div class="sm-value" id="stToday">0</div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card" onclick="openExternal('website')">
+          <div class="dc-icon">🌐</div>
+          <div class="dc-title">Your Website</div>
+          <div class="dc-desc">Your live public website at your SiteCommand domain. Share it with clients now.</div>
+          <div class="dc-arrow">View Website →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('portal')">
+          <div class="dc-icon">🏗️</div>
+          <div class="dc-title">Client Portal</div>
+          <div class="dc-desc">Your clients sign in here to see project progress, photos, expenses, and updates.</div>
+          <div class="dc-arrow">Open Client Portal →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('crew')">
+          <div class="dc-icon">👷</div>
+          <div class="dc-title">Crew App</div>
+          <div class="dc-desc">GPS clock-in/out, task assignments, and daily photo reports for your crew.</div>
+          <div class="dc-arrow">Open Crew App →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('email')">
+          <div class="dc-icon">📧</div>
+          <div class="dc-title">Email AI</div>
+          <div class="dc-desc">Connect Gmail or Outlook. AI reads every email, flags important ones, drafts replies.</div>
+          <div class="dc-arrow">Open Email AI →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('leads')" id="cardLeads">
+          <div class="dc-icon">🔍</div>
+          <div class="dc-title">Lead Finder</div>
+          <div class="dc-desc">AI scans Zillow, Facebook, Craigslist daily for motivated sellers and renovation jobs.</div>
+          <div class="dc-arrow">Find Leads →</div>
+        </div>
+        <div class="dash-card" onclick="showSection('aisetup',null)">
+          <div class="dc-icon">🤖</div>
+          <div class="dc-title">AI Phone Setup</div>
+          <div class="dc-desc">Customize the questions your AI asks every caller. Add, remove, reorder anytime.</div>
+          <div class="dc-arrow">Customize AI →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('social')">
+          <div class="dc-icon">📱</div>
+          <div class="dc-title">Social Media AI</div>
+          <div class="dc-desc">Auto-post project photos to Google Business and Facebook with AI-written captions.</div>
+          <div class="dc-arrow">Open Social Media →</div>
+        </div>
+        <div class="dash-card" onclick="openExternal('permits')" id="cardPermits">
+          <div class="dc-icon">🏛️</div>
+          <div class="dc-title">Permit Agent</div>
+          <div class="dc-desc">Enter any US address and get every permit required, codes, fees, and direct apply links.</div>
+          <div class="dc-arrow">Open Permit Agent →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY LINKS -->
+    <div class="p-section" id="sec-links">
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:1.25rem">Your Links</h2>
+      <p style="font-size:.86rem;color:var(--mid);margin-bottom:1.5rem">Share these links with your clients and crew. They are live right now.</p>
+      <div class="links-grid" id="linksGrid"></div>
+    </div>
+
+    <!-- AI SETUP -->
+    <div class="p-section" id="sec-aisetup">
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:.35rem">AI Phone Questions</h2>
+      <p style="font-size:.86rem;color:var(--mid);margin-bottom:1.5rem">Your AI asks these questions to every caller. Drag to reorder. Click ✕ to remove. Add your own below.</p>
+      <div class="panel">
+        <div class="panel-label">Questions Your AI Asks</div>
+        <div class="question-list" id="questionList"></div>
+        <div class="add-q-row">
+          <input class="add-q-input" id="newQInput" placeholder="Add a new question..." onkeydown="if(event.key==='Enter')addQuestion()"/>
+          <button class="add-q-btn" onclick="addQuestion()">+ Add Question</button>
+        </div>
+        <div style="margin-top:1rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <button class="save-btn" onclick="saveQuestions()">Save Questions</button>
+          <button onclick="resetDefaultQuestions()" style="background:none;border:1px solid var(--border);color:var(--mid);font-size:.78rem;padding:.5rem 1rem;border-radius:6px;cursor:pointer">Reset to Defaults</button>
+          <span id="qSaveMsg" style="font-size:.8rem;color:var(--green)"></span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-label">AI Greeting Message</div>
+        <p style="font-size:.82rem;color:var(--mid);margin-bottom:.75rem">What your AI says when someone calls your number</p>
+        <textarea id="greetingText" class="info-input" style="min-height:80px;resize:vertical"></textarea>
+        <button class="save-btn" onclick="saveGreeting()">Save Greeting</button>
+        <span id="greetSaveMsg" style="font-size:.8rem;color:var(--green);margin-left:.75rem"></span>
+      </div>
+    </div>
+
+    <!-- DOMAIN -->
+    <div class="p-section" id="sec-domain">
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:.35rem">Your Domain</h2>
+      <p style="font-size:.86rem;color:var(--mid);margin-bottom:1.5rem">Your website is live right now on your SiteCommand subdomain. Connect your own domain when ready.</p>
+
+      <!-- SUBDOMAIN (instant) -->
+      <div class="panel" style="border-color:rgba(110,200,122,.3);background:rgba(110,200,122,.04)">
+        <div class="panel-label" style="color:var(--green)">Your Free Subdomain — Live Now</div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1">
+            <div style="font-size:1.1rem;font-weight:700;color:var(--white)" id="subdomainDisplay">yourcompany.sitecommand.io</div>
+            <div style="font-size:.78rem;color:var(--mid);margin-top:.25rem">Your website is live at this address right now. Share it with clients immediately.</div>
+          </div>
+          <button class="copy-btn" style="background:rgba(110,200,122,.15);border-color:rgba(110,200,122,.3);color:var(--green)" onclick="copyText(document.getElementById('subdomainDisplay').textContent,this)">Copy Link</button>
+          <button class="copy-btn" onclick="window.open('https://'+document.getElementById('subdomainDisplay').textContent,'_blank')">Open Site →</button>
+        </div>
+        <div style="margin-top:1rem;padding:.65rem .9rem;background:rgba(110,200,122,.06);border-radius:6px;font-size:.78rem;color:var(--green)">
+          ✅ Active · All 8 pages live · Updates instantly when you change settings
+        </div>
+      </div>
+
+      <!-- CUSTOM DOMAIN -->
+      <div class="panel">
+        <div class="panel-label">Connect Your Own Domain</div>
+        <p style="font-size:.84rem;color:var(--mid);margin-bottom:1.25rem;line-height:1.65">
+          Want <strong style="color:var(--white)">smithroofing.com</strong> instead of smithroofing.sitecommand.io?
+          Enter your domain below and follow the 3-step DNS instructions. Takes 10 minutes to set up, 24-48 hours to fully propagate.
+        </p>
+
+        <div style="margin-bottom:1rem">
+          <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.4rem">Your Domain Name</label>
+          <div style="display:flex;gap:.5rem">
+            <input class="info-input" id="customDomainInput" placeholder="smithroofing.com" style="flex:1;margin-bottom:0"/>
+            <button class="save-btn" style="margin-top:0;white-space:nowrap" onclick="saveCustomDomain()">Save Domain</button>
+          </div>
+          <div id="domainSaveMsg" style="font-size:.8rem;margin-top:.4rem;min-height:.9rem"></div>
+        </div>
+
+        <!-- DNS INSTRUCTIONS -->
+        <div id="dnsInstructions" style="display:none">
+          <div style="font-size:.82rem;font-weight:600;color:var(--white);margin-bottom:.75rem">DNS Setup Instructions (do this at your domain registrar — GoDaddy, Namecheap, etc.):</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem">
+            <div style="background:var(--surface);border-radius:7px;padding:.75rem 1rem;font-size:.82rem">
+              <div style="display:grid;grid-template-columns:80px 80px 1fr 1fr;gap:.5rem;font-weight:600;color:var(--mid);font-size:.7rem;text-transform:uppercase;margin-bottom:.4rem">
+                <span>Type</span><span>Name</span><span>Value</span><span>TTL</span>
+              </div>
+              <div style="display:grid;grid-template-columns:80px 80px 1fr 1fr;gap:.5rem;color:var(--white)">
+                <span style="color:var(--accent)">CNAME</span>
+                <span>www</span>
+                <span id="cnameTarget" style="color:var(--green)">proxy.sitecommand.io</span>
+                <span>Auto</span>
+              </div>
+            </div>
+            <div style="background:var(--surface);border-radius:7px;padding:.75rem 1rem;font-size:.82rem">
+              <div style="display:grid;grid-template-columns:80px 80px 1fr 1fr;gap:.5rem;color:var(--white)">
+                <span style="color:var(--accent)">A</span>
+                <span>@</span>
+                <span style="color:var(--green)">76.76.21.21</span>
+                <span>Auto</span>
+              </div>
+            </div>
+          </div>
+          <div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:.85rem 1rem;font-size:.8rem;color:var(--light);line-height:1.75">
+            <strong style="color:var(--accent)">Step by step:</strong><br>
+            1. Log in to your domain registrar (GoDaddy, Namecheap, Google Domains, etc.)<br>
+            2. Go to DNS Settings for your domain<br>
+            3. Add the CNAME record above for "www"<br>
+            4. Add the A record above for "@" (root domain)<br>
+            5. Wait 24-48 hours for DNS to propagate worldwide<br>
+            6. Your site will automatically appear at your domain — no other action needed
+          </div>
+          <div id="domainStatus" style="margin-top:.85rem;padding:.6rem .9rem;background:rgba(232,148,74,.08);border:1px solid rgba(232,148,74,.3);border-radius:6px;font-size:.78rem;color:var(--orange)">
+            ⏳ Pending — DNS changes can take 24-48 hours to propagate. Your subdomain still works during this time.
+          </div>
+          <button onclick="checkDomainStatus()" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:5px;cursor:pointer;margin-top:.65rem">Check Domain Status</button>
+        </div>
+      </div>
+
+      <!-- BOTH WORK SIMULTANEOUSLY -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.4rem;font-size:.82rem;color:var(--light);line-height:1.8">
+        <strong style="color:var(--accent)">Good to know:</strong> Both your subdomain and your custom domain work at the same time.
+        You never lose access to smithroofing.sitecommand.io even after connecting smithroofing.com.
+        Share either link — they both go to the same website.
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="p-section" id="sec-settings">
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:1.25rem">Company Settings</h2>
+      <div class="panel">
+        <div class="panel-label">Company Information</div>
+        <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.35rem">Company Name</label>
+        <input class="info-input" id="setCoName" placeholder="Your Company Name"/>
+        <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.35rem">Business Phone</label>
+        <input class="info-input" id="setPhone" placeholder="(302) 000-0000" type="tel"/>
+        <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.35rem">Tagline / Slogan</label>
+        <input class="info-input" id="setTagline" placeholder="Building excellence since 2010"/>
+        <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.35rem">City & State</label>
+        <input class="info-input" id="setLocation" placeholder="Wilmington, DE"/>
+        <label style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);display:block;margin-bottom:.35rem">Brand Color</label>
+        <div class="color-row" id="settingsColorRow">
+          <div class="cswatch sel" style="background:#c8a96e" data-color="#c8a96e" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#4a9eff" data-color="#4a9eff" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#6ec87a" data-color="#6ec87a" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#e05252" data-color="#e05252" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#9b59b6" data-color="#9b59b6" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#e67e22" data-color="#e67e22" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#1abc9c" data-color="#1abc9c" onclick="setColor(this)"></div>
+        </div>
+        <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+        <span id="settingsSaveMsg" class="ok-msg"></span>
+      </div>
+      <div class="panel">
+        <div class="panel-label">Subscription</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+          <div>
+            <div style="font-size:.96rem;font-weight:600" id="planDisplay">Professional Plan — $197/month</div>
+            <div style="font-size:.78rem;color:var(--mid);margin-top:.2rem">14-day free trial · No charge until trial ends</div>
+          </div>
+          <span style="font-size:.7rem;font-weight:700;text-transform:uppercase;padding:.2rem .75rem;border-radius:99px;background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)">Active Trial</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }                  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword,
+         createUserWithEmailAndPassword,
+         sendPasswordResetEmail, signOut,
+         onAuthStateChanged }             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc,
+         setDoc, updateDoc, collection,
+         getDocs, serverTimestamp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── FIREBASE (SiteCommand's own project — replace with your new Firebase config) ──
+const FB_CONFIG = {
+  apiKey:            "AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8",
+  authDomain:        "sitecommand-saas.firebaseapp.com",
+  projectId:         "sitecommand-saas",
+  storageBucket:     "sitecommand-saas.firebasestorage.app",
+  messagingSenderId: "309552233436",
+  appId:             "1:309552233436:web:c1dcecb5ed8b9373862d19",
+};
+
+const TWILIO_SID   = localStorage.getItem('sc_twilio_sid')   || '';
+const TWILIO_TOKEN = localStorage.getItem('sc_twilio_token') || '';
+const TWILIO_FROM  = localStorage.getItem('sc_twilio_from')  || '';
+const BASE_URL     = 'https://sitecommand-io.github.io/platform';
+
+const app  = initializeApp(FB_CONFIG);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null;
+let userData    = null;
+let selectedColor = '#c8a96e';
+
+const DEFAULT_QUESTIONS = [
+  "Can I get your first and last name please?",
+  "What type of work are you looking to have done?",
+  "What is the property address where the work will be done?",
+  "Are you the homeowner or property owner?",
+  "What is your timeline? Are you looking to start immediately or still planning?",
+  "Do you have a rough budget in mind for the project?",
+  "Are you interested in potentially selling the property? We also buy homes for cash.",
+];
+
+// ── AUTH STATE ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { showAuth(); return; }
+  currentUser = user;
+  await loadUserData(user.uid);
+  showPlatform();
+});
+
+async function loadUserData(uid) {
+  const snap = await getDoc(doc(db, 'contractors', uid));
+  if (snap.exists()) {
+    userData = snap.data();
+  } else {
+    userData = { questions: DEFAULT_QUESTIONS };
+  }
+}
+
+function showAuth() {
+  document.getElementById('authWrap').style.display = 'flex';
+  document.getElementById('platform').style.display = 'none';
+}
+
+function showPlatform() {
+  document.getElementById('authWrap').style.display = 'none';
+  document.getElementById('platform').style.display = 'block';
+  renderPlatform();
+}
+
+function renderPlatform() {
+  const d = userData || {};
+  const coName = d.companyName || currentUser.email;
+  document.getElementById('headerCompany').textContent = coName;
+  document.getElementById('welcomeMsg').textContent    = 'Welcome, ' + (d.firstName || (d.ownerName||'').split(' ')[0] || currentUser.email.split('@')[0]) + '!';
+  document.getElementById('welcomeSub').textContent    = coName + ' · SiteCommand Dashboard';
+
+  // Phone
+  if (d.aiPhone) {
+    document.getElementById('headerPhone').textContent = '📞 ' + d.aiPhone;
+    document.getElementById('phoneSetupBanner').style.display = 'none';
+  } else {
+    document.getElementById('headerPhone').textContent = '📞 No number yet';
+    document.getElementById('phoneSetupBanner').style.display = 'flex';
+  }
+
+  // Plan features
+  const plan = d.plan || 'starter';
+  if (plan !== 'starter') {
+    document.getElementById('cardLeads').style.display = 'block';
+  }
+  if (plan === 'elite') {
+    document.getElementById('cardPermits').style.display = 'block';
+  }
+  document.getElementById('planDisplay').textContent =
+    plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan — $' +
+    ({starter:97,professional:197,elite:297}[plan]||97) + '/month';
+
+  // Settings fields
+  document.getElementById('setCoName').value  = d.companyName  || '';
+  document.getElementById('setPhone').value   = d.bizPhone     || '';
+  document.getElementById('setTagline').value = d.tagline      || '';
+  document.getElementById('setLocation').value= d.location     || '';
+
+  // Color
+  if (d.color) {
+    selectedColor = d.color;
+    document.querySelectorAll('.cswatch').forEach(s => {
+      s.classList.toggle('sel', s.dataset.color === d.color);
+    });
+  }
+
+  // Greeting
+  const slug = makeSlug(coName);
+  document.getElementById('greetingText').value = d.greeting ||
+    'Thank you for calling ' + coName + '. This is our assistant. ' +
+    'I am going to ask you a few quick questions so our team can prepare the best response for you. Let\'s get started. ';
+
+  renderQuestions();
+  renderLinks(d, slug);
+  setTimeout(updateSubdomainDisplay, 100);
+}
+
+function renderLinks(d, slug) {
+  const plan       = d.plan || 'starter';
+  const mysite     = 'https://' + slug + '.sitecommand.net';
+  const platform   = 'https://sitecommand-io.github.io/platform';
+  const links = [
+    { icon:'🌐', label:'Your Website',       url: mysite,                             show: true },
+    { icon:'🏗️', label:'Client Portal',      url: mysite + '/portal',                 show: true },
+    { icon:'👷', label:'Crew App',            url: mysite + '/crew',                   show: true },
+    { icon:'📧', label:'Email AI',            url: platform + '/email-ai.html',        show: plan !== 'starter' },
+    { icon:'🔍', label:'Lead Finder',         url: platform + '/lead-finder.html',     show: plan !== 'starter' },
+    { icon:'📱', label:'Social Media AI',     url: platform + '/social-media.html',    show: plan === 'elite' },
+    { icon:'🏛️', label:'Permit Agent',        url: mysite + '/permits',                show: true },
+    { icon:'☎️', label:'AI Phone Number',         url: 'tel:' + (d.aiPhone||''), label2: d.aiPhone || 'Not set up yet', show: true },
+  ];
+  document.getElementById('linksGrid').innerHTML = links.filter(l=>l.show).map(l => `
+    <div class="link-item">
+      <div class="link-label">${l.icon} ${l.label}</div>
+      <div class="link-url">${l.label2 || l.url}</div>
+      <button class="copy-btn" onclick="copyText('${l.label2||l.url}',this)">Copy</button>
+      ${!l.url.startsWith('tel:') ? `<button class="copy-btn" style="margin-left:.35rem" onclick="window.open('${l.url}','_blank')">Open →</button>` : ''}
+    </div>`).join('');
+}
+
+function renderQuestions() {
+  const qs = userData?.questions || DEFAULT_QUESTIONS;
+  document.getElementById('questionList').innerHTML = qs.map((q,i) => `
+    <div class="q-item" id="qi-${i}" draggable="true" ondragstart="dragStart(${i})" ondragover="event.preventDefault()" ondrop="dragDrop(${i})">
+      <div class="q-num">${i+1}</div>
+      <input class="q-input" id="qinput-${i}" value="${q.replace(/"/g,'&quot;')}" placeholder="Question ${i+1}"/>
+      <div class="q-drag">⠿</div>
+      <button class="q-del" onclick="deleteQuestion(${i})" title="Remove">✕</button>
+    </div>`).join('');
+}
+
+// ── DRAG AND DROP ──
+let dragIdx = null;
+window.dragStart = i => dragIdx = i;
+window.dragDrop  = i => {
+  if (dragIdx === null || dragIdx === i) return;
+  const qs = [...(userData?.questions || DEFAULT_QUESTIONS)];
+  const [moved] = qs.splice(dragIdx, 1);
+  qs.splice(i, 0, moved);
+  userData.questions = qs;
+  dragIdx = null;
+  renderQuestions();
+};
+
+window.deleteQuestion = i => {
+  const qs = [...(userData?.questions || DEFAULT_QUESTIONS)];
+  qs.splice(i, 1);
+  userData.questions = qs;
+  renderQuestions();
+};
+
+window.addQuestion = () => {
+  const inp = document.getElementById('newQInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!userData) userData = {};
+  if (!userData.questions) userData.questions = [...DEFAULT_QUESTIONS];
+  userData.questions.push(val);
+  inp.value = '';
+  renderQuestions();
+};
+
+window.resetDefaultQuestions = () => {
+  if (!confirm('Reset to default questions? This will remove any custom questions.')) return;
+  userData.questions = [...DEFAULT_QUESTIONS];
+  renderQuestions();
+};
+
+window.saveQuestions = async () => {
+  const msg = document.getElementById('qSaveMsg');
+  // Read current values from inputs
+  const qs = [];
+  document.querySelectorAll('.q-input').forEach(inp => {
+    if (inp.value.trim()) qs.push(inp.value.trim());
+  });
+  userData.questions = qs;
+  try {
+    await updateDoc(doc(db, 'contractors', currentUser.uid), { questions: qs });
+    msg.textContent = '✅ Questions saved!';
+    setTimeout(() => msg.textContent = '', 3000);
+  } catch(e) { msg.style.color = '#e08080'; msg.textContent = 'Error: ' + e.message; }
+};
+
+window.saveGreeting = async () => {
+  const greeting = document.getElementById('greetingText').value.trim();
+  const msg      = document.getElementById('greetSaveMsg');
+  try {
+    await updateDoc(doc(db, 'contractors', currentUser.uid), { greeting });
+    msg.textContent = '✅ Saved!'; setTimeout(() => msg.textContent = '', 3000);
+  } catch(e) { msg.style.color = '#e08080'; msg.textContent = e.message; }
+};
+
+window.saveSettings = async () => {
+  const msg = document.getElementById('settingsSaveMsg');
+  const updates = {
+    companyName: document.getElementById('setCoName').value.trim(),
+    bizPhone:    document.getElementById('setPhone').value.trim(),
+    tagline:     document.getElementById('setTagline').value.trim(),
+    location:    document.getElementById('setLocation').value.trim(),
+    color:       selectedColor,
+    updatedAt:   serverTimestamp(),
+  };
+  try {
+    await updateDoc(doc(db, 'contractors', currentUser.uid), updates);
+    Object.assign(userData, updates);
+    document.getElementById('headerCompany').textContent = updates.companyName;
+    msg.textContent = '✅ Settings saved!'; setTimeout(() => msg.textContent = '', 3000);
+  } catch(e) { msg.style.color = '#e08080'; msg.textContent = e.message; }
+};
+
+window.setColor = el => {
+  document.querySelectorAll('.cswatch').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedColor = el.dataset.color;
+};
+
+// ── BUY PHONE NUMBER ──
+window.buyPhoneNumber = async () => {
+  const btn = document.getElementById('buyPhoneBtn');
+  btn.disabled = true; btn.textContent = 'Getting your number...';
+  const state   = userData?.state || 'DE';
+  const areaCodes = { DE:'302', PA:'215', MD:'410', NJ:'201', NY:'212', VA:'571' };
+  const areaCode  = areaCodes[state] || '302';
+  try {
+    // Search available numbers
+    const creds   = btoa(TWILIO_SID + ':' + TWILIO_TOKEN);
+    const searchR = await fetch(
+      'https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID +
+      '/AvailablePhoneNumbers/US/Local.json?AreaCode=' + areaCode + '&SmsEnabled=true&VoiceEnabled=true',
+      { headers: { 'Authorization': 'Basic ' + creds } }
+    );
+    const searchD = await searchR.json();
+    if (!searchD.available_phone_numbers?.length) throw new Error('No numbers available in area ' + areaCode);
+    const number  = searchD.available_phone_numbers[0].phone_number;
+    // Purchase
+    const buyR = await fetch(
+      'https://api.twilio.com/2010-04-01/Accounts/' + TWILIO_SID + '/IncomingPhoneNumbers.json',
+      { method:'POST', headers:{ 'Authorization':'Basic '+creds, 'Content-Type':'application/x-www-form-urlencoded' },
+        body: 'PhoneNumber=' + encodeURIComponent(number) }
+    );
+    const buyD = await buyR.json();
+    if (!buyD.phone_number) throw new Error(buyD.message || 'Purchase failed');
+    // Save to Firebase
+    await updateDoc(doc(db, 'contractors', currentUser.uid), { aiPhone: buyD.phone_number });
+    userData.aiPhone = buyD.phone_number;
+    document.getElementById('headerPhone').textContent = '📞 ' + buyD.phone_number;
+    document.getElementById('phoneSetupBanner').style.display = 'none';
+    alert('✅ Your AI phone number is: ' + buyD.phone_number + '\n\nThis number will be set up in your AI phone assistant automatically.');
+  } catch(e) {
+    alert('Error: ' + e.message + '\n\nMake sure your Twilio credentials are set in browser console:\nlocalStorage.setItem("sc_twilio_sid","YOUR_SID")\nlocalStorage.setItem("sc_twilio_token","YOUR_TOKEN")');
+    btn.disabled = false; btn.textContent = 'Get My Number →';
+  }
+};
+
+// ── AUTH ACTIONS ──
+window.showTab = tab => {
+  document.getElementById('tabLogin').classList.toggle('active',  tab==='login');
+  document.getElementById('tabSignup').classList.toggle('active', tab==='signup');
+  document.getElementById('loginForm').style.display  = tab==='login'  ? 'block':'none';
+  document.getElementById('signupForm').style.display = tab==='signup' ? 'block':'none';
+};
+
+window.doLogin = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const err   = document.getElementById('loginErr');
+  const btn   = document.getElementById('loginBtn');
+  err.textContent = '';
+  if (!email||!pass) { err.textContent='Enter email and password.'; return; }
+  btn.disabled=true; btn.textContent='Signing in...';
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) {
+    const m = {'auth/invalid-credential':'Wrong email or password.','auth/user-not-found':'No account found.','auth/wrong-password':'Wrong password.','auth/too-many-requests':'Too many attempts. Wait a moment.'};
+    err.textContent = m[e.code] || e.message;
+    btn.disabled=false; btn.textContent='Sign In';
+  }
+};
+
+window.doSignup = async () => {
+  const co    = document.getElementById('sigCo').value.trim();
+  const name  = document.getElementById('sigName').value.trim();
+  const email = document.getElementById('sigEmail').value.trim();
+  const phone = document.getElementById('sigPhone').value.trim();
+  const state = document.getElementById('sigState').value;
+  const plan  = document.getElementById('sigPlan').value;
+  const pass  = document.getElementById('sigPass').value;
+  const err   = document.getElementById('signupErr');
+  const btn   = document.getElementById('signupBtn');
+  err.textContent = '';
+  if (!co||!name||!email||!phone||!state||!pass) { err.textContent='All fields required.'; return; }
+  if (pass.length<8) { err.textContent='Password must be at least 8 characters.'; return; }
+  btn.disabled=true; btn.textContent='Creating account...';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    const slug = makeSlug(co);
+    await setDoc(doc(db,'contractors',cred.user.uid), {
+      companyName: co, ownerName: name, email, phone, state, plan, slug,
+      questions:   DEFAULT_QUESTIONS,
+      greeting:    'Thank you for calling ' + co + '. This is our assistant. I am going to ask you a few quick questions so our team can prepare the best response for you.',
+      color:       '#c8a96e',
+      aiPhone:     null,
+      status:      'trial',
+      createdAt:   serverTimestamp(),
+    });
+  } catch(e) { err.textContent=e.message; btn.disabled=false; btn.textContent='Start Free Trial →'; }
+};
+
+window.doReset = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const err   = document.getElementById('loginErr');
+  if (!email) { err.textContent='Enter your email above first.'; return; }
+  await sendPasswordResetEmail(auth, email);
+  err.style.color='var(--green)'; err.textContent='Reset email sent!';
+};
+
+window.doLogout = () => signOut(auth);
+
+// ── UI HELPERS ──
+window.showSection = (id, btn) => {
+  document.querySelectorAll('.p-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.p-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+};
+
+window.copyText = (text, btn) => {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent; btn.textContent='Copied!';
+    setTimeout(() => btn.textContent=orig, 2000);
+  });
+};
+
+window.openExternal = type => {
+  const d       = userData || {};
+  const slug    = d.slug || makeSlug(d.companyName||'');
+  const mysite  = 'https://' + slug + '.sitecommand.net';
+  const platform= 'https://sitecommand-io.github.io/platform';
+  const urls = {
+    website: mysite,
+    portal:  mysite + '/portal',
+    crew:    mysite + '/crew',
+    leads:   platform + '/lead-finder.html',
+    email:   platform + '/email-ai.html',
+    social:  platform + '/social-media.html',
+    permits: mysite + '/permits',
+  };
+  if (urls[type]) window.open(urls[type], '_blank');
+};
+
+function makeSlug(name) {
+  return (name||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,30);
+}
+
+// ── DOMAIN MANAGEMENT ──
+window.saveCustomDomain = async () => {
+  const domain = document.getElementById('customDomainInput').value.trim().toLowerCase().replace(/^https?:\/\/|^www\./,'');
+  const msg    = document.getElementById('domainSaveMsg');
+  if (!domain || !domain.includes('.')) { msg.style.color='#e08080'; msg.textContent='Enter a valid domain (e.g. smithroofing.com)'; return; }
+  try {
+    await updateDoc(doc(db,'contractors',currentUser.uid),{ customDomain: domain });
+    userData.customDomain = domain;
+    msg.style.color='var(--green)'; msg.textContent='✅ Domain saved! Follow the DNS instructions below.';
+    document.getElementById('dnsInstructions').style.display='block';
+  } catch(e) { msg.style.color='#e08080'; msg.textContent=e.message; }
+};
+
+window.checkDomainStatus = async () => {
+  const domain = userData?.customDomain;
+  const status = document.getElementById('domainStatus');
+  if (!domain) return;
+  status.style.background='rgba(200,169,110,.08)'; status.style.borderColor='rgba(200,169,110,.3)';
+  status.style.color='var(--accent)'; status.textContent='🔍 Checking DNS for ' + domain + '...';
+  try {
+    const res = await fetch('https://dns.google/resolve?name=' + domain + '&type=A');
+    const d   = await res.json();
+    if (d.Answer && d.Answer.some(r => r.data === '76.76.21.21')) {
+      status.style.background='rgba(110,200,122,.08)'; status.style.borderColor='rgba(110,200,122,.3)';
+      status.style.color='var(--green)'; status.textContent='✅ DNS confirmed! Your domain ' + domain + ' is pointing to SiteCommand correctly.';
+    } else {
+      status.style.background='rgba(232,148,74,.08)'; status.style.borderColor='rgba(232,148,74,.3)';
+      status.style.color='var(--orange)'; status.textContent='⏳ DNS not yet updated for ' + domain + '. This can take up to 48 hours. Your subdomain still works.';
+    }
+  } catch(e) { status.textContent='Could not check DNS. Try again in a few minutes.'; }
+};
+
+// Update subdomain display when platform loads
+function updateSubdomainDisplay() {
+  const slug = userData?.slug || makeSlug(userData?.companyName||'');
+  const el   = document.getElementById('subdomainDisplay');
+  if (el) el.textContent = slug + '.sitecommand.io';
+  const inp = document.getElementById('customDomainInput');
+  if (inp && userData?.customDomain) {
+    inp.value = userData.customDomain;
+    document.getElementById('dnsInstructions').style.display='block';
+  }
+}
+</script>
+</body>
 </html>
