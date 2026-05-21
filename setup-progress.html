@@ -210,7 +210,12 @@ function showDoneState(data) {
 
 startPolling();
 // Fallback: show done after 3 minutes regardless
-setTimeout(() => { clearInterval(pollInterval); showDoneState(); }, 180000);
+setTimeout(() => { clearInterval(pollInterval); showDoneState(); }, 60000);
+
+// If no server configured just show done after animation
+if (!server) {
+  setTimeout(() => showDoneState(), 45000);
+}
 </script>
 </body>
 </html>
