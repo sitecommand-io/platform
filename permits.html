@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Permit Agent • Ali Signature Construction LLC</title>
+  <title>Permit Agent • " + (localStorage.getItem("sc_co")||"Your Company") + " LLC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -172,10 +172,10 @@
 
 <div class="header">
   <div class="header-logo">ASC</div>
-  <div><div class="header-brand">Ali Signature Construction</div><div class="header-sub">Permit Agent</div></div>
+  <div><div class="header-brand">" + (localStorage.getItem("sc_co")||"Your Company") + "</div><div class="header-sub">Permit Agent</div></div>
   <div class="header-right">
-    <a href="admin.html" class="back-link">← Dashboard</a>
-    <a href="portal.html" class="back-link">Portal →</a>
+    <a href="javascript:history.back()" class="back-link">← Dashboard</a>
+    <a href="javascript:void(0)" onclick="window.location.href='https://'+window.location.hostname+'/portal'" class="back-link">Portal →</a>
   </div>
 </div>
 
@@ -1120,7 +1120,7 @@ async function exportPDF() {
     ).join('') + '</div>' +
     '<div style="margin-top:20px"><h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Documents Checklist</h3>' +
     [...document.querySelectorAll('.cl-item span')].map(s => '<div style="font-size:12px;margin-bottom:4px">[ ] ' + s.textContent + '</div>').join('') + '</div>' +
-    '<div style="margin-top:15px;font-size:10px;color:#999;border-top:1px solid #ddd;padding-top:10px">Ali Signature Construction LLC | (302) 257-8521 | info@alisignatureconstruction.com</div>';
+    '<div style="margin-top:15px;font-size:10px;color:#999;border-top:1px solid #ddd;padding-top:10px">Ali S" + (localStorage.getItem("sc_co")||"Your Company") + " | " + (localStorage.getItem("sc_phone")||"") + " | " + (localStorage.getItem("sc_admin_email")||"")</div>';
   const perms = pdfDiv.querySelector('#pdfPerms');
   perms.innerHTML = '<h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Required Permits</h3>';
   document.querySelectorAll('.permit-card').forEach(card => {
@@ -1158,7 +1158,7 @@ let chatHistory = [];
 // Load key from localStorage or use default
 const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || '';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const CHAT_SYS   = 'You are an expert permit and building code assistant for Ali Signature Construction LLC in Delaware. You know NEC 2023, IMC 2021, Delaware Plumbing Code, IBC 2018, IRC 2018, Delaware Construction Codes 2018. Be concise and cite specific code sections. Note that electrical permits in all Delaware jurisdictions go through State of Delaware DPR, not the county.';
+const CHAT_SYS   = 'You are an expert permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + " LLC in Delaware. You know NEC 2023, IMC 2021, Delaware Plumbing Code, IBC 2018, IRC 2018, Delaware Construction Codes 2018. Be concise and cite specific code sections. Note that electrical permits in all Delaware jurisdictions go through State of Delaware DPR, not the county.';
 
 window.toggleChat = () => {
   chatOpen = !chatOpen;
@@ -1288,7 +1288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="chat-chip" onclick="quickAsk('What is GFCI and where is it required?')">GFCI rules</div>
   </div>
   <div class="chat-msgs" id="chatMsgs">
-    <div class="chat-msg ai">Hi! I am your permit and building code assistant for Ali Signature Construction.<br><br>Ask me anything about permits, electrical codes (NEC), HVAC codes (IMC), plumbing codes, Delaware regulations, or construction requirements. I am powered by Gemini AI and answer for free.</div>
+    <div class="chat-msg ai">Hi! I am your permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + ".<br><br>Ask me anything about permits, electrical codes (NEC), HVAC codes (IMC), plumbing codes, Delaware regulations, or construction requirements. I am powered by Gemini AI and answer for free.</div>
   </div>
   <div class="chat-input-row">
     <textarea class="chat-input" id="chatInput" placeholder="Ask about permits, codes, requirements..." rows="1" onkeydown="chatKeyDown(event)"></textarea>
