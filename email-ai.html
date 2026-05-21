@@ -93,7 +93,29 @@ input,select,textarea,button{font-family:inherit}
 .spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:.75rem auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-detail{text-align:center;padding:3rem 1rem;color:var(--mid)}
-@media(max-width:900px){.app-layout{grid-template-columns:1fr}.email-detail-col{display:none}.sidebar{display:none}}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid var(--border);padding:.5rem 0 calc(.5rem + env(safe-area-inset-bottom));z-index:200;grid-template-columns:repeat(5,1fr)}
+.bn-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.4rem;cursor:pointer;color:var(--mid);font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;transition:color .15s;border:none;background:none}
+.bn-item.active,.bn-item:hover{color:var(--accent)}
+.bn-icon{font-size:1.3rem}
+
+/* ── MOBILE EMAIL DETAIL OVERLAY ── */
+#mobileDetail{display:none;position:fixed;inset:0;background:var(--black);z-index:150;overflow-y:auto;padding-bottom:80px}
+.md-header{position:sticky;top:0;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem}
+.md-back{background:none;border:none;color:var(--accent);font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.3rem;padding:0}
+.md-content{padding:1.25rem}
+
+@media(max-width:900px){
+  .app-layout{grid-template-columns:1fr}
+  .email-detail-col{display:none}
+  .sidebar{display:none}
+  .bottom-nav{display:grid}
+  #emailApp .app-layout{padding-bottom:70px}
+  .email-list-col{max-height:calc(100vh - 128px)}
+  #desktopNav{display:none !important}
+  #autoRefreshIndicator{display:none}
+}
 </style>
 </head>
 <body>
@@ -101,7 +123,14 @@ input,select,textarea,button{font-family:inherit}
 <div class="header">
   <div class="logo"><span>Site</span>Command</div>
   <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📧 Email AI</span>
-  <a href="platform.html" class="back">← Dashboard</a>
+  <!-- Desktop nav -->
+  <div style="display:flex;gap:.25rem;margin-left:.75rem" id="desktopNav">
+    <a href="platform.html" style="font-size:.78rem;color:var(--mid);padding:.28rem .75rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--mid)'">🏠 Dashboard</a>
+    <a href="lead-finder.html" style="font-size:.78rem;color:var(--mid);padding:.28rem .75rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--mid)'">🔍 Leads</a>
+    <a href="social-media.html" style="font-size:.78rem;color:var(--mid);padding:.28rem .75rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--mid)'">📱 Social</a>
+    <a href="permits.html" style="font-size:.78rem;color:var(--mid);padding:.28rem .75rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--mid)'">🏛️ Permits</a>
+  </div>
+  <div style="margin-left:auto;font-size:.72rem;color:var(--mid)" id="autoRefreshIndicator">🔄 Auto-refresh on</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════
@@ -289,9 +318,37 @@ input,select,textarea,button{font-family:inherit}
   </div>
 </div>
 
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <a href="platform.html" class="bn-item">
+    <span class="bn-icon">🏠</span>Dashboard
+  </a>
+  <button class="bn-item" onclick="showMobileSection('list')">
+    <span class="bn-icon">📧</span>Inbox
+  </button>
+  <button class="bn-item" onclick="showMobileSection('important')">
+    <span class="bn-icon">🔴</span>Important
+  </button>
+  <button class="bn-item" onclick="showMobileSection('leads')">
+    <span class="bn-icon">🟢</span>Leads
+  </button>
+  <button class="bn-item" onclick="showMobileSection('settings')">
+    <span class="bn-icon">⚙️</span>Settings
+  </button>
+</nav>
+
+<!-- MOBILE EMAIL DETAIL OVERLAY -->
+<div id="mobileDetail">
+  <div class="md-header">
+    <button class="md-back" onclick="closeMobileDetail()">← Back</button>
+    <span style="font-size:.8rem;color:var(--mid)" id="mdEmailCount"></span>
+  </div>
+  <div class="md-content" id="mdContent"></div>
+</div>
+
 <script>
 // ── CONFIG ─────────────────────────────────────────────────────
-const GEMINI_KEY  = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || '';
+const GEMINI_KEY  = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
 const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const SCOPES      = 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send';
 const COMPANY     = localStorage.getItem('sc_co') || 'Your Company';
@@ -310,6 +367,7 @@ function init() {
   if (tokenValid) {
     showEmailApp();
     loadEmails(accessToken);
+    startAutoRefresh();
   } else {
     // If we had a token but it expired — clear it
     if (accessToken) {
@@ -435,6 +493,7 @@ function showEmailApp() {
   document.getElementById('setupWizard').style.display = 'none';
   const email = localStorage.getItem('gmail_user_email') || 'Gmail';
   document.getElementById('connectedEmail').textContent = email;
+  startAutoRefresh();
 }
 
 // ── LOAD REAL EMAILS ──────────────────────────────────────────
@@ -442,39 +501,57 @@ async function loadEmails(token) {
   document.getElementById('emailListBody').innerHTML = '<div class="loading-emails"><div class="spin"></div><div>Loading your emails...</div></div>';
 
   try {
-    // Fetch inbox messages
-    const listRes = await fetch(
-      'https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=25&labelIds=INBOX',
-      { headers: { 'Authorization': 'Bearer ' + token } }
-    );
-    const listData = await listRes.json();
+    // Fetch ALL inbox messages (paginate)
+    let allMessages = [];
+    let pageToken   = null;
+    let pageCount   = 0;
 
-    if (listData.error) {
-      if (listData.error.code === 401) {
-        // Token expired
-        localStorage.removeItem('gmail_access_token');
-        localStorage.removeItem('gmail_token_expiry');
-        document.getElementById('emailApp').style.display = 'none';
-        document.getElementById('setupWizard').style.display = 'block';
-        goWizStep(4);
-        return;
+    // Load up to 5 pages (500 emails max)
+    do {
+      const url = 'https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=100&labelIds=INBOX' + (pageToken ? '&pageToken='+pageToken : '');
+      const listRes  = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+      const listData = await listRes.json();
+
+      if (listData.error) {
+        if (listData.error.code === 401) {
+          localStorage.removeItem('gmail_access_token');
+          localStorage.removeItem('gmail_token_expiry');
+          document.getElementById('emailApp').style.display = 'none';
+          document.getElementById('setupWizard').style.display = 'block';
+          goWizStep(4);
+          return;
+        }
+        throw new Error(listData.error.message);
       }
-      throw new Error(listData.error.message);
-    }
 
-    const messages = listData.messages || [];
-    if (!messages.length) {
+      allMessages = allMessages.concat(listData.messages || []);
+      pageToken   = listData.nextPageToken || null;
+      pageCount++;
+
+      // Update loading message
+      document.getElementById('emailListBody').innerHTML = '<div class="loading-emails"><div class="spin"></div><div>Loading emails... ' + allMessages.length + ' found</div></div>';
+
+    } while (pageToken && pageCount < 5);
+
+    if (!allMessages.length) {
       document.getElementById('emailListBody').innerHTML = '<div class="loading-emails">📭 No emails found in your inbox.</div>';
       return;
     }
 
-    // Fetch each email (batch of 15 for speed)
-    const batch = messages.slice(0, 15);
-    const details = await Promise.all(batch.map(m =>
-      fetch('https://www.googleapis.com/gmail/v1/users/me/messages/' + m.id + '?format=full', {
-        headers: { 'Authorization': 'Bearer ' + token }
-      }).then(r => r.json())
-    ));
+    // Fetch full details in batches of 20 (parallel)
+    const BATCH = 20;
+    let details = [];
+    for (let i = 0; i < Math.min(allMessages.length, 200); i += BATCH) {
+      const batch   = allMessages.slice(i, i + BATCH);
+      const fetched = await Promise.all(batch.map(m =>
+        fetch('https://www.googleapis.com/gmail/v1/users/me/messages/' + m.id + '?format=full', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).then(r => r.json()).catch(() => null)
+      ));
+      details = details.concat(fetched.filter(Boolean));
+      // Show progress
+      document.getElementById('emailListBody').innerHTML = '<div class="loading-emails"><div class="spin"></div><div>Loading emails... ' + details.length + ' / ' + allMessages.length + '</div></div>';
+    }
 
     allEmails = details.map(parseGmailMessage).filter(Boolean);
     renderStats();
@@ -593,6 +670,40 @@ function filterEmails(filter, btn) {
 }
 
 // ── SELECT & SUMMARIZE ────────────────────────────────────────
+function showMobileSection(section) {
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  if (section === 'list') { filterEmails('all', document.querySelector('.fbtn')); }
+  else if (section === 'important') { filterEmails('important', document.querySelectorAll('.fbtn')[1]); }
+  else if (section === 'leads') { filterEmails('lead', document.querySelectorAll('.fbtn')[2]); }
+  else if (section === 'settings') { showMobileSettings(); }
+}
+
+function showMobileSettings() {
+  const md = document.getElementById('mobileDetail');
+  const mc = document.getElementById('mdContent');
+  mc.innerHTML = `
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:1.25rem">Settings</h2>
+    <div style="background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.75rem">
+      <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.75rem">Connected Account</div>
+      <div style="font-size:.88rem;color:var(--green)">✓ ${localStorage.getItem('gmail_user_email')||'Gmail'}</div>
+      <button onclick="disconnectGmail()" style="margin-top:.85rem;background:none;border:1px solid var(--border);color:var(--mid);border-radius:6px;font-size:.78rem;padding:.4rem .9rem;cursor:pointer;width:100%">Disconnect Gmail</button>
+    </div>
+    <div style="background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+      <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.75rem">AI Priority Rules</div>
+      <div style="display:flex;flex-direction:column;gap:.6rem">
+        <label style="display:flex;align-items:center;gap:.6rem;font-size:.86rem;color:var(--light)"><input type="checkbox" checked style="accent-color:var(--accent)"> Flag permit emails</label>
+        <label style="display:flex;align-items:center;gap:.6rem;font-size:.86rem;color:var(--light)"><input type="checkbox" checked style="accent-color:var(--accent)"> Flag payment emails</label>
+        <label style="display:flex;align-items:center;gap:.6rem;font-size:.86rem;color:var(--light)"><input type="checkbox" checked style="accent-color:var(--accent)"> Flag lead emails</label>
+        <label style="display:flex;align-items:center;gap:.6rem;font-size:.86rem;color:var(--light)"><input type="checkbox" checked style="accent-color:var(--accent)"> Flag client emails</label>
+      </div>
+    </div>`;
+  md.style.display = 'block';
+}
+
+function closeMobileDetail() {
+  document.getElementById('mobileDetail').style.display = 'none';
+}
+
 async function selectEmail(id) {
   selectedEmail = allEmails.find(e=>e.id===id);
   if (!selectedEmail) return;
@@ -601,11 +712,33 @@ async function selectEmail(id) {
   selectedEmail.unread = false;
   document.querySelectorAll('.email-item').forEach(el=>el.classList.remove('sel'));
   document.getElementById('ei-'+id)?.classList.add('sel');
-  document.querySelector(`#ei-${id} .unread-dot`)?.remove();
+  document.querySelector('#ei-'+id+' .unread-dot')?.remove();
   renderStats();
 
-  const detail = document.getElementById('emailDetailBody');
-  detail.innerHTML = `
+  // On mobile - show overlay instead
+  const isMobile = window.innerWidth <= 900;
+  const detail = isMobile
+    ? document.getElementById('mdContent')
+    : document.getElementById('emailDetailBody');
+
+  if (isMobile) {
+    document.getElementById('mobileDetail').style.display = 'block';
+    document.getElementById('mdEmailCount').textContent = (allEmails.indexOf(selectedEmail)+1) + ' of ' + allEmails.length;
+  }
+
+  const detailOuter = isMobile ? null : document.getElementById('emailDetailBody');
+  const detailContent = `
+    <div class="ed-from">${escHtml(selectedEmail.from)} <span style="color:var(--mid);font-weight:400;font-size:.82rem">&lt;${escHtml(selectedEmail.fromEmail)}&gt;</span></div>`;
+
+  if (isMobile) {
+    detail.innerHTML = detailContent;
+  } else {
+    document.getElementById('emailDetailBody').innerHTML = detailContent;
+  }
+
+  // re-point detail for AI summary injection below
+  const detail2 = isMobile ? document.getElementById('mdContent') : document.getElementById('emailDetailBody');
+  detail2.innerHTML = `
     <div class="ed-from">${escHtml(selectedEmail.from)} <span style="color:var(--mid);font-weight:400;font-size:.82rem">&lt;${escHtml(selectedEmail.fromEmail)}&gt;</span></div>
     <div class="ed-subject">${escHtml(selectedEmail.subject)}</div>
     <div class="ed-meta">${selectedEmail.time} · ${selectedEmail.tags.join(', ')}</div>
@@ -735,6 +868,47 @@ async function refreshEmails() {
   }
   await loadEmails(accessToken);
   btn.textContent='🔄 Refresh Emails'; btn.disabled=false;
+}
+
+// Auto-refresh every 10 seconds
+let autoRefreshInterval = null;
+function startAutoRefresh() {
+  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+  autoRefreshInterval = setInterval(() => {
+    const token = localStorage.getItem('gmail_access_token');
+    const expiry = parseInt(localStorage.getItem('gmail_token_expiry') || '0');
+    if (token && Date.now() < expiry) {
+      // Silent refresh - don't show loading state
+      silentRefresh(token);
+    }
+  }, 10000);
+}
+
+async function silentRefresh(token) {
+  try {
+    const listRes  = await fetch('https://www.googleapis.com/gmail/v1/users/me/messages?maxResults=100&labelIds=INBOX', { headers: { 'Authorization': 'Bearer ' + token } });
+    const listData = await listRes.json();
+    if (listData.error || !listData.messages?.length) return;
+    const newIds = listData.messages.map(m => m.id);
+    const existingIds = new Set(allEmails.map(e => e.id));
+    const newMessages = newIds.filter(id => !existingIds.has(id));
+    if (!newMessages.length) return;
+    // Fetch only new ones
+    const fetched = await Promise.all(newMessages.slice(0,10).map(id =>
+      fetch('https://www.googleapis.com/gmail/v1/users/me/messages/' + id + '?format=full', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      }).then(r => r.json()).catch(() => null)
+    ));
+    const parsed = fetched.filter(Boolean).map(parseGmailMessage).filter(Boolean);
+    if (parsed.length) {
+      allEmails = [...parsed, ...allEmails];
+      renderStats();
+      renderEmailList();
+      // Flash the refresh button
+      const btn = document.getElementById('refreshBtn');
+      if (btn) { btn.textContent = '🔄 ' + parsed.length + ' new email' + (parsed.length>1?'s':'') + '!'; btn.style.color='var(--green)'; setTimeout(() => { btn.textContent='🔄 Refresh Emails'; btn.style.color=''; }, 4000); }
+    }
+  } catch(e) {}
 }
 
 function disconnectGmail() {
