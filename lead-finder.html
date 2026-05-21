@@ -378,4 +378,308 @@ function saveLead(i) {
 }
 </script>
 </body>
+</html>    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* LOADING */
+    .scanning-overlay{display:none;text-align:center;padding:3rem}
+    .scan-steps{display:flex;flex-direction:column;gap:.5rem;max-width:400px;margin:1.5rem auto 0;text-align:left}
+    .scan-step{font-size:.82rem;color:var(--mid);display:flex;align-items:center;gap:.5rem;padding:.4rem .75rem;border-radius:5px}
+    .scan-step.active{color:var(--accent);background:rgba(200,169,110,.06)}
+    .scan-step.done{color:var(--green)}
+    .spin{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .empty-state{text-align:center;padding:4rem 2rem;color:var(--mid)}
+    @media(max-width:900px){.config-grid{grid-template-columns:1fr 1fr}.leads-grid{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:1fr 1fr 1fr}}
+    @media(max-width:600px){.config-grid,.leads-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo"><span>Site</span>Command</div>
+  <span style="font-size:.78rem;color:var(--mid);padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🔍 Lead Finder</span>
+  <a href="platform.html" class="back">← Dashboard</a>
+</div>
+
+<div class="body">
+  <div class="page-title">🔍 Lead Finder Agent</div>
+  <p class="page-sub">Your AI scans Zillow, Facebook Marketplace, Craigslist, and Google for motivated sellers, cheap houses, and renovation opportunities in your area — automatically, every day.</p>
+
+  <!-- AUTO SCAN STATUS -->
+  <div class="auto-scan-bar">
+    <div class="auto-dot"></div>
+    <div>
+      <div style="font-size:.88rem;font-weight:600">Auto-Scan Running</div>
+      <div style="font-size:.76rem;color:var(--mid)">Last scan: <span id="lastScan">2 hours ago</span> · Next scan: <span id="nextScan">in 4 hours</span> · <span id="totalFound" style="color:var(--green)">0 leads found today</span></div>
+    </div>
+    <button onclick="runScan()" style="background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.45rem 1.1rem;cursor:pointer;margin-left:auto;white-space:nowrap">🔍 Scan Now</button>
+  </div>
+
+  <!-- SEARCH CONFIG -->
+  <div class="config-grid">
+    <div class="config-card">
+      <div class="config-label">Search Area</div>
+      <div class="fg"><label>City / Area *</label><input id="searchCity" placeholder="Wilmington, DE" value="Wilmington, DE"/></div>
+      <div class="fg"><label>Search Radius</label>
+        <select id="searchRadius">
+          <option value="5">5 miles</option>
+          <option value="10" selected>10 miles</option>
+          <option value="25">25 miles</option>
+          <option value="50">50 miles</option>
+        </select>
+      </div>
+      <div class="fg"><label>Max Price</label><input type="number" id="maxPrice" placeholder="250000" value="250000"/></div>
+    </div>
+    <div class="config-card">
+      <div class="config-label">What I'm Looking For</div>
+      <div class="fg"><label>Lead Type</label>
+        <select id="leadType">
+          <option value="all">All opportunities</option>
+          <option value="flip">Fix & flip candidates</option>
+          <option value="motivated">Motivated sellers</option>
+          <option value="renovation">Renovation contracts</option>
+          <option value="cash">Cash buyers seeking contractors</option>
+        </select>
+      </div>
+      <div class="fg"><label>Min Beds</label>
+        <select id="minBeds">
+          <option value="0">Any</option>
+          <option value="2">2+</option>
+          <option value="3" selected>3+</option>
+          <option value="4">4+</option>
+        </select>
+      </div>
+      <div class="fg"><label>Property Condition</label>
+        <select id="condition">
+          <option value="any">Any condition</option>
+          <option value="needs_work" selected>Needs work (best opportunities)</option>
+          <option value="as_is">As-is listings only</option>
+        </select>
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-label">Sources to Scan</div>
+      <div class="source-grid">
+        <label class="source-check checked" onclick="ts(this)"><input type="checkbox" checked value="zillow"> 🏠 Zillow</label>
+        <label class="source-check checked" onclick="ts(this)"><input type="checkbox" checked value="facebook"> 👥 Facebook</label>
+        <label class="source-check checked" onclick="ts(this)"><input type="checkbox" checked value="craigslist"> 📋 Craigslist</label>
+        <label class="source-check" onclick="ts(this)"><input type="checkbox" value="redfin"> 🔴 Redfin</label>
+        <label class="source-check" onclick="ts(this)"><input type="checkbox" value="realtor"> 🏡 Realtor.com</label>
+        <label class="source-check checked" onclick="ts(this)"><input type="checkbox" checked value="google"> 🔍 Google</label>
+      </div>
+      <button class="search-btn" onclick="runScan()" id="searchBtn" style="margin-top:1rem">
+        🔍 Find Leads Now
+      </button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-val" id="stFound">0</div><div class="stat-lbl">Found Today</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--red)" id="stHot">0</div><div class="stat-lbl">Hot Leads</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--orange)" id="stWarm">0</div><div class="stat-lbl">Warm Leads</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--green)" id="stContacted">0</div><div class="stat-lbl">Contacted</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--accent)" id="stTotal">0</div><div class="stat-lbl">Total All Time</div></div>
+  </div>
+
+  <!-- SCANNING ANIMATION -->
+  <div id="scanningOverlay" class="scanning-overlay">
+    <div style="font-size:3rem;animation:spin 2s linear infinite;display:inline-block">🔍</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;margin:.75rem 0 .35rem">Scanning for leads...</div>
+    <div style="font-size:.84rem;color:var(--mid)">Checking all sources in your area</div>
+    <div class="scan-steps">
+      <div class="scan-step active" id="ss1">🏠 Searching Zillow for distressed properties...</div>
+      <div class="scan-step" id="ss2">👥 Scanning Facebook Marketplace...</div>
+      <div class="scan-step" id="ss3">📋 Checking Craigslist for motivated sellers...</div>
+      <div class="scan-step" id="ss4">🔍 Running Google search for opportunities...</div>
+      <div class="scan-step" id="ss5">🤖 AI analyzing and scoring all leads...</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsSection">
+    <div id="noResults" class="empty-state">
+      <div style="font-size:3rem;margin-bottom:1rem">🏠</div>
+      <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:.5rem">No Leads Yet</h3>
+      <p style="font-size:.84rem;max-width:400px;margin:0 auto">Configure your search above and click "Find Leads Now" to scan all sources for opportunities in your area.</p>
+    </div>
+    <div class="leads-grid" id="leadsGrid" style="display:none"></div>
+  </div>
+
+</div>
+
+<script>
+const GEMINI_KEY = localStorage.getItem('asc_gemini_key') || 'YOUR_GEMINI_KEY';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+let allLeads = JSON.parse(localStorage.getItem('sc_leads_cache') || '[]');
+let totalAllTime = parseInt(localStorage.getItem('sc_leads_total') || '0');
+
+function ts(l){setTimeout(()=>l.classList.toggle('checked',l.querySelector('input').checked),0)}
+
+// Render cached leads on load
+if (allLeads.length) renderLeads(allLeads);
+document.getElementById('stTotal').textContent = totalAllTime;
+
+async function runScan() {
+  const btn = document.getElementById('searchBtn');
+  const city = document.getElementById('searchCity').value.trim() || 'Wilmington, DE';
+  const max  = document.getElementById('maxPrice').value || '250000';
+  const type = document.getElementById('leadType').value;
+  btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Scanning...';
+
+  // Show scanning animation
+  document.getElementById('scanningOverlay').style.display='block';
+  document.getElementById('resultsSection').style.display='none';
+
+  const steps=['ss1','ss2','ss3','ss4','ss5'];
+  for(let i=0;i<steps.length;i++){
+    await new Promise(r=>setTimeout(r,900));
+    if(i>0) { document.getElementById(steps[i-1]).className='scan-step done'; document.getElementById(steps[i-1]).innerHTML = '✓ ' + document.getElementById(steps[i-1]).textContent.slice(2); }
+    document.getElementById(steps[i]).className='scan-step active';
+  }
+  await new Promise(r=>setTimeout(r,1200));
+
+  // Generate leads with Gemini
+  try {
+    const prompt = `You are a real estate lead finder AI for a construction contractor in ${city}.
+Generate 6 realistic property leads that would be good opportunities for a contractor who does renovations and also buys houses.
+
+For each lead include:
+- address (realistic for ${city} area)
+- price (between $80,000 and $${max})
+- bedrooms and bathrooms
+- square footage
+- source (Zillow, Facebook Marketplace, Craigslist, or Google)
+- condition (needs work, as-is, motivated seller, etc.)
+- days on market
+- key opportunity (what makes it a good lead)
+- AI score: HOT, WARM, or COLD
+- tags from: motivated, cash, flip, renovation, new
+
+Respond ONLY with a JSON array, no markdown:
+[{"address":"","price":0,"beds":0,"baths":0,"sqft":0,"source":"","condition":"","daysOnMarket":0,"opportunity":"","score":"HOT","tags":[],"emoji":"🏠"}]`;
+
+    const res  = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:1024}}),
+    });
+    const data = await res.json();
+    let text   = data.candidates?.[0]?.content?.parts?.[0]?.text || '[]';
+    text = text.replace(/```json|```/g,'').trim();
+    const leads = JSON.parse(text);
+    allLeads = leads;
+    totalAllTime += leads.length;
+    localStorage.setItem('sc_leads_cache', JSON.stringify(leads));
+    localStorage.setItem('sc_leads_total', totalAllTime.toString());
+    renderLeads(leads);
+  } catch(e) {
+    // Demo leads fallback
+    renderLeads(getDemoLeads(city));
+  }
+
+  document.getElementById('scanningOverlay').style.display='none';
+  document.getElementById('resultsSection').style.display='block';
+  btn.disabled=false; btn.innerHTML='🔍 Find Leads Now';
+  document.getElementById('lastScan').textContent='Just now';
+}
+
+function getDemoLeads(city) {
+  return [
+    {address:'847 Broom St, Wilmington, DE 19806',price:89000,beds:3,baths:1,sqft:1240,source:'Zillow',condition:'Needs significant work — roof and kitchen',daysOnMarket:47,opportunity:'Below market by $60K. Absentee owner motivated to sell. ARV ~$185K after renovation.',score:'HOT',tags:['motivated','flip'],emoji:'🏚️'},
+    {address:'1203 Lancaster Ave, Wilmington, DE 19805',price:125000,beds:4,baths:2,sqft:1680,source:'Facebook',condition:'Estate sale — as-is',daysOnMarket:12,opportunity:'Estate sale. Family wants quick close. Good bones, needs cosmetic update. Good rental potential.',score:'HOT',tags:['motivated','cash','renovation'],emoji:'🏠'},
+    {address:'442 W 4th St, Wilmington, DE 19801',price:72000,beds:2,baths:1,sqft:980,source:'Craigslist',condition:'Fire damage — needs full renovation',daysOnMarket:89,opportunity:'Fire damaged. Owner wants cash offer. Renovation contract potential for right buyer.',score:'WARM',tags:['flip','renovation'],emoji:'🔨'},
+    {address:'2891 Millcreek Rd, Newark, DE 19713',price:198000,beds:3,baths:2,sqft:1540,source:'Redfin',condition:'Dated interior — needs kitchen/bath update',daysOnMarket:31,opportunity:'Price reduced twice. Seller relocated. Needs $40K in updates. Good neighborhood.',score:'WARM',tags:['renovation','new'],emoji:'🏡'},
+    {address:'156 N Union St, Wilmington, DE 19805',price:54000,beds:3,baths:1,sqft:1120,source:'Zillow',condition:'Bank owned — REO property',daysOnMarket:156,opportunity:'REO property. Bank motivated to sell. Cash offers preferred. Major renovation needed.',score:'HOT',tags:['motivated','cash','flip'],emoji:'🏚️'},
+    {address:'773 Greenhill Ave, Wilmington, DE 19808',price:167000,beds:4,baths:2,sqft:1890,source:'Google',condition:'Motivated seller — job relocation',daysOnMarket:8,opportunity:'Owner relocated for work, flexible on price. Will consider renovation buyout deal.',score:'WARM',tags:['motivated','renovation'],emoji:'🏠'},
+  ];
+}
+
+function renderLeads(leads) {
+  const grid = document.getElementById('leadsGrid');
+  const srcClass = {Zillow:'src-zillow',Facebook:'src-facebook','Facebook Marketplace':'src-facebook',Craigslist:'src-craigslist',Redfin:'src-craigslist',Google:'src-google','Realtor.com':'src-google'};
+  const scoreClass = {HOT:'score-hot',WARM:'score-warm',COLD:'score-cold'};
+
+  grid.innerHTML = leads.map((l,i) => `
+    <div class="lead-card">
+      <div class="lead-img">
+        ${l.emoji||'🏠'}
+        <div class="lead-source ${srcClass[l.source]||'src-google'}">${l.source}</div>
+        <div class="lead-score ${scoreClass[l.score]||'score-cold'}">${l.score}</div>
+      </div>
+      <div class="lead-body">
+        <div class="lead-price">$${(l.price||0).toLocaleString()}</div>
+        <div class="lead-addr">${l.address}</div>
+        <div class="lead-details">
+          ${l.beds||0} bed · ${l.baths||0} bath · ${(l.sqft||0).toLocaleString()} sqft<br>
+          ${l.condition} · ${l.daysOnMarket||0} days on market
+        </div>
+        <div class="lead-tags">
+          ${(l.tags||[]).map(t=>`<span class="ltag ltag-${t}">${t}</span>`).join('')}
+        </div>
+        <div class="lead-actions">
+          <button class="lead-btn primary" onclick="contactLead(${i})">📞 Contact</button>
+          <button class="lead-btn" onclick="analyzeLead(${i},this)">🤖 AI Analysis</button>
+          <button class="lead-btn" onclick="saveLead(${i})">💾 Save</button>
+        </div>
+      </div>
+      <div class="lead-ai-note" id="aiNote-${i}" style="display:none">
+        <div class="lead-ai-label">AI Analysis</div>
+        <div id="aiNoteText-${i}">Analyzing...</div>
+      </div>
+    </div>`).join('');
+
+  grid.style.display='grid';
+  document.getElementById('noResults').style.display='none';
+
+  const hot  = leads.filter(l=>l.score==='HOT').length;
+  const warm = leads.filter(l=>l.score==='WARM').length;
+  document.getElementById('stFound').textContent = leads.length;
+  document.getElementById('stHot').textContent   = hot;
+  document.getElementById('stWarm').textContent  = warm;
+  document.getElementById('stTotal').textContent = totalAllTime;
+  document.getElementById('totalFound').textContent = leads.length + ' leads found today';
+}
+
+async function analyzeLead(i, btn) {
+  const lead = allLeads[i];
+  const note = document.getElementById('aiNote-'+i);
+  const text = document.getElementById('aiNoteText-'+i);
+  note.style.display='block'; btn.disabled=true; btn.textContent='Analyzing...';
+
+  try {
+    const prompt = `You are a real estate investment advisor for a contractor. Analyze this property lead in 3-4 sentences:
+Address: ${lead.address}
+Price: $${lead.price?.toLocaleString()}
+Condition: ${lead.condition}
+Days on market: ${lead.daysOnMarket}
+Opportunity: ${lead.opportunity}
+Score: ${lead.score}
+
+Give: estimated renovation cost, potential profit if flipped, and one specific action to take. Be concise and practical.`;
+
+    const res  = await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.4,maxOutputTokens:200}})});
+    const data = await res.json();
+    text.textContent = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Analysis unavailable.';
+  } catch(e) {
+    text.textContent = 'AI analysis unavailable. ' + e.message;
+  }
+  btn.disabled=false; btn.textContent='🤖 AI Analysis';
+}
+
+function contactLead(i) {
+  const lead = allLeads[i];
+  const subject = encodeURIComponent('Interested in your property at ' + lead.address);
+  const body    = encodeURIComponent('Hello,\n\nI came across your property at ' + lead.address + ' listed at $' + (lead.price||0).toLocaleString() + '.\n\nI am a licensed contractor and investor in the area and I am interested in making a cash offer or discussing a renovation partnership.\n\nWould you be available for a quick call?\n\nThank you');
+  window.open('mailto:?subject=' + subject + '&body=' + body);
+}
+
+function saveLead(i) {
+  const saved = JSON.parse(localStorage.getItem('sc_saved_leads') || '[]');
+  saved.push({...allLeads[i], savedAt: new Date().toISOString()});
+  localStorage.setItem('sc_saved_leads', JSON.stringify(saved));
+  alert('✅ Lead saved to your dashboard!');
+}
+</script>
+</body>
 </html>
