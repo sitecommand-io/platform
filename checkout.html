@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Start Free Trial — SiteCommand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#252525;--mid:#666;--light:#aaa;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#5cb85c;--red:#e05252}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    .header{height:60px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem}
+    .header-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;color:var(--accent)}
+    .checkout-wrap{max-width:960px;margin:2.5rem auto;padding:0 1.5rem;display:grid;grid-template-columns:1.2fr 1fr;gap:2rem;align-items:start}
+    .steps-row{display:flex;gap:0;margin-bottom:2rem}
+    .step-pill{flex:1;text-align:center;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.5rem;border-bottom:2px solid var(--border);color:var(--mid);transition:all .2s}
+    .step-pill.active{border-bottom-color:var(--accent);color:var(--accent)}
+    .step-pill.done{border-bottom-color:var(--green);color:var(--green)}
+    .form-panel{display:none}.form-panel.active{display:block}
+    .step-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:.35rem}
+    .step-sub{font-size:.86rem;color:var(--mid);margin-bottom:1.75rem}
+    .fg{margin-bottom:1rem}
+    .fg label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.4rem}
+    .fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.9rem;padding:.7rem .95rem;transition:border-color .2s;font-family:inherit}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+    .fg select option{background:var(--dark)}
+    .fg textarea{resize:vertical;min-height:72px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .services-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.4rem}
+    .service-check{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.45rem .75rem;cursor:pointer;font-size:.82rem;color:var(--light);transition:all .15s}
+    .service-check input{accent-color:var(--accent);cursor:pointer}
+    .service-check.checked{border-color:var(--accent);color:var(--white);background:rgba(200,169,110,.06)}
+    .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+    .color-swatch{width:32px;height:32px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color .15s}
+    .color-swatch.selected{border-color:var(--white)}
+    .next-btn{width:100%;background:var(--accent);color:var(--black);border:none;border-radius:8px;font-size:.92rem;font-weight:700;padding:.85rem;cursor:pointer;transition:all .2s;margin-top:.75rem;letter-spacing:.02em}
+    .next-btn:hover{background:var(--accent2)}
+    .next-btn:disabled{opacity:.5;cursor:not-allowed}
+    .back-btn{background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.65rem;padding:.35rem 0}
+    .back-btn:hover{color:var(--white)}
+    .err-msg{font-size:.8rem;color:#e08080;margin-top:.5rem;min-height:.9rem}
+    .summary-side{position:sticky;top:1.5rem}
+    .plan-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+    .plan-selector{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem}
+    .plan-opt{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.8rem 1rem;cursor:pointer;transition:all .15s}
+    .plan-opt:hover,.plan-opt.selected{border-color:var(--accent);background:rgba(200,169,110,.06)}
+    .plan-opt-left{display:flex;align-items:center;gap:.65rem}
+    .plan-radio{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0}
+    .plan-opt.selected .plan-radio{border-color:var(--accent);background:var(--accent)}
+    .plan-name{font-size:.9rem;font-weight:600}
+    .plan-price-sm{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--accent)}
+    .plan-features-mini{list-style:none;display:flex;flex-direction:column;gap:.4rem;margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem}
+    .plan-features-mini li{display:flex;align-items:flex-start;gap:.5rem;font-size:.8rem;color:var(--light);line-height:1.5}
+    .plan-features-mini li::before{content:"✓";color:var(--green);font-weight:700;flex-shrink:0}
+    .price-breakdown{border-top:1px solid var(--border);padding-top:1rem;margin-top:1rem}
+    .price-row{display:flex;justify-content:space-between;font-size:.84rem;color:var(--light);margin-bottom:.4rem}
+    .price-row.total{font-weight:700;font-size:.95rem;color:var(--white);padding-top:.5rem;border-top:1px solid var(--border);margin-top:.35rem}
+    .trial-badge{background:rgba(92,184,92,.1);border:1px solid rgba(92,184,92,.3);border-radius:6px;padding:.6rem .9rem;font-size:.78rem;color:var(--green);margin-top:.75rem;display:flex;align-items:center;gap:.4rem}
+    .trust-items{display:flex;flex-direction:column;gap:.35rem;margin-top:.9rem}
+    .trust-item{display:flex;align-items:center;gap:.5rem;font-size:.76rem;color:var(--mid)}
+    .trust-item span{color:var(--green)}
+    #successPanel{display:none;text-align:center;padding:3rem 1rem}
+    @media(max-width:720px){.checkout-wrap{grid-template-columns:1fr}.summary-side{position:static}.grid2{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="header-logo">SiteCommand</a>
+  <span style="font-size:.76rem;color:var(--mid)">🔒 Secure Checkout</span>
+</div>
+
+<div class="checkout-wrap">
+  <div>
+    <div class="steps-row">
+      <div class="step-pill active" id="pill1">1 · Account</div>
+      <div class="step-pill" id="pill2">2 · Business</div>
+      <div class="step-pill" id="pill3">3 · Confirm</div>
+    </div>
+
+    <!-- STEP 1 -->
+    <div class="form-panel active" id="panel1">
+      <div class="step-title">Create Your Account</div>
+      <div class="step-sub">14-day free trial — no credit card required to start</div>
+      <div class="grid2">
+        <div class="fg"><label>First Name *</label><input id="fn" placeholder="Mohamed"/></div>
+        <div class="fg"><label>Last Name *</label><input id="ln" placeholder="Ali"/></div>
+      </div>
+      <div class="fg"><label>Email *</label><input type="email" id="em" placeholder="you@company.com"/></div>
+      <div class="fg"><label>Phone *</label><input type="tel" id="ph" placeholder="+1 (302) 000-0000"/></div>
+      <div class="fg"><label>Password * (min 8 chars)</label><input type="password" id="pw" placeholder="••••••••"/></div>
+      <div class="fg"><label>Confirm Password *</label><input type="password" id="cp" placeholder="••••••••"/></div>
+      <div class="err-msg" id="e1"></div>
+      <button class="next-btn" onclick="step1()">Continue →</button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="form-panel" id="panel2">
+      <div class="step-title">Your Business Info</div>
+      <div class="step-sub">We use this to build and brand your complete system</div>
+      <div class="fg"><label>Company Name *</label><input id="co" placeholder="Ali Signature Construction LLC"/></div>
+      <div class="grid2">
+        <div class="fg"><label>City *</label><input id="ci" placeholder="Wilmington"/></div>
+        <div class="fg"><label>State *</label>
+          <select id="st"><option value="">Select state</option>
+            <option value="DE">Delaware</option><option value="PA">Pennsylvania</option>
+            <option value="MD">Maryland</option><option value="NJ">New Jersey</option>
+            <option value="NY">New York</option><option value="VA">Virginia</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Business Phone</label><input type="tel" id="bp" placeholder="(302) 257-8521"/></div>
+      <div class="fg"><label>Tagline / Slogan (optional)</label><input id="tl" placeholder="Building Delaware's Future, One Project at a Time"/></div>
+      <div class="fg"><label>Services (check all that apply)</label>
+        <div class="services-grid">
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="General Contracting"> General Contracting</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Kitchen Remodeling"> Kitchen Remodeling</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Bathroom Remodeling"> Bathroom Remodeling</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Roofing"> Roofing</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Flooring"> Flooring</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Drywall & Painting"> Drywall & Painting</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="HVAC"> HVAC</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Electrical"> Electrical</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Plumbing"> Plumbing</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Additions"> Additions</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Home Buying"> Buy Houses Cash</label>
+          <label class="service-check" onclick="ts(this)"><input type="checkbox" value="Siding"> Siding / Exterior</label>
+        </div>
+      </div>
+      <div class="fg"><label>Brand Color</label>
+        <div class="color-row">
+          <div class="color-swatch selected" style="background:#c8a96e" data-color="#c8a96e" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#4a9eff" data-color="#4a9eff" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#5cb85c" data-color="#5cb85c" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#e05252" data-color="#e05252" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#9b59b6" data-color="#9b59b6" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#e67e22" data-color="#e67e22" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#1abc9c" data-color="#1abc9c" onclick="sc(this)"></div>
+          <div class="color-swatch" style="background:#2c3e50" data-color="#2c3e50" onclick="sc(this)"></div>
+        </div>
+      </div>
+      <div class="fg"><label>Anything else? (optional)</label><textarea id="no" placeholder="Special requirements, notes..."></textarea></div>
+      <div class="err-msg" id="e2"></div>
+      <button class="next-btn" onclick="step2()">Review & Confirm →</button>
+      <button class="back-btn" onclick="goTo(1)">← Back</button>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="form-panel" id="panel3">
+      <div class="step-title">Review & Start Trial</div>
+      <div class="step-sub">Confirm your details and start your 14-day free trial</div>
+      <div id="reviewBox" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem;font-size:.86rem;line-height:2.1;color:var(--light)"></div>
+      <div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:1rem 1.1rem;margin-bottom:1.25rem;font-size:.82rem;color:var(--light);line-height:1.8">
+        <strong style="color:var(--accent)">What happens next:</strong><br>
+        1. We receive your signup and start building your system immediately<br>
+        2. Within 24 hours you get an email with all your links and a setup guide<br>
+        3. Your 14-day free trial begins — zero charge during trial<br>
+        4. Day 15: your plan fee begins unless you cancel
+      </div>
+      <div class="fg">
+        <label style="display:flex;align-items:flex-start;gap:.6rem;cursor:pointer">
+          <input type="checkbox" id="tc" style="margin-top:.15rem;accent-color:var(--accent)"/>
+          <span style="font-size:.82rem;color:var(--light)">I agree to the <a href="terms.html" target="_blank" style="color:var(--accent)">Terms of Service</a> and <a href="privacy.html" target="_blank" style="color:var(--accent)">Privacy Policy</a></span>
+        </label>
+      </div>
+      <div class="err-msg" id="e3"></div>
+      <button class="next-btn" id="subBtn" onclick="submit()">🚀 Start My Free Trial</button>
+      <button class="back-btn" onclick="goTo(2)">← Back</button>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="successPanel">
+      <div style="font-size:4rem;margin-bottom:1rem">🎉</div>
+      <h2 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.75rem">You Are In!</h2>
+      <p style="color:var(--light);font-size:.92rem;line-height:1.8;margin-bottom:1.5rem">Welcome to SiteCommand!<br><br>
+        We have received your signup. <strong style="color:var(--accent)">Check your email within 24 hours</strong> — you will receive your complete system links and a simple setup guide.</p>
+      <a href="index.html" style="display:inline-block;background:var(--accent);color:var(--black);font-weight:700;padding:.75rem 2rem;border-radius:8px;font-size:.9rem">Back to Home</a>
+    </div>
+  </div>
+
+  <!-- SUMMARY SIDE -->
+  <div class="summary-side">
+    <div class="plan-card">
+      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.85rem">Select Your Plan</div>
+      <div class="plan-selector">
+        <div class="plan-opt" id="opt-starter" onclick="selPlan('starter')">
+          <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Starter</div><div style="font-size:.72rem;color:var(--mid)">Website + Portal + Crew</div></div></div>
+          <div class="plan-price-sm">$97/mo</div>
+        </div>
+        <div class="plan-opt selected" id="opt-professional" onclick="selPlan('professional')">
+          <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Professional ⭐</div><div style="font-size:.72rem;color:var(--mid)">+ AI Phone + Leads</div></div></div>
+          <div class="plan-price-sm">$197/mo</div>
+        </div>
+        <div class="plan-opt" id="opt-elite" onclick="selPlan('elite')">
+          <div class="plan-opt-left"><div class="plan-radio"></div><div><div class="plan-name">Elite</div><div style="font-size:.72rem;color:var(--mid)">+ Permit Agent</div></div></div>
+          <div class="plan-price-sm">$297/mo</div>
+        </div>
+      </div>
+      <ul class="plan-features-mini" id="pfList"></ul>
+      <div class="price-breakdown">
+        <div class="price-row"><span>14-day free trial</span><span style="color:var(--green)">FREE</span></div>
+        <div class="price-row"><span>Then monthly</span><span id="priceAfter">$197/mo</span></div>
+        <div class="price-row total"><span>Due today</span><span style="color:var(--green)">$0.00</span></div>
+      </div>
+      <div class="trial-badge">✅ No card required · Cancel anytime</div>
+      <div class="trust-items">
+        <div class="trust-item"><span>✓</span> System ready within 24 hours</div>
+        <div class="trust-item"><span>✓</span> Your branded website included</div>
+        <div class="trust-item"><span>✓</span> Email support included</div>
+        <div class="trust-item"><span>✓</span> Google Cloud data backup</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PLANS={
+  starter:{name:'Starter',price:'$97/mo',features:['Branded website','Client project portal','Crew GPS time clock','Photo & expense tracking','Auto SMS clients (EN/ES/AR)']},
+  professional:{name:'Professional',price:'$197/mo',features:['Everything in Starter','AI phone assistant 24/7','Leads dashboard + transcripts','Admin command center','Priority support']},
+  elite:{name:'Elite',price:'$297/mo',features:['Everything in Professional','AI permit agent DE + PA','NEC/IMC/UPC code lookup','Permit application links','Phone support + onboarding call']},
+};
+let plan='professional', color='#c8a96e', fd={};
+
+const urlPlan=new URLSearchParams(location.search).get('plan');
+const lsPlan=localStorage.getItem('selected_plan');
+selPlan(PLANS[urlPlan]?urlPlan:PLANS[lsPlan]?lsPlan:'professional');
+
+function selPlan(p){
+  plan=p;
+  document.querySelectorAll('.plan-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('opt-'+p).classList.add('selected');
+  document.getElementById('priceAfter').textContent=PLANS[p].price;
+  document.getElementById('pfList').innerHTML=PLANS[p].features.map(f=>'<li>'+f+'</li>').join('');
+  localStorage.setItem('selected_plan',p);
+}
+function ts(l){setTimeout(()=>l.classList.toggle('checked',l.querySelector('input').checked),0)}
+function sc(el){document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));el.classList.add('selected');color=el.dataset.color}
+function goTo(n){
+  for(let i=1;i<=3;i++){
+    document.getElementById('panel'+i).classList.toggle('active',i===n);
+    const p=document.getElementById('pill'+i);
+    p.className='step-pill'+(i<n?' done':i===n?' active':'');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function step1(){
+  const e=document.getElementById('e1');e.textContent='';
+  const fn=document.getElementById('fn').value.trim();
+  const ln=document.getElementById('ln').value.trim();
+  const em=document.getElementById('em').value.trim();
+  const ph=document.getElementById('ph').value.trim();
+  const pw=document.getElementById('pw').value;
+  const cp=document.getElementById('cp').value;
+  if(!fn||!ln||!em||!ph||!pw){e.textContent='All fields required.';return}
+  if(!/\S+@\S+\.\S+/.test(em)){e.textContent='Enter a valid email.';return}
+  if(pw.length<8){e.textContent='Password must be at least 8 characters.';return}
+  if(pw!==cp){e.textContent='Passwords do not match.';return}
+  fd={firstName:fn,lastName:ln,email:em,phone:ph,password:pw};
+  goTo(2);
+}
+function step2(){
+  const e=document.getElementById('e2');e.textContent='';
+  const co=document.getElementById('co').value.trim();
+  const ci=document.getElementById('ci').value.trim();
+  const st=document.getElementById('st').value;
+  if(!co||!ci||!st){e.textContent='Company name, city and state required.';return}
+  fd.companyName=co;fd.city=ci;fd.state=st;
+  fd.bizPhone=document.getElementById('bp').value.trim();
+  fd.tagline=document.getElementById('tl').value.trim();
+  fd.services=[...document.querySelectorAll('.service-check input:checked')].map(c=>c.value);
+  fd.color=color;
+  fd.notes=document.getElementById('no').value.trim();
+  document.getElementById('reviewBox').innerHTML=
+    '<strong style="color:var(--white)">Name:</strong> '+fd.firstName+' '+fd.lastName+'<br>'+
+    '<strong style="color:var(--white)">Email:</strong> '+fd.email+'<br>'+
+    '<strong style="color:var(--white)">Company:</strong> '+fd.companyName+' · '+fd.city+', '+fd.state+'<br>'+
+    '<strong style="color:var(--white)">Services:</strong> '+(fd.services.join(', ')||'None selected')+'<br>'+
+    '<strong style="color:var(--white)">Plan:</strong> '+PLANS[plan].name+' — '+PLANS[plan].price+'<br>'+
+    '<strong style="color:var(--white)">Brand Color:</strong> <span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:'+color+';vertical-align:middle;margin-left:4px"></span>';
+  goTo(3);
+}
+async function submit(){
+  const e=document.getElementById('e3');e.textContent='';
+  if(!document.getElementById('tc').checked){e.textContent='Please agree to the Terms of Service.';return}
+  const btn=document.getElementById('subBtn');btn.disabled=true;btn.textContent='Submitting...';
+  const payload={...fd,plan,planName:PLANS[plan].name,planPrice:PLANS[plan].price,submittedAt:new Date().toISOString()};
+  localStorage.setItem('asc_saas_signup',JSON.stringify({...payload,password:'[HIDDEN]'}));
+  try{
+    const{initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const{getFirestore,addDoc,collection,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const app=initializeApp({apiKey:"SITECOMMAND_FIREBASE_API_KEY",authDomain:"sitecommand-saas.firebaseapp.com",projectId:"sitecommand-saas",storageBucket:"sitecommand-saas.firebasestorage.app",messagingSenderId:"SITECOMMAND_MESSAGING_ID",appId:"1:SITECOMMAND_MESSAGING_ID:web:SITECOMMAND_APP_ID"},'saas-co');
+    const db=getFirestore(app);
+    await addDoc(collection(db,'saasSignups'),{...payload,password:'[HIDDEN]',createdAt:serverTimestamp()});
+  }catch(err){console.log('Firebase:',err.message)}
+  // Call server to trigger auto-onboarding
+  const server = localStorage.getItem('asc_phone_server') || '';
+  if (server) {
+    try {
+      fetch(server + '/api/new-signup', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},
+        body: JSON.stringify({...payload, password:'[HIDDEN]'}),
+      });
+    } catch(e) { console.log('Server notify:', e.message); }
+  }
+  // Redirect to progress page
+  btn.disabled=false;
+  window.location.href = 'setup-progress.html';
+}
+</script>
+</body>
+</html>

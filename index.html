@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>SiteCommand — Track Every Job. Command Every Site.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#0f0f0f;--surface:#161616;--card:#1c1c1c;--border:#252525;--mid:#666;--light:#aaa;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#5cb85c;--blue:#4a9eff;--red:#e05252}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    img{display:block;max-width:100%}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.05)}
+    .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;color:var(--accent)}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{font-size:.88rem;color:var(--light);transition:color .15s}
+    .nav-links a:hover{color:var(--white)}
+    .nav-cta{background:var(--accent);color:var(--black);font-size:.84rem;font-weight:700;padding:.5rem 1.25rem;border-radius:6px;transition:background .15s}
+    .nav-cta:hover{background:var(--accent2)}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:8rem 1.5rem 5rem;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,169,110,.12) 0%,transparent 65%);pointer-events:none}
+    .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+    .hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);border-radius:99px;font-size:.78rem;font-weight:600;color:var(--accent);padding:.35rem 1rem;margin-bottom:1.75rem;letter-spacing:.04em}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,8vw,6.5rem);letter-spacing:.02em;line-height:.95;margin-bottom:1.5rem}
+    .hero h1 span{color:var(--accent)}
+    .hero p{font-size:clamp(1rem,2vw,1.2rem);color:var(--light);max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+    .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+    .btn-primary{background:var(--accent);color:var(--black);font-size:.95rem;font-weight:700;padding:.85rem 2.25rem;border-radius:8px;transition:all .2s;border:none;cursor:pointer;letter-spacing:.02em}
+    .btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,169,110,.35)}
+    .btn-secondary{background:transparent;color:var(--white);font-size:.95rem;font-weight:600;padding:.85rem 2.25rem;border-radius:8px;border:1.5px solid var(--border);transition:all .2s;cursor:pointer}
+    .btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+    .hero-trust{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+    .hero-trust-item{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--mid)}
+    .hero-trust-item span{color:var(--green)}
+
+    /* STATS BAR */
+    .stats-bar{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.5rem 2rem}
+    .stats-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center}
+    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--accent);letter-spacing:.02em}
+    .stat-lbl{font-size:.78rem;color:var(--mid);margin-top:.2rem}
+
+    /* SECTIONS */
+    section{padding:6rem 1.5rem}
+    .container{max-width:1100px;margin:0 auto}
+    .section-badge{display:inline-block;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding:.3rem .9rem;margin-bottom:1rem}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);letter-spacing:.03em;margin-bottom:1rem;line-height:1.1}
+    .section-sub{font-size:1rem;color:var(--light);max-width:560px;line-height:1.7}
+
+    /* FEATURES */
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+    .feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem;transition:all .2s;position:relative;overflow:hidden}
+    .feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .2s}
+    .feature-card:hover{border-color:rgba(200,169,110,.4);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    .feature-card:hover::before{opacity:1}
+    .feature-icon{font-size:2rem;margin-bottom:1rem}
+    .feature-title{font-size:1rem;font-weight:700;margin-bottom:.5rem}
+    .feature-desc{font-size:.84rem;color:var(--light);line-height:1.65}
+    .feature-tag{display:inline-block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.18rem .6rem;border-radius:99px;margin-top:.75rem}
+    .tag-included{background:rgba(92,184,92,.15);color:var(--green);border:1px solid rgba(92,184,92,.3)}
+    .tag-pro{background:rgba(74,158,255,.15);color:var(--blue);border:1px solid rgba(74,158,255,.3)}
+    .tag-elite{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+
+    /* HOW IT WORKS */
+    .how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem;position:relative}
+    .how-card{text-align:center;padding:1.5rem 1rem}
+    .how-num{width:48px;height:48px;border-radius:50%;background:rgba(200,169,110,.15);border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--accent);margin:0 auto 1rem}
+    .how-title{font-size:.95rem;font-weight:700;margin-bottom:.5rem}
+    .how-desc{font-size:.82rem;color:var(--light);line-height:1.6}
+    .how-arrow{position:absolute;top:2.5rem;font-size:1.5rem;color:var(--border)}
+
+    /* PRICING */
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+    .price-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;transition:all .2s}
+    .price-card.featured{border-color:var(--accent);background:linear-gradient(145deg,rgba(200,169,110,.08),var(--card))}
+    .price-card.featured::before{content:'MOST POPULAR';position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--black);font-size:.65rem;font-weight:800;letter-spacing:.1em;padding:.3rem 1rem;border-radius:99px;white-space:nowrap}
+    .price-name{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;margin-bottom:.5rem}
+    .price-desc{font-size:.82rem;color:var(--mid);margin-bottom:1.5rem}
+    .price-amount{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:.02em;line-height:1;color:var(--accent)}
+    .price-period{font-size:.82rem;color:var(--mid);margin-bottom:1.75rem}
+    .price-features{list-style:none;display:flex;flex-direction:column;gap:.65rem;margin-bottom:2rem}
+    .price-features li{display:flex;align-items:flex-start;gap:.6rem;font-size:.84rem;color:var(--light);line-height:1.5}
+    .price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:.05rem}
+    .price-features li.no::before{content:'✕';color:var(--mid)}
+    .price-features li.no{color:var(--mid)}
+    .price-btn{width:100%;background:var(--accent);color:var(--black);border:none;border-radius:8px;font-size:.88rem;font-weight:700;padding:.85rem;cursor:pointer;transition:all .2s;letter-spacing:.02em}
+    .price-btn:hover{background:var(--accent2);transform:translateY(-1px)}
+    .price-btn.outline{background:transparent;border:1.5px solid var(--border);color:var(--white)}
+    .price-btn.outline:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* TESTIMONIALS */
+    .testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3rem}
+    .testi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+    .testi-stars{color:var(--accent);font-size:.9rem;margin-bottom:.75rem;letter-spacing:.1em}
+    .testi-text{font-size:.88rem;color:var(--light);line-height:1.7;margin-bottom:1.25rem;font-style:italic}
+    .testi-author{display:flex;align-items:center;gap:.75rem}
+    .testi-avatar{width:38px;height:38px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--black);flex-shrink:0}
+    .testi-name{font-size:.88rem;font-weight:600}
+    .testi-role{font-size:.74rem;color:var(--mid)}
+
+    /* FAQ */
+    .faq-list{max-width:720px;margin:3rem auto 0;display:flex;flex-direction:column;gap:.75rem}
+    .faq-item{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .faq-q{padding:1.1rem 1.25rem;font-size:.92rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}
+    .faq-q:hover{background:var(--surface)}
+    .faq-q span{color:var(--accent);font-size:1.1rem;transition:transform .2s}
+    .faq-a{display:none;padding:0 1.25rem 1.1rem;font-size:.86rem;color:var(--light);line-height:1.75}
+    .faq-item.open .faq-q span{transform:rotate(45deg)}
+    .faq-item.open .faq-a{display:block}
+
+    /* CTA SECTION */
+    .cta-section{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(200,169,110,.04));border:1px solid rgba(200,169,110,.2);border-radius:20px;padding:4rem 2rem;text-align:center;max-width:800px;margin:0 auto}
+
+    /* FOOTER */
+    footer{background:var(--dark);border-top:1px solid var(--border);padding:3rem 2rem 2rem;text-align:center}
+    .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.06em;color:var(--accent);margin-bottom:.5rem}
+    .footer-sub{font-size:.82rem;color:var(--mid);margin-bottom:2rem}
+    .footer-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+    .footer-links a{font-size:.82rem;color:var(--mid);transition:color .15s}
+    .footer-links a:hover{color:var(--white)}
+    .footer-copy{font-size:.76rem;color:var(--mid)}
+
+    @media(max-width:900px){
+      .features-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr 1fr}
+      .how-grid{grid-template-columns:1fr 1fr}
+      .stats-inner{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .features-grid,.pricing-grid,.testimonials-grid,.how-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .stats-inner{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span style="color:var(--accent)">Site</span><span style="color:var(--white)">Command</span></div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it Works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="login.html">Sign In</a>
+    <a href="checkout.html" class="nav-cta">Start Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div>
+    <div class="hero-badge">📡 Real-Time Tracking For Contractors</div>
+    <h1>Track Every Job.<br><span>Command Every Site.</span></h1>
+    <p>Track Every Job. Command Every Site. Grow Your Business.. AI answers your calls, clients track their projects, crew clocks in with GPS, and you never miss a permit. All in one place.</p>
+    <div class="hero-btns">
+      <a href="checkout.html" class="btn-primary">Start 14-Day Free Trial →</a>
+      <a href="#features" class="btn-secondary">See Everything Included</a>
+    </div>
+    <div class="hero-trust">
+      <div class="hero-trust-item"><span>✓</span> No credit card required</div>
+      <div class="hero-trust-item"><span>✓</span> Setup in under 10 minutes</div>
+      <div class="hero-trust-item"><span>✓</span> Cancel anytime</div>
+      <div class="hero-trust-item"><span>✓</span> Your own branded website</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div><div class="stat-num">500+</div><div class="stat-lbl">Contractors Using SiteCommand</div></div>
+    <div><div class="stat-num">$2.4M</div><div class="stat-lbl">Revenue Generated for Clients</div></div>
+    <div><div class="stat-num">12K+</div><div class="stat-lbl">Leads Captured by AI</div></div>
+    <div><div class="stat-num">98%</div><div class="stat-lbl">Customer Satisfaction Rate</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-badge">Everything Included</div>
+    <h2 class="section-title">9 Powerful Tools.<br>One Monthly Price.</h2>
+    <p class="section-sub">Everything a modern contracting business needs — professionally built, fully branded with your company name and colors, ready to use on day one.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-title">Professional Website</div>
+        <div class="feature-desc">A stunning, mobile-first website with your logo, colors, services, project gallery, team page, and contact form. Looks like you paid $10,000 for it.</div>
+        <span class="feature-tag tag-included">All Plans</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏗️</div>
+        <div class="feature-title">Client Project Portal</div>
+        <div class="feature-desc">Clients log in and see real-time project progress, photos, expenses, and a 45-item construction checklist. Auto-texts them at every milestone in English, Spanish, or Arabic.</div>
+        <span class="feature-tag tag-included">All Plans</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👷</div>
+        <div class="feature-title">Crew Management & Time Clock</div>
+        <div class="feature-desc">GPS clock-in/clock-out, task assignments, daily photo reports, and clock-out summaries. Know exactly who is on site and what they did — in real time.</div>
+        <span class="feature-tag tag-included">All Plans</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">AI Phone Assistant</div>
+        <div class="feature-desc">Your AI answers every call 24/7 in your voice. Asks 7 qualifying questions, captures leads, saves everything to your dashboard automatically. Never miss a call again.</div>
+        <span class="feature-tag tag-pro">Professional+</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📞</div>
+        <div class="feature-title">Leads Dashboard</div>
+        <div class="feature-desc">Every phone lead captured with full transcript, AI summary, budget, timeline, and priority score. One-click callback. Track every lead from first call to closed deal.</div>
+        <span class="feature-tag tag-pro">Professional+</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Automated Client SMS</div>
+        <div class="feature-desc">Automatically texts clients when projects hit 25%, 50%, 75%, and 100% completion. Status change texts in English, Spanish, and Arabic — all automated.</div>
+        <span class="feature-tag tag-included">All Plans</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏛️</div>
+        <div class="feature-title">Permit Agent</div>
+        <div class="feature-desc">Enter the project address and scope — get every permit required, NEC electrical codes, IMC HVAC codes, plumbing codes, fees, and direct application links. Covers DE and PA.</div>
+        <span class="feature-tag tag-elite">Elite Only</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Admin Command Center</div>
+        <div class="feature-desc">One dashboard showing all your leads, active projects, crew on site, weather alerts, and server status. Your entire business at a glance, updated every 30 seconds.</div>
+        <span class="feature-tag tag-pro">Professional+</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Expense & Photo Tracking</div>
+        <div class="feature-desc">Track every project expense by category. Upload before/after photos and PDFs directly to each project. Clients see their expenses and photos in their portal.</div>
+        <span class="feature-tag tag-included">All Plans</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-badge">Simple Process</div>
+      <h2 class="section-title">Up and Running in 4 Steps</h2>
+      <p class="section-sub" style="margin:0 auto">No tech skills needed. We build everything for you.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">1</div>
+        <div class="how-title">Sign Up & Tell Us About Your Business</div>
+        <div class="how-desc">Fill out a simple form with your company name, colors, services, and phone number. Takes under 5 minutes.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">2</div>
+        <div class="how-title">We Build Everything For You</div>
+        <div class="how-desc">Your complete website, portal, crew app, and AI phone assistant are built and branded with your company within 24 hours.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">3</div>
+        <div class="how-title">You Get Everything Delivered</div>
+        <div class="how-desc">We email you your live website link, portal link, crew app link, and a simple setup guide. Everything works out of the box.</div>
+      </div>
+      <div class="how-card">
+        <div class="how-num">4</div>
+        <div class="how-title">Start Growing Your Business</div>
+        <div class="how-desc">Your AI answers calls, your portal impresses clients, and your crew stays accountable — all on autopilot while you focus on the work.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-badge">Simple Pricing</div>
+      <h2 class="section-title">Start Free. Scale As You Grow.</h2>
+      <p class="section-sub" style="margin:0 auto">No setup fees. No contracts. Cancel anytime. 14-day free trial on all plans.</p>
+    </div>
+    <div class="pricing-grid">
+
+      <!-- STARTER -->
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-desc">Perfect for solo contractors just getting started</div>
+        <div class="price-amount">$97</div>
+        <div class="price-period">per month · billed monthly</div>
+        <ul class="price-features">
+          <li>Professional branded website</li>
+          <li>Client project portal (unlimited projects)</li>
+          <li>45-item construction checklist</li>
+          <li>Crew GPS time clock</li>
+          <li>Photo and expense tracking</li>
+          <li>Auto SMS to clients (EN/ES/AR)</li>
+          <li>Customer support via email</li>
+          <li class="no">AI phone assistant</li>
+          <li class="no">Leads dashboard</li>
+          <li class="no">Permit agent</li>
+        </ul>
+        <button class="price-btn outline" onclick="window.location.href='checkout.html?plan=starter'">Start Free Trial</button>
+      </div>
+
+      <!-- PROFESSIONAL -->
+      <div class="price-card featured">
+        <div class="price-name">Professional</div>
+        <div class="price-desc">For growing contractors who want more leads</div>
+        <div class="price-amount">$197</div>
+        <div class="price-period">per month · billed monthly</div>
+        <ul class="price-features">
+          <li>Everything in Starter</li>
+          <li>AI phone assistant (answers 24/7)</li>
+          <li>Leads dashboard with transcripts</li>
+          <li>Admin command center</li>
+          <li>Priority email support</li>
+          <li>Lead qualification (7 questions)</li>
+          <li>Multi-language AI (EN/ES/AR)</li>
+          <li class="no">Permit agent</li>
+        </ul>
+        <button class="price-btn" onclick="window.location.href='checkout.html?plan=professional'">Start Free Trial</button>
+      </div>
+
+      <!-- ELITE -->
+      <div class="price-card">
+        <div class="price-name">Elite</div>
+        <div class="price-desc">For established contractors who want everything</div>
+        <div class="price-amount">$297</div>
+        <div class="price-period">per month · billed monthly</div>
+        <ul class="price-features">
+          <li>Everything in Professional</li>
+          <li>AI permit agent (DE + PA)</li>
+          <li>NEC, IMC, UPC code lookup</li>
+          <li>Auto permit fee estimates</li>
+          <li>Direct permit application links</li>
+          <li>Priority phone support</li>
+          <li>Dedicated onboarding call</li>
+          <li>Custom feature requests</li>
+        </ul>
+        <button class="price-btn outline" onclick="window.location.href='checkout.html?plan=elite'">Start Free Trial</button>
+      </div>
+
+    </div>
+    <p style="text-align:center;font-size:.82rem;color:var(--mid);margin-top:1.5rem">All plans include a 14-day free trial. No credit card required to start. Cancel anytime with no fees.</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section style="background:var(--surface)">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-badge">Real Contractors</div>
+      <h2 class="section-title">What Our Clients Say</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"I was spending hours every week answering calls and chasing clients for updates. Now the AI handles calls and clients check the portal. I got my weekends back."</div>
+        <div class="testi-author"><div class="testi-avatar">MR</div><div><div class="testi-name">Marcus R.</div><div class="testi-role">General Contractor · Baltimore, MD</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"My clients love the portal. They can see photos, track progress, and get texts automatically. I look way more professional than competitors who charge twice as much."</div>
+        <div class="testi-author"><div class="testi-avatar">JT</div><div><div class="testi-name">James T.</div><div class="testi-role">Roofing Contractor · Philadelphia, PA</div></div></div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"The permit agent alone saved me 3 hours on my last kitchen job. It told me exactly what permits I needed and gave me the direct links. Paid for itself on day one."</div>
+        <div class="testi-author"><div class="testi-avatar">DW</div><div><div class="testi-name">David W.</div><div class="testi-role">Kitchen & Bath Contractor · Wilmington, DE</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="section-badge">Questions</div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do I need any technical skills to use SiteCommand? <span>+</span></div>
+        <div class="faq-a">No technical skills needed at all. We build and set up everything for you. You just fill out a form with your company info and we handle the rest. If you can use a smartphone you can use SiteCommand.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How long does setup take? <span>+</span></div>
+        <div class="faq-a">Your complete system is ready within 24 hours of signing up. We build your branded website, set up your portal, configure your crew app, and deliver everything to your email with a simple guide.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I use my existing phone number for the AI assistant? <span>+</span></div>
+        <div class="faq-a">Yes — we can forward calls from your existing number to the AI. Or we provide you with a new local business number. Either way works perfectly.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What happens after the 14-day free trial? <span>+</span></div>
+        <div class="faq-a">After 14 days you are charged your monthly plan fee. We send a reminder email 3 days before the trial ends. If you cancel before the trial ends you are never charged anything.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime? <span>+</span></div>
+        <div class="faq-a">Yes — cancel anytime with no fees or penalties. Your account stays active until the end of your current billing period. We do not do long-term contracts.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is my data secure? <span>+</span></div>
+        <div class="faq-a">Yes. All data is stored in Firebase (Google Cloud) with enterprise-grade security. Your client data, project info, and business data are never shared or sold. Each contractor has their own isolated database.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Does the permit agent work outside Delaware and Pennsylvania? <span>+</span></div>
+        <div class="faq-a">Currently the permit agent covers all of Delaware and greater Philadelphia/Pennsylvania suburbs. We are expanding to more states. Elite plan subscribers get new states added automatically at no extra cost.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Can I upgrade or downgrade my plan? <span>+</span></div>
+        <div class="faq-a">Yes — upgrade or downgrade anytime from your account dashboard. Upgrades take effect immediately. Downgrades take effect at the next billing cycle.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="container">
+    <div class="cta-section">
+      <div class="section-badge">Get Started Today</div>
+      <h2 class="section-title">Stop Losing Leads.<br>Start Growing.</h2>
+      <p style="color:var(--light);margin:1rem auto 2.5rem;max-width:500px;line-height:1.7">Join hundreds of contractors who replaced missed calls, manual updates, and permit headaches with one simple system.</p>
+      <a href="checkout.html" class="btn-primary" style="display:inline-block;font-size:1rem;padding:1rem 2.5rem">Start Your 14-Day Free Trial →</a>
+      <p style="font-size:.78rem;color:var(--mid);margin-top:1rem">No credit card required · Setup in 24 hours · Cancel anytime</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SiteCommand</div>
+  <div class="footer-sub">Track Every Job. Command Every Site. Grow Your Business.</div>
+  <div class="footer-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="login.html">Sign In</a>
+    <a href="checkout.html">Start Free Trial</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="mailto:support@sitecommand.com">Support</a>
+  </div>
+  <div class="footer-copy">© 2026 SiteCommand. All rights reserved. Built by Ali Signature Construction LLC.</div>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  el.closest('.faq-item').classList.toggle('open');
+}
+// Add plan to checkout URL
+document.querySelectorAll('[onclick*="checkout"]').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const plan = btn.getAttribute('onclick').match(/plan=(\w+)/)?.[1];
+    if (plan) localStorage.setItem('selected_plan', plan);
+  });
+});
+</script>
+</body>
+</html>

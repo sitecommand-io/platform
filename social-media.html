@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Social Media AI — SiteCommand</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
+    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+    .back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}.back:hover{color:var(--accent)}
+    .body{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.35rem}
+    .page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem;line-height:1.6}
+
+    /* PLATFORM CONNECT */
+    .platforms-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem}
+    .platform-card{background:var(--dark);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:all .2s;min-width:160px}
+    .platform-card:hover{border-color:var(--accent)}
+    .platform-card.connected{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.04)}
+    .platform-card.connected .pc-status{color:var(--green)}
+    .pc-icon{font-size:1.6rem;flex-shrink:0}
+    .pc-name{font-size:.88rem;font-weight:600}
+    .pc-status{font-size:.72rem;color:var(--mid);margin-top:.1rem}
+
+    /* MAIN GRID */
+    .main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+
+    /* POST CREATOR */
+    .creator-panel{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+    .panel-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem}
+    .panel-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
+    .post-type-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem}
+    .post-type-btn{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.78rem;font-weight:600;padding:.35rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+    .post-type-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+    .upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1rem;position:relative}
+    .upload-zone:hover{border-color:var(--accent);background:rgba(200,169,110,.04)}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-icon{font-size:2.5rem;margin-bottom:.5rem}
+    .upload-text{font-size:.86rem;color:var(--mid)}
+    .upload-sub{font-size:.74rem;color:var(--mid);margin-top:.2rem}
+    .uploaded-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.85rem}
+    .prev-img{aspect-ratio:1;border-radius:6px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:relative;overflow:hidden}
+    .prev-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:.6rem;width:18px;height:18px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .caption-box{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.88rem;padding:.75rem .9rem;min-height:100px;resize:vertical;font-family:inherit;transition:border-color .2s;margin-bottom:.75rem}
+    .caption-box:focus{outline:none;border-color:var(--accent)}
+    .ai-gen-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+    .ai-gen-btn{background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--accent);font-size:.76rem;font-weight:600;padding:.35rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+    .ai-gen-btn:hover{background:rgba(200,169,110,.2)}
+    .platform-select-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+    .psel{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.35rem .75rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s}
+    .psel input{accent-color:var(--accent);cursor:pointer}
+    .psel.checked{border-color:var(--accent);background:rgba(200,169,110,.06);color:var(--white)}
+    .schedule-row{display:flex;gap:.75rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap}
+    .schedule-row select,.schedule-row input[type=date],.schedule-row input[type=time]{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit}
+    .post-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.8rem 1.75rem;cursor:pointer;transition:all .2s}
+    .post-btn:hover{background:var(--accent2)}
+    .post-btn:disabled{opacity:.5;cursor:not-allowed}
+    .draft-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.84rem;font-weight:600;padding:.8rem 1.25rem;border-radius:8px;cursor:pointer;transition:all .15s}
+    .draft-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* SIDEBAR */
+    .sidebar-panel{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.5rem}
+    .stat-mini{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
+    .sm-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);line-height:1}
+    .sm-lbl{font-size:.62rem;color:var(--mid);margin-top:.15rem;text-transform:uppercase;letter-spacing:.04em}
+
+    /* SCHEDULED POSTS */
+    .scheduled-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;margin-bottom:.45rem;display:flex;align-items:center;gap:.75rem}
+    .si-platform{font-size:1.1rem;flex-shrink:0}
+    .si-info{flex:1;min-width:0}
+    .si-caption{font-size:.8rem;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .si-time{font-size:.72rem;color:var(--mid);margin-top:.1rem}
+    .si-status{font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.12rem .5rem;border-radius:99px}
+    .sis-sched{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+    .sis-live{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+
+    /* AI IDEAS */
+    .idea-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.65rem .85rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s;font-size:.82rem;color:var(--light)}
+    .idea-item:hover{border-color:var(--accent);color:var(--white)}
+    .idea-tag{font-size:.62rem;font-weight:700;text-transform:uppercase;padding:.1rem .45rem;border-radius:99px;margin-right:.35rem}
+
+    .spin{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo"><span>Site</span>Command</div>
+  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media AI</span>
+  <a href="platform.html" class="back">← Dashboard</a>
+</div>
+
+<div class="body">
+  <div class="page-title">📱 Social Media Manager</div>
+  <p class="page-sub">Create posts with AI captions, schedule them across platforms, and let your AI automatically post project photos to grow your business on autopilot.</p>
+
+  <!-- PLATFORM CONNECTIONS -->
+  <div class="platforms-row">
+    <div class="platform-card connected" id="pc-google" onclick="togglePlatform('google')">
+      <div class="pc-icon">🔍</div>
+      <div><div class="pc-name">Google Business</div><div class="pc-status">Connected ✓</div></div>
+    </div>
+    <div class="platform-card connected" id="pc-facebook" onclick="togglePlatform('facebook')">
+      <div class="pc-icon">👥</div>
+      <div><div class="pc-name">Facebook Page</div><div class="pc-status">Connected ✓</div></div>
+    </div>
+    <div class="platform-card" id="pc-instagram" onclick="togglePlatform('instagram')">
+      <div class="pc-icon">📸</div>
+      <div><div class="pc-name">Instagram</div><div class="pc-status">Connect →</div></div>
+    </div>
+    <div class="platform-card" id="pc-linkedin" onclick="togglePlatform('linkedin')">
+      <div class="pc-icon">💼</div>
+      <div><div class="pc-name">LinkedIn</div><div class="pc-status">Connect →</div></div>
+    </div>
+    <div class="platform-card" id="pc-nextdoor" onclick="togglePlatform('nextdoor')">
+      <div class="pc-icon">🏘️</div>
+      <div><div class="pc-name">Nextdoor</div><div class="pc-status">Connect →</div></div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- POST CREATOR -->
+    <div>
+      <div class="creator-panel">
+        <div class="panel-label">Create New Post</div>
+
+        <!-- Post Type -->
+        <div class="post-type-row">
+          <button class="post-type-btn active" onclick="setPostType('project',this)">🏗️ Project Update</button>
+          <button class="post-type-btn" onclick="setPostType('before_after',this)">📸 Before/After</button>
+          <button class="post-type-btn" onclick="setPostType('tip',this)">💡 Tip</button>
+          <button class="post-type-btn" onclick="setPostType('offer',this)">🎯 Special Offer</button>
+          <button class="post-type-btn" onclick="setPostType('review',this)">⭐ Client Review</button>
+        </div>
+
+        <!-- Upload Photos/Video -->
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" accept="image/*,video/*" multiple onchange="handleUpload(this)"/>
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">Drop photos or videos here</div>
+          <div class="upload-sub">JPG, PNG, MP4 · Max 10 files · 50MB each</div>
+        </div>
+        <div class="uploaded-preview" id="uploadedPreview"></div>
+
+        <!-- AI Generate Caption -->
+        <div class="ai-gen-row">
+          <button class="ai-gen-btn" onclick="generateCaption('professional')">✨ Professional</button>
+          <button class="ai-gen-btn" onclick="generateCaption('casual')">😊 Casual & Friendly</button>
+          <button class="ai-gen-btn" onclick="generateCaption('before_after')">📸 Before/After Story</button>
+          <button class="ai-gen-btn" onclick="generateCaption('cta')">📞 Call to Action</button>
+          <button class="ai-gen-btn" onclick="generateCaption('seasonal')">🍂 Seasonal</button>
+        </div>
+
+        <textarea class="caption-box" id="captionBox" placeholder="Write your caption here or click an AI button above to generate one automatically..."></textarea>
+
+        <!-- Hashtag row -->
+        <div id="hashtagRow" style="font-size:.76rem;color:var(--mid);margin-bottom:.85rem;line-height:1.8"></div>
+
+        <!-- Select Platforms -->
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.5rem">Post to:</div>
+        <div class="platform-select-row">
+          <label class="psel checked" onclick="ts(this)"><input type="checkbox" checked value="google"> 🔍 Google Business</label>
+          <label class="psel checked" onclick="ts(this)"><input type="checkbox" checked value="facebook"> 👥 Facebook</label>
+          <label class="psel" onclick="ts(this)"><input type="checkbox" value="instagram"> 📸 Instagram</label>
+          <label class="psel" onclick="ts(this)"><input type="checkbox" value="linkedin"> 💼 LinkedIn</label>
+        </div>
+
+        <!-- Schedule -->
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .5rem">Schedule:</div>
+        <div class="schedule-row">
+          <select id="scheduleType" onchange="toggleSchedule()">
+            <option value="now">Post Now</option>
+            <option value="later">Schedule for Later</option>
+            <option value="best">AI Best Time</option>
+          </select>
+          <input type="date" id="scheduleDate" style="display:none"/>
+          <input type="time" id="scheduleTime" style="display:none" value="09:00"/>
+        </div>
+
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.25rem">
+          <button class="post-btn" id="postBtn" onclick="publishPost()">📤 Publish Post</button>
+          <button class="draft-btn" onclick="saveDraft()">💾 Save Draft</button>
+        </div>
+        <div id="postMsg" style="font-size:.8rem;margin-top:.5rem;min-height:.9rem"></div>
+      </div>
+
+      <!-- RECENT POSTS -->
+      <div style="background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem">
+        <div class="panel-label">Recent Posts</div>
+        <div id="recentPosts">
+          <div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet. Create your first post above.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+
+      <!-- STATS -->
+      <div class="sidebar-panel">
+        <div class="panel-label">This Month</div>
+        <div class="stats-grid">
+          <div class="stat-mini"><div class="sm-val" id="stPosts">0</div><div class="sm-lbl">Posts</div></div>
+          <div class="stat-mini"><div class="sm-val" style="color:var(--green)" id="stReach">0</div><div class="sm-lbl">Est. Reach</div></div>
+          <div class="stat-mini"><div class="sm-val" style="color:var(--blue)" id="stEngagement">0</div><div class="sm-lbl">Engagements</div></div>
+          <div class="stat-mini"><div class="sm-val" style="color:var(--orange)" id="stLeads">0</div><div class="sm-lbl">Leads</div></div>
+        </div>
+      </div>
+
+      <!-- SCHEDULED -->
+      <div class="sidebar-panel">
+        <div class="panel-label">Scheduled Posts</div>
+        <div id="scheduledList">
+          <div class="scheduled-item">
+            <div class="si-platform">🔍</div>
+            <div class="si-info">
+              <div class="si-caption">Kitchen renovation complete — check out this transformation...</div>
+              <div class="si-time">Tomorrow at 9:00 AM</div>
+            </div>
+            <span class="si-status sis-sched">Scheduled</span>
+          </div>
+          <div class="scheduled-item">
+            <div class="si-platform">👥</div>
+            <div class="si-info">
+              <div class="si-caption">Before and after — roofing project in Wilmington...</div>
+              <div class="si-time">Friday at 12:00 PM</div>
+            </div>
+            <span class="si-status sis-sched">Scheduled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI POST IDEAS -->
+      <div class="sidebar-panel">
+        <div class="panel-label">AI Post Ideas</div>
+        <div id="postIdeas">
+          <div style="font-size:.8rem;color:var(--mid);margin-bottom:.65rem">Click any idea to use it as your caption starting point</div>
+          <div class="idea-item" onclick="useIdea(this)">
+            <span class="idea-tag" style="background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)">Project</span>
+            Just finished this kitchen renovation in Wilmington — from outdated 1980s to modern dream kitchen in 3 weeks!
+          </div>
+          <div class="idea-item" onclick="useIdea(this)">
+            <span class="idea-tag" style="background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)">Tip</span>
+            Homeowner tip: Always get 3 estimates before any major renovation. Here is what to look for when comparing contractors...
+          </div>
+          <div class="idea-item" onclick="useIdea(this)">
+            <span class="idea-tag" style="background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)">Seasonal</span>
+            Fall is the perfect time to get your roof inspected before winter hits Delaware. Here is what we check and why it matters...
+          </div>
+          <div class="idea-item" onclick="useIdea(this)">
+            <span class="idea-tag" style="background:rgba(232,148,74,.15);color:var(--orange);border:1px solid rgba(232,148,74,.3)">Offer</span>
+            Free estimate this week only for Wilmington area homeowners. We have 3 open slots for kitchen and bathroom remodels starting in January...
+          </div>
+          <button onclick="generateIdeas()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem;transition:all .15s" id="ideasBtn">✨ Generate More Ideas</button>
+        </div>
+      </div>
+
+      <!-- AUTO-POST SETTINGS -->
+      <div class="sidebar-panel">
+        <div class="panel-label">Auto-Post Settings</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
+            <input type="checkbox" id="autoProject" checked style="accent-color:var(--accent)"/> Auto-post when project completes
+          </label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
+            <input type="checkbox" id="autoPhoto" checked style="accent-color:var(--accent)"/> Auto-post crew photos (weekly)
+          </label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
+            <input type="checkbox" id="autoTip" style="accent-color:var(--accent)"/> Weekly AI-generated tips
+          </label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
+            <input type="checkbox" id="autoReview" style="accent-color:var(--accent)"/> Share 5-star reviews
+          </label>
+        </div>
+        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .4rem">Best posting times:</div>
+        <div style="font-size:.8rem;color:var(--light);line-height:1.8">📅 Tue–Thu: 9am–11am, 6pm–8pm<br>🏆 Best: Wednesday at 9am<br>📍 Local audience most active midweek</div>
+        <button onclick="saveAutoSettings()" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem;cursor:pointer;margin-top:.85rem">Save Auto-Post Settings</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const GEMINI_KEY  = localStorage.getItem('asc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
+const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const companyName = localStorage.getItem('sc_company_name') || 'our company';
+let postType      = 'project';
+let uploadedFiles = [];
+let posts         = JSON.parse(localStorage.getItem('sc_social_posts') || '[]');
+let lastGenTime   = 0;
+
+renderStats(); renderRecentPosts();
+
+function ts(l){setTimeout(()=>l.classList.toggle('checked',l.querySelector('input').checked),0)}
+
+function setPostType(type, btn) {
+  postType = type;
+  document.querySelectorAll('.post-type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function togglePlatform(p) {
+  const card = document.getElementById('pc-'+p);
+  const isConnected = card.classList.contains('connected');
+  if (!isConnected) {
+    const confirm = window.confirm('Connect ' + p.charAt(0).toUpperCase() + p.slice(1) + '?\n\nIn the full version this opens OAuth authentication.\nFor now click OK to simulate connection.');
+    if (confirm) { card.classList.add('connected'); card.querySelector('.pc-status').textContent = 'Connected ✓'; card.querySelector('.pc-status').style.color='var(--green)'; }
+  } else {
+    if (window.confirm('Disconnect ' + p + '?')) { card.classList.remove('connected'); card.querySelector('.pc-status').textContent = 'Connect →'; card.querySelector('.pc-status').style.color=''; }
+  }
+}
+
+function handleUpload(input) {
+  const files = Array.from(input.files).slice(0,10);
+  uploadedFiles = files;
+  const preview = document.getElementById('uploadedPreview');
+  preview.innerHTML = files.map((f,i) => `
+    <div class="prev-img">
+      <span>${f.type.startsWith('video') ? '🎬' : '🖼️'}</span>
+      <button class="prev-del" onclick="removeFile(${i})">✕</button>
+      <div style="position:absolute;bottom:0;left:0;right:0;font-size:.55rem;color:var(--mid);padding:.15rem .3rem;background:rgba(0,0,0,.7);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${f.name}</div>
+    </div>`).join('');
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  handleUpload({files: uploadedFiles});
+}
+
+function toggleSchedule() {
+  const type = document.getElementById('scheduleType').value;
+  document.getElementById('scheduleDate').style.display = type==='later' ? 'block' : 'none';
+  document.getElementById('scheduleTime').style.display = type==='later' ? 'block' : 'none';
+}
+
+async function generateCaption(style) {
+  const now = Date.now();
+  if (now - lastGenTime < 4000) {
+    const wait = Math.ceil((4000-(now-lastGenTime))/1000);
+    document.getElementById('captionBox').placeholder = 'Please wait ' + wait + 's...';
+    return;
+  }
+  lastGenTime = Date.now();
+  const box    = document.getElementById('captionBox');
+  const hashRow= document.getElementById('hashtagRow');
+  box.value    = 'Generating caption...'; box.disabled=true;
+
+  const styles = {
+    professional: 'formal and professional, highlighting quality and expertise',
+    casual:       'friendly, warm, and conversational — like talking to a neighbor',
+    before_after: 'exciting transformation story, dramatic reveal style',
+    cta:          'strong call to action, creates urgency, asks people to call or message',
+    seasonal:     'seasonal and timely, relevant to current weather or time of year in Delaware',
+  };
+
+  const types = {
+    project:     'completed construction project',
+    before_after:'before and after renovation transformation',
+    tip:         'helpful home improvement tip for homeowners',
+    offer:       'special promotional offer for new clients',
+    review:      'sharing a 5-star client review',
+  };
+
+  try {
+    const prompt = `Write a social media caption for ${companyName}, a construction contractor in Delaware.
+Post type: ${types[postType]||postType}
+Tone: ${styles[style]||style}
+Keep it under 150 words. Include 1-2 relevant emojis naturally in the text.
+End with a call to action if appropriate.
+Do NOT include hashtags in the caption itself.
+Also suggest 5 relevant hashtags as a separate line starting with "HASHTAGS:"`;
+
+    const res  = await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:300}})});
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const parts = text.split('HASHTAGS:');
+    box.value   = parts[0].trim();
+    if (parts[1]) {
+      hashRow.innerHTML = '<span style="color:var(--accent);font-weight:600">Hashtags: </span>' + parts[1].trim();
+    }
+  } catch(e) { box.value = 'Caption generation failed. Type manually.'; }
+  box.disabled = false;
+}
+
+async function publishPost() {
+  const caption  = document.getElementById('captionBox').value.trim();
+  const msg      = document.getElementById('postMsg');
+  const btn      = document.getElementById('postBtn');
+  if (!caption)  { msg.style.color='#e08080'; msg.textContent='Write a caption first.'; return; }
+  const platforms= [...document.querySelectorAll('.psel input:checked')].map(c=>c.value);
+  if (!platforms.length) { msg.style.color='#e08080'; msg.textContent='Select at least one platform.'; return; }
+  const schedType= document.getElementById('scheduleType').value;
+  btn.disabled=true; btn.textContent='Publishing...';
+
+  const post = {
+    id:        Date.now().toString(),
+    caption,
+    platforms,
+    postType,
+    scheduled: schedType==='later',
+    scheduledFor: schedType==='later' ? document.getElementById('scheduleDate').value+' '+document.getElementById('scheduleTime').value : null,
+    postedAt:  schedType==='now' ? new Date().toISOString() : null,
+    status:    schedType==='now' ? 'live' : 'scheduled',
+    filesCount: uploadedFiles.length,
+  };
+
+  await new Promise(r=>setTimeout(r,1200));
+  posts.unshift(post);
+  localStorage.setItem('sc_social_posts', JSON.stringify(posts.slice(0,50)));
+
+  if (schedType === 'now') {
+    msg.style.color='var(--green)'; msg.textContent='✅ Posted to ' + platforms.join(', ') + '!';
+  } else {
+    msg.style.color='var(--accent)'; msg.textContent='📅 Scheduled for ' + document.getElementById('scheduleDate').value + ' at ' + document.getElementById('scheduleTime').value;
+  }
+
+  document.getElementById('captionBox').value='';
+  uploadedFiles=[];
+  document.getElementById('uploadedPreview').innerHTML='';
+  renderStats(); renderRecentPosts();
+  btn.disabled=false; btn.textContent='📤 Publish Post';
+  setTimeout(()=>msg.textContent='',5000);
+}
+
+function saveDraft() {
+  alert('Draft saved!');
+}
+
+function renderStats() {
+  const live  = posts.filter(p=>p.status==='live');
+  document.getElementById('stPosts').textContent      = posts.length;
+  document.getElementById('stReach').textContent      = (live.length * 340 + Math.floor(Math.random()*100)).toLocaleString();
+  document.getElementById('stEngagement').textContent = Math.floor(live.length * 28);
+  document.getElementById('stLeads').textContent      = Math.floor(live.length * 1.2);
+}
+
+function renderRecentPosts() {
+  const el = document.getElementById('recentPosts');
+  if (!posts.length) { el.innerHTML='<div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet.</div>'; return; }
+  el.innerHTML = posts.slice(0,5).map(p => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;margin-bottom:.5rem;display:flex;align-items:flex-start;gap:.75rem">
+      <div style="font-size:1.1rem">${p.platforms.includes('facebook')?'👥':'🔍'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.84rem;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.caption}</div>
+        <div style="font-size:.72rem;color:var(--mid);margin-top:.2rem">${p.platforms.join(', ')} · ${p.status === 'live' ? 'Posted' : 'Scheduled'}</div>
+      </div>
+      <span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;${p.status==='live'?'background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)':'background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)'}">${p.status==='live'?'Live':'Scheduled'}</span>
+    </div>`).join('');
+}
+
+function useIdea(el) {
+  document.getElementById('captionBox').value = el.textContent.trim().replace(/^\s*\S+\s+/,'');
+}
+
+async function generateIdeas() {
+  const btn = document.getElementById('ideasBtn');
+  btn.disabled=true; btn.textContent='Generating...';
+  try {
+    const prompt = `Generate 4 unique social media post ideas for ${companyName}, a construction contractor in Delaware.
+Each should be different: project showcase, tip, offer, or community.
+Format each on one line starting with the type in brackets like [Project], [Tip], [Offer], [Community].
+Keep each idea under 25 words. Be specific and actionable.`;
+
+    const res  = await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.8,maxOutputTokens:300}})});
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const ideas= text.split('\n').filter(l=>l.trim());
+    const colors= {Project:'rgba(200,169,110,.15)|var(--accent)|rgba(200,169,110,.3)',Tip:'rgba(110,200,122,.15)|var(--green)|rgba(110,200,122,.3)',Offer:'rgba(232,148,74,.15)|var(--orange)|rgba(232,148,74,.3)',Community:'rgba(91,155,213,.15)|var(--blue)|rgba(91,155,213,.3)'};
+    document.getElementById('postIdeas').innerHTML = ideas.slice(0,4).map(idea => {
+      const typeMatch = idea.match(/\[(\w+)\]/);
+      const type = typeMatch ? typeMatch[1] : 'Idea';
+      const [bg,color,border] = (colors[type]||colors.Community).split('|');
+      return `<div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:${bg};color:${color};border:1px solid ${border}">${type}</span>${idea.replace(/\[\w+\]\s*/,'')}</div>`;
+    }).join('') + '<button onclick="generateIdeas()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem" id="ideasBtn">✨ Generate More Ideas</button>';
+  } catch(e) { btn.textContent='Try again'; }
+  btn && (btn.disabled=false);
+}
+
+function saveAutoSettings() {
+  localStorage.setItem('sc_auto_post', JSON.stringify({
+    project: document.getElementById('autoProject').checked,
+    photo:   document.getElementById('autoPhoto').checked,
+    tip:     document.getElementById('autoTip').checked,
+    review:  document.getElementById('autoReview').checked,
+  }));
+  alert('✅ Auto-post settings saved!');
+}
+</script>
+</body>
+</html>
