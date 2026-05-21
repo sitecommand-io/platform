@@ -291,7 +291,7 @@ async function submit(){
   try{
     const{initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
     const{getFirestore,addDoc,collection,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const app=initializeApp({apiKey:"SITECOMMAND_FIREBASE_API_KEY",authDomain:"sitecommand-saas.firebaseapp.com",projectId:"sitecommand-saas",storageBucket:"sitecommand-saas.firebasestorage.app",messagingSenderId:"SITECOMMAND_MESSAGING_ID",appId:"1:SITECOMMAND_MESSAGING_ID:web:SITECOMMAND_APP_ID"},'saas-co');
+    const app=initializeApp({apiKey:"AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8",authDomain:"sitecommand-saas.firebaseapp.com",projectId:"sitecommand-saas",storageBucket:"sitecommand-saas.firebasestorage.app",messagingSenderId:"309552233436",appId:"1:309552233436:web:1:309552233436:web:c1dcecb5ed8b9373862d19"},'saas-co');
     const db=getFirestore(app);
     await addDoc(collection(db,'saasSignups'),{...payload,password:'[HIDDEN]',createdAt:serverTimestamp()});
   }catch(err){console.log('Firebase:',err.message)}
