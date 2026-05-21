@@ -276,6 +276,10 @@
   <div style="font-size:.9rem;color:var(--mid);margin-bottom:1.5rem">Everything is being configured — takes about 30 seconds</div>
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
   <div class="success-steps" id="successSteps"></div>
+  <div id="linksSection" style="display:none;width:100%;max-width:600px;margin-top:1.5rem">
+    <div style="font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.75rem;text-align:left">Your links — all live right now:</div>
+    <div id="linksList" style="display:flex;flex-direction:column;gap:.5rem"></div>
+  </div>
   <button class="go-btn" id="goBtn" onclick="goToDashboard()">Go to My Dashboard →</button>
 </div>
 
@@ -436,7 +440,7 @@ window.doSignup = async () => {
 
     // Step 3 — Website is live (Cloudflare Worker reads from Firebase — instant)
     updateSuccessStep(2);
-    await new Promise(r=>setTimeout(r,800)); // tiny pause for effect
+    await new Promise(r=>setTimeout(r,1200));
     completeSuccessStep(2);
 
     // Step 4 — Buy phone number in background
@@ -465,8 +469,32 @@ window.doSignup = async () => {
     localStorage.setItem('sc_plan',        selectedPlan);
     localStorage.setItem('sc_phone_number',phoneNumber||'');
 
-    // Show go button
+    // Show links and go button
     document.getElementById('progressFill').style.width='100%';
+    const slug2   = makeSlug(co);
+    const platform = 'https://sitecommand-io.github.io/platform';
+    const myLinks = [
+      { icon:'🌐', label:'Your Website',      url: 'https://'+slug2+'.sitecommand.net' },
+      { icon:'🏗️', label:'Client Portal',     url: platform+'/platform.html' },
+      { icon:'👷', label:'Crew App',           url: platform+'/platform.html' },
+      { icon:'📧', label:'Email AI',           url: platform+'/email-ai.html' },
+      { icon:'🔍', label:'Lead Finder',        url: platform+'/lead-finder.html' },
+      { icon:'📱', label:'Social Media AI',    url: platform+'/social-media.html' },
+    ];
+    if (phoneNumber) myLinks.push({ icon:'☎️', label:'AI Phone: '+phoneNumber, url:'tel:'+phoneNumber });
+    
+    const linksList = document.getElementById('linksList');
+    if (linksList) {
+      linksList.innerHTML = myLinks.map(l => 
+        '<a href="'+l.url+'" target="_blank" style="display:flex;align-items:center;gap:.75rem;background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:.7rem 1rem;text-decoration:none;transition:all .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='rgba(200,169,110,.2)'">' +
+          '<span style="font-size:1.1rem">'+l.icon+'</span>' +
+          '<span style="flex:1;font-size:.84rem;color:var(--white);font-weight:600">'+l.label+'</span>' +
+          '<span style="font-size:.72rem;color:var(--accent)">Open →</span>' +
+        '</a>'
+      ).join('');
+      document.getElementById('linksSection').style.display='block';
+    }
+    
     setTimeout(()=>{
       document.getElementById('goBtn').style.display='inline-block';
     }, 500);
@@ -518,7 +546,7 @@ function completeSuccessStep(i) {
 }
 
 window.goToDashboard = () => {
-  window.location.href = 'platform.html';
+  window.location.href = 'https://sitecommand-io.github.io/platform/platform.html';
 };
 
 // ── TWILIO PHONE PURCHASE ──
