@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Project Portal • " + (localStorage.getItem("sc_co") || "Your Company") + "</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--muted:#3a3a3a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
+    html,body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+    input,select,textarea,button{font-family:inherit}
+    img{display:block;max-width:100%}
+
+    /* AUTH */
+    #authScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:radial-gradient(ellipse at 50% 0%,rgba(200,169,110,.08) 0%,transparent 70%)}
+    .auth-box{background:var(--dark);border:1px solid var(--border);border-radius:16px;padding:3rem 2.5rem;width:100%;max-width:440px}
+    .auth-logo{text-align:center;margin-bottom:2rem}
+    .auth-mark{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:var(--accent);border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--black);margin-bottom:.75rem}
+    .auth-logo h1{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em}
+    .auth-logo p{font-size:.8rem;color:var(--mid);margin-top:.2rem}
+    .auth-tabs{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:1.5rem}
+    .auth-tab{flex:1;background:none;border:none;color:var(--mid);font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:.6rem;cursor:pointer;transition:all .15s}
+    .auth-tab.active{background:var(--accent);color:var(--black)}
+    .lfield{margin-bottom:1rem}
+    .lfield label{display:block;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.4rem}
+    .lfield input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.92rem;padding:.75rem 1rem;transition:border-color .2s}
+    .lfield input:focus{outline:none;border-color:var(--accent)}
+    .auth-btn{width:100%;background:var(--accent);color:var(--black);border:none;border-radius:6px;font-size:.88rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:.85rem;cursor:pointer;margin-top:.5rem;transition:background .2s}
+    .auth-btn:hover{background:var(--accent2)}
+    .auth-btn:disabled{opacity:.5;cursor:not-allowed}
+    .auth-err{font-size:.82rem;color:#e08080;text-align:center;margin-top:.75rem;min-height:1.1rem}
+    .auth-ok{font-size:.82rem;color:var(--green);text-align:center;margin-top:.75rem}
+    .info-box{background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:1rem 1.1rem;font-size:.82rem;color:var(--light);line-height:1.75;margin-bottom:1rem}
+    .info-box strong{color:var(--accent)}
+
+    /* PENDING */
+    #pendingScreen{display:none;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem}
+    .pending-box{background:var(--dark);border:1px solid var(--border);border-radius:16px;padding:3rem 2.5rem;width:100%;max-width:440px;text-align:center}
+
+    /* PORTAL */
+    #portalScreen{display:none;min-height:100vh}
+    .pheader{height:60px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+    .plogo{width:36px;height:36px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--black);flex-shrink:0}
+    .pbrand{font-size:.85rem;font-weight:600;line-height:1.3}
+    .pbrand-sub{font-size:.7rem;color:var(--mid)}
+    .role-pill{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:.18rem .65rem;border-radius:99px}
+    .role-admin{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+    .role-client{background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)}
+    .pnav{display:flex;gap:.2rem;margin-left:.75rem}
+    .pnav-btn{background:none;border:none;color:var(--mid);font-size:.8rem;font-weight:500;padding:.38rem .9rem;border-radius:5px;cursor:pointer;transition:all .15s}
+    .pnav-btn.active,.pnav-btn:hover{background:var(--surface);color:var(--white)}
+    .puser{margin-left:auto;font-size:.78rem;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+    .logout-btn{background:none;border:1px solid var(--border);color:var(--light);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:.32rem .85rem;border-radius:5px;cursor:pointer;margin-left:.6rem;transition:all .15s;flex-shrink:0}
+    .logout-btn:hover{border-color:var(--red);color:var(--red)}
+    .pbody{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+    .psection{display:none}.psection.active{display:block}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:1.5rem}
+
+    /* WEATHER */
+    .weather-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem 1.1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+    .weather-temp{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent);letter-spacing:.02em;line-height:1}
+    .weather-desc{font-size:.82rem;color:var(--light);margin-top:.1rem}
+    .weather-detail{font-size:.76rem;color:var(--mid)}
+    .weather-alert{background:rgba(232,148,74,.1);border:1px solid rgba(232,148,74,.3);border-radius:6px;padding:.4rem .8rem;font-size:.76rem;color:var(--orange);margin-left:auto}
+
+    /* SMS PANEL */
+    .sms-panel{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
+    .sms-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.9rem;display:flex;align-items:center;gap:.5rem}
+    .sms-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
+    .lang-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem}
+    .lang-btn{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.72rem;font-weight:600;padding:.28rem .75rem;border-radius:99px;cursor:pointer;transition:all .15s}
+    .lang-btn.active{background:var(--accent);border-color:var(--accent);color:var(--black)}
+    .sms-row{display:flex;gap:.6rem;margin-bottom:.65rem;flex-wrap:wrap}
+    .sms-input{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.86rem;padding:.55rem .85rem;flex:1;min-width:160px;transition:border-color .2s}
+    .sms-input:focus{outline:none;border-color:var(--accent)}
+    .sms-select{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.82rem;padding:.55rem .75rem;flex:1;min-width:160px}
+    .sms-textarea{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.86rem;padding:.62rem .9rem;width:100%;min-height:80px;resize:vertical;transition:border-color .2s;margin-bottom:.4rem}
+    .sms-textarea:focus{outline:none;border-color:var(--accent)}
+    .tmpl-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem}
+    .tmpl-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.72rem;padding:.3rem .75rem;border-radius:5px;cursor:pointer;transition:all .15s}
+    .tmpl-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .sms-send{background:var(--accent);color:var(--black);border:none;border-radius:6px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.6rem 1.3rem;cursor:pointer;transition:background .2s}
+    .sms-send:hover{background:var(--accent2)}
+    .sms-send:disabled{opacity:.5;cursor:not-allowed}
+    .sms-char{font-size:.7rem;color:var(--mid);text-align:right;margin-bottom:.5rem}
+    .sms-hist-item{background:var(--surface);border-radius:6px;padding:.5rem .8rem;margin-bottom:.35rem;font-size:.8rem;color:var(--light)}
+    .sms-hist-meta{font-size:.7rem;color:var(--mid);margin-top:.15rem}
+
+    /* PANELS */
+    .panel{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.6rem;margin-bottom:1.25rem}
+    .panel-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .panel-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
+    .fg{display:flex;flex-direction:column;gap:.35rem}
+    .fg label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
+    .fg input,.fg select,.fg textarea{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.88rem;padding:.62rem .9rem;transition:border-color .2s;width:100%}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+    .fg select option{background:var(--dark)}
+    .fg textarea{resize:vertical;min-height:72px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+    .btn-p{background:var(--accent);color:var(--black);border:none;border-radius:6px;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.62rem 1.4rem;cursor:pointer;transition:background .2s;margin-top:.75rem}
+    .btn-p:hover{background:var(--accent2)}
+    .btn-p:disabled{opacity:.5;cursor:not-allowed}
+
+    /* PROJECT LIST */
+    .proj-card{background:var(--dark);border:1px solid var(--border);border-radius:10px;margin-bottom:.65rem;transition:border-color .2s}
+    .proj-card:hover{border-color:var(--muted)}
+    .proj-inner{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem}
+    .sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+    .s-active{background:var(--green)}.s-paused{background:var(--accent)}.s-complete{background:var(--blue)}.s-cancelled{background:var(--mid)}
+    .proj-info{flex:1;min-width:0}
+    .proj-name{font-size:.98rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .proj-addr{font-size:.78rem;color:var(--mid);margin-top:.1rem}
+    .proj-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+    .pmini{width:80px;height:4px;background:var(--muted);border-radius:99px;overflow:hidden}
+    .pmini-bar{height:100%;background:var(--accent);border-radius:99px}
+    .pmini-lbl{font-size:.76rem;color:var(--mid);min-width:34px;text-align:right}
+    .btn-open{background:none;border:1px solid var(--border);color:var(--accent);font-size:.76rem;font-weight:600;padding:.32rem .85rem;border-radius:5px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .btn-open:hover{background:var(--accent);color:var(--black);border-color:var(--accent)}
+
+    /* DETAIL */
+    #detailView{display:none}
+    .back-btn{background:none;border:1px solid var(--border);color:var(--light);font-size:.76rem;padding:.38rem .9rem;border-radius:5px;cursor:pointer;transition:all .15s;margin-bottom:1.25rem}
+    .back-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .detail-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.03em}
+    .detail-addr{font-size:.88rem;color:var(--mid);margin-top:.2rem}
+    .detail-desc{font-size:.86rem;color:var(--light);margin-top:.45rem}
+    .sbadge{display:inline-block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:.18rem .7rem;border-radius:99px;margin-top:.4rem}
+    .sb-active{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+    .sb-paused{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+    .sb-complete{background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)}
+    .sb-cancelled{background:rgba(107,107,107,.15);color:var(--mid);border:1px solid rgba(107,107,107,.3)}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+    .summary-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem}
+    .summary-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.4rem}
+    .summary-value{font-size:1.4rem;font-weight:700;font-family:'Bebas Neue',sans-serif;letter-spacing:.02em}
+    .sv-accent{color:var(--accent)}.sv-green{color:var(--green)}.sv-white{color:var(--white);font-size:1rem;font-family:'DM Sans',sans-serif}
+    .pbar-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.5rem;margin:1.25rem 0}
+    .pbar-track{background:var(--muted);border-radius:99px;height:8px;overflow:hidden;margin:.5rem 0 .35rem}
+    .pbar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .6s ease}
+    .dtabs{display:flex;gap:.2rem;border-bottom:1px solid var(--border);margin-bottom:1.4rem;flex-wrap:wrap}
+    .dtab{background:none;border:none;border-bottom:2px solid transparent;color:var(--mid);font-size:.84rem;font-weight:500;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s;margin-bottom:-1px}
+    .dtab.active,.dtab:hover{color:var(--white)}
+    .dtab.active{border-bottom-color:var(--accent)}
+    .dtab-panel{display:none}.dtab-panel.active{display:block}
+
+    /* CHECKLIST */
+    .cl-category{margin-bottom:1.5rem}
+    .cl-cat-header{display:flex;align-items:center;justify-content:space-between;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding-bottom:.45rem;border-bottom:1px solid var(--border);margin-bottom:.65rem}
+    .cl-cat-count{font-weight:400;color:var(--mid)}
+    .cl-item{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.85rem 1rem;margin-bottom:.4rem;transition:all .2s}
+    .cl-item.done{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.06)}
+    .cl-item-row{display:flex;align-items:center;gap:.85rem;cursor:pointer}
+    .cl-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--muted);background:var(--card);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .cl-item.done .cl-box{background:var(--green);border-color:var(--green)}
+    .cl-check{display:none;color:#000;font-size:.8rem;font-weight:900}
+    .cl-item.done .cl-check{display:block}
+    .cl-name{font-size:.9rem;font-weight:600;color:var(--white)}
+    .cl-item.done .cl-name{color:var(--green)}
+    .cl-sub{font-size:.75rem;color:var(--mid);margin-top:.1rem}
+    .cl-note-row{margin-top:.65rem;padding-top:.6rem;border-top:1px solid var(--border)}
+    .cl-note-row input{background:var(--card);border:1px solid var(--border);border-radius:5px;color:var(--light);font-size:.82rem;padding:.42rem .75rem;width:100%;transition:border-color .2s}
+    .cl-note-row input:focus{outline:none;border-color:var(--accent)}
+    .cl-client-category{margin-bottom:1.4rem}
+    .cl-client-cat-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border);margin-bottom:.6rem}
+    .cl-client-item{display:flex;align-items:flex-start;gap:.75rem;padding:.72rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:.35rem}
+    .cl-client-item.done{border-color:rgba(110,200,122,.35);background:rgba(110,200,122,.05)}
+    .cl-client-name{font-size:.88rem;font-weight:600;color:var(--light)}
+    .cl-client-item.done .cl-client-name{color:var(--green)}
+    .cl-client-note{font-size:.76rem;color:var(--mid);margin-top:.12rem;font-style:italic}
+
+    /* EXPENSES */
+    .exp-row{display:flex;align-items:center;justify-content:space-between;padding:.72rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:.45rem;gap:1rem}
+    .exp-info{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;flex:1;min-width:0}
+    .exp-cat{font-size:.68rem;font-weight:600;text-transform:uppercase;color:var(--accent);background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.2);padding:.15rem .55rem;border-radius:99px;white-space:nowrap}
+    .exp-desc{font-size:.86rem;color:var(--light)}
+    .exp-date{font-size:.76rem;color:var(--mid)}
+    .exp-right{display:flex;align-items:center;gap:.65rem;flex-shrink:0}
+    .exp-amt{font-size:.92rem;font-weight:600}
+    .del-sm{background:none;border:1px solid var(--border);color:var(--mid);font-size:.72rem;width:23px;height:23px;border-radius:4px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+    .del-sm:hover{border-color:var(--red);color:var(--red)}
+    .exp-total{display:flex;justify-content:flex-end;padding:.7rem 1rem;font-size:.92rem;color:var(--light);gap:.4rem;margin-top:.2rem}
+    .exp-total strong{color:var(--white)}
+
+    /* PHOTOS */
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-top:.75rem}
+    .photo-item{position:relative;border-radius:8px;overflow:hidden;background:var(--card);border:1px solid var(--border);aspect-ratio:4/3}
+    .pbadge{position:absolute;top:6px;left:6px;font-size:.62rem;font-weight:700;text-transform:uppercase;padding:.18rem .55rem;border-radius:99px;z-index:2}
+    .pbadge.before{background:rgba(200,169,110,.92);color:var(--black)}
+    .pbadge.after{background:rgba(110,200,122,.92);color:var(--black)}
+    .del-photo{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.72);border:none;color:#fff;font-size:.62rem;width:22px;height:22px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3}
+    .del-photo:hover{background:var(--red)}
+    #photoOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:999;align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out}
+    #photoOverlayImg{max-width:90vw;max-height:90vh;border-radius:8px;object-fit:contain}
+
+    /* CLIENTS */
+    .client-row{background:var(--dark);border:1px solid var(--border);border-radius:10px;margin-bottom:.65rem;padding:1rem 1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .client-info{flex:1;min-width:0}
+    .client-email{font-size:.9rem;font-weight:600}
+    .client-sub{font-size:.76rem;color:var(--mid);margin-top:.1rem}
+    .client-pill{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:.15rem .6rem;border-radius:99px}
+    .cp-pending{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+    .cp-assigned{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+    .client-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+    .client-actions select{background:var(--surface);border:1px solid var(--border);border-radius:5px;color:var(--white);font-size:.78rem;padding:.3rem .6rem}
+    .danger-zone{border:1px solid rgba(209,79,79,.3);border-radius:10px;padding:1.2rem 1.5rem;margin-top:1rem}
+    .danger-zone h4{font-size:.72rem;font-weight:600;text-transform:uppercase;color:var(--red);margin-bottom:.7rem}
+    .btn-danger{background:none;border:1px solid var(--red);color:var(--red);font-size:.78rem;font-weight:600;text-transform:uppercase;padding:.45rem 1.1rem;border-radius:5px;cursor:pointer;transition:all .15s}
+    .btn-danger:hover{background:var(--red);color:#fff}
+    code{background:var(--surface);padding:.1rem .4rem;border-radius:3px;font-size:.78rem}
+    .empty-txt{font-size:.84rem;color:var(--mid);padding:.75rem 0}
+    .spin-wrap{display:flex;align-items:center;gap:.5rem;padding:.75rem 0;font-size:.84rem;color:var(--mid)}
+    .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .msg-ok{font-size:.82rem;color:var(--green);margin-top:.5rem}
+    .msg-err{font-size:.82rem;color:#e08080;margin-top:.5rem}
+
+    @media(max-width:680px){
+      .grid2,.grid3{grid-template-columns:1fr}
+      .summary-grid{grid-template-columns:1fr 1fr}
+      .pbody{padding:1.25rem 1rem}
+      .pmini{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-mark">ASC</div>
+      <h1>Project Portal</h1>
+      <p>" + (localStorage.getItem("sc_co") || "Your Company") + "</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="showAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabSignup" onclick="showAuthTab('signup')">Create Account</button>
+    </div>
+    <div id="loginForm">
+      <div class="lfield"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
+      <div class="lfield"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••" /></div>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+      <div class="auth-err" id="loginErr"></div>
+      <p style="text-align:center;margin-top:.75rem"><a href="#" onclick="doReset()" style="font-size:.78rem;color:var(--accent)">Forgot password?</a></p>
+    </div>
+    <div id="signupForm" style="display:none">
+      <div class="info-box"><strong>New clients:</strong> Create your account below. Once registered we will link your project and you will have full access.</div>
+      <div class="lfield"><label>Full Name</label><input type="text" id="signupName" placeholder="John Smith" /></div>
+      <div class="lfield"><label>Email</label><input type="email" id="signupEmail" placeholder="you@email.com" /></div>
+      <div class="lfield"><label>Password (min 6 chars)</label><input type="password" id="signupPass" placeholder="••••••••" /></div>
+      <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create Account</button>
+      <div class="auth-err" id="signupErr"></div>
+    </div>
+    <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:1.4rem">Questions? <a href="mailto:info@alisignatureconstruction.com" style="color:var(--accent)">info@alisignatureconstruction.com</a></p>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div id="pendingScreen" style="display:none;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem">
+  <div class="pending-box">
+    <div style="font-size:3rem;margin-bottom:1rem">⏳</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;margin-bottom:.75rem">Account Created!</h2>
+    <p style="font-size:.88rem;color:var(--light);line-height:1.7;margin-bottom:1rem">Your account is set up. We are linking your project and you will have full access shortly.</p>
+    <p style="font-size:.84rem;color:var(--accent);font-weight:600;margin-bottom:1.5rem" id="pendingEmail"></p>
+    <p style="font-size:.82rem;color:var(--mid);margin-bottom:1.5rem">Already approved? <a href="#" onclick="checkAccess()" style="color:var(--accent)">Click here to check</a></p>
+    <button class="auth-btn" style="width:auto;padding:.6rem 1.5rem" onclick="doLogout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portalScreen">
+  <div class="pheader">
+    <div class="plogo">ASC</div>
+    <div><div class="pbrand">" + (localStorage.getItem("sc_co") || "Your Company") + "</div><div class="pbrand-sub">Project Portal</div></div>
+    <span id="rolePill" class="role-pill"></span>
+    <div class="pnav" id="adminNav" style="display:none">
+      <button class="pnav-btn active" onclick="showSection('projects',this)">Projects</button>
+      <button class="pnav-btn" onclick="showSection('clients',this)">Clients</button>
+    </div>
+    <span class="puser" id="userLabel"></span>
+    <button class="logout-btn" onclick="doLogout()">Log Out</button>
+  </div>
+
+  <div class="pbody">
+
+    <!-- WEATHER (everyone sees this) -->
+    <div id="weatherBar" style="display:none">
+      <div class="weather-bar" id="weatherWidget">
+        <div style="font-size:.82rem;color:var(--mid)">Loading weather...</div>
+      </div>
+    </div>
+
+    <!-- SMS PANEL (admin only) - Twilio Auto SMS -->
+    <div id="smsPanel" style="display:none">
+      <div class="sms-panel">
+        <div class="sms-label">Send Text Message — (302) 202-2204</div>
+        <div style="font-size:.78rem;color:var(--green);margin-bottom:.9rem">
+          ✅ Sends automatically from your business number (302) 202-2204
+        </div>
+        <div class="lang-row">
+          <button class="lang-btn active" onclick="setLang('en',this)">🇺🇸 English</button>
+          <button class="lang-btn" onclick="setLang('es',this)">🇪🇸 Spanish</button>
+          <button class="lang-btn" onclick="setLang('ar',this)">🇸🇦 Arabic</button>
+        </div>
+        <div class="sms-row">
+          <input class="sms-input" type="tel" id="smsPhone" placeholder="+1 (302) 000-0000" style="width:100%" />
+          <select class="sms-select" id="smsContactPick" onchange="pickContact(this.value)" style="width:100%">
+            <option value="">Pick saved contact...</option>
+          </select>
+        </div>
+        <div class="tmpl-row">
+          <button class="tmpl-btn" onclick="useTemplate('update')">📋 Update</button>
+          <button class="tmpl-btn" onclick="useTemplate('schedule')">📅 Schedule</button>
+          <button class="tmpl-btn" onclick="useTemplate('weather')">🌤 Delay</button>
+          <button class="tmpl-btn" onclick="useTemplate('complete')">✅ Complete</button>
+          <button class="tmpl-btn" onclick="useTemplate('reminder')">🔔 Reminder</button>
+        </div>
+        <textarea class="sms-textarea" id="smsBody" placeholder="Type your message..." oninput="updateCharCount()"></textarea>
+        <div class="sms-char"><span id="charCount">0</span>/160 characters</div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-top:.5rem">
+          <button class="sms-send" id="smsSendBtn" onclick="sendSMS()">📤 Send Text</button>
+          <span style="font-size:.74rem;color:var(--mid)">~$0.01/text · From (302) 202-2204</span>
+        </div>
+        <div id="smsMsg" style="font-size:.8rem;margin-top:.5rem;min-height:1rem;line-height:1.6"></div>
+        <div style="margin-top:.85rem;border-top:1px solid var(--border);padding-top:.75rem">
+          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.5rem">Recent Messages Sent</div>
+          <div id="smsHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS SECTION -->
+    <div class="psection active" id="section-projects">
+      <div id="listView">
+        <div id="createArea" style="display:none">
+          <div class="panel">
+            <div class="panel-label">Create New Project</div>
+            <div class="grid3" style="margin-bottom:.8rem">
+              <div class="fg"><label>Project Name *</label><input id="newName" placeholder="Johnson Kitchen Remodel" /></div>
+              <div class="fg"><label>Property Address *</label><input id="newAddress" placeholder="123 Main St, Wilmington, DE" /></div>
+              <div class="fg"><label>Contract Value ($)</label><input type="number" id="newContract" placeholder="0.00" min="0" step="0.01" /></div>
+            </div>
+            <div class="grid2" style="margin-bottom:.8rem">
+              <div class="fg"><label>Client Phone (10 digits, no dashes)</label><input type="tel" id="newPhone" placeholder="3025551234" /></div>
+              <div class="fg"><label>Client Language</label>
+                <select id="newLang">
+                  <option value="en">🇺🇸 English</option>
+                  <option value="es">🇪🇸 Spanish</option>
+                  <option value="ar">🇸🇦 Arabic</option>
+                </select>
+              </div>
+              <div class="fg"><label>Client Carrier</label>
+                <select id="newCarrier">
+                  <option value="txt.att.net">AT&amp;T</option>
+                  <option value="vtext.com">Verizon</option>
+                  <option value="tmomail.net">T-Mobile / Google Fi</option>
+                  <option value="messaging.sprintpcs.com">Sprint / Boost</option>
+                  <option value="mms.cricketwireless.net">Cricket Wireless</option>
+                  <option value="mymetropcs.com">Metro PCS</option>
+                  <option value="sms.myboostmobile.com">Boost Mobile</option>
+                  <option value="vmobl.com">Virgin Mobile</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:.8rem"><label>Description / Scope Notes</label><textarea id="newDesc" placeholder="Scope of work, materials, special notes..."></textarea></div>
+            <button class="btn-p" id="createBtn" onclick="createProject()">Create Project</button>
+            <div id="createMsg"></div>
+          </div>
+        </div>
+        <h2 class="section-title" id="listTitle">Projects</h2>
+        <div id="projectList"></div>
+      </div>
+
+      <!-- DETAIL VIEW -->
+      <div id="detailView">
+        <button class="back-btn" onclick="backToList()">Back to Projects</button>
+        <div class="detail-title" id="dName"></div>
+        <div class="detail-addr" id="dAddr"></div>
+        <div id="dStatus" class="sbadge"></div>
+        <div class="detail-desc" id="dDesc" style="margin-bottom:.5rem"></div>
+        <div class="summary-grid">
+          <div class="summary-card"><div class="summary-label">Progress</div><div class="summary-value sv-accent" id="sumProgress">0%</div></div>
+          <div class="summary-card"><div class="summary-label">Status</div><div class="summary-value sv-white" id="sumStatus">Active</div></div>
+          <div class="summary-card"><div class="summary-label">Contract Value</div><div class="summary-value sv-green" id="sumContract">-</div></div>
+        </div>
+        <div class="pbar-wrap">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:.76rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)">Project Progress</span>
+            <span id="pbarLbl" style="font-size:.84rem;color:var(--accent);font-weight:600"></span>
+          </div>
+          <div class="pbar-track"><div class="pbar-fill" id="pbarFill" style="width:0%"></div></div>
+          <div style="font-size:.78rem;color:var(--mid)" id="pbarSub"></div>
+        </div>
+
+        <!-- ADMIN TABS -->
+        <div id="adminTabs" style="display:none">
+          <div class="dtabs">
+            <button class="dtab active" id="atab-progress" onclick="switchAdminTab('progress')">Progress</button>
+            <button class="dtab" id="atab-edit" onclick="switchAdminTab('edit')">Edit Details</button>
+            <button class="dtab" id="atab-expenses" onclick="switchAdminTab('expenses')">Expenses</button>
+            <button class="dtab" id="atab-photos" onclick="switchAdminTab('photos')">Photos</button>
+          </div>
+          <div class="dtab-panel active" id="apanel-progress">
+            <div class="panel">
+              <div class="panel-label">Construction Checklist</div>
+              <p style="font-size:.82rem;color:var(--mid);margin-bottom:1.25rem">Check off each item. Add notes for the client. Progress and SMS updates send automatically.</p>
+              <div id="adminChecklistBody"></div>
+              <div style="margin-top:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+                <button class="btn-p" style="margin-top:0" id="saveClBtn" onclick="saveChecklist()">Save Checklist</button>
+                <span id="clSaveMsg" style="font-size:.82rem;color:var(--green)"></span>
+              </div>
+            </div>
+          </div>
+          <div class="dtab-panel" id="apanel-edit">
+            <div class="panel">
+              <div class="panel-label">Edit Project Details</div>
+              <div class="grid2" style="margin-bottom:.8rem">
+                <div class="fg"><label>Project Name</label><input id="eName" /></div>
+                <div class="fg"><label>Property Address</label><input id="eAddr" /></div>
+                <div class="fg"><label>Contract Value ($)</label><input type="number" id="eContract" min="0" step="0.01" /></div>
+                <div class="fg"><label>Status</label>
+                  <select id="eStatus">
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                    <option value="complete">Complete</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <div class="fg"><label>Client Phone (10 digits)</label><input type="tel" id="ePhone" placeholder="3025551234" /></div>
+                <div class="fg"><label>Client Language</label>
+                  <select id="eLang">
+                    <option value="en">🇺🇸 English</option>
+                    <option value="es">🇪🇸 Spanish</option>
+                    <option value="ar">🇸🇦 Arabic</option>
+                  </select>
+                </div>
+                <div class="fg"><label>Client Carrier</label>
+                  <select id="eCarrier">
+                    <option value="txt.att.net">AT&amp;T</option>
+                    <option value="vtext.com">Verizon</option>
+                    <option value="tmomail.net">T-Mobile / Google Fi</option>
+                    <option value="messaging.sprintpcs.com">Sprint / Boost</option>
+                    <option value="mms.cricketwireless.net">Cricket Wireless</option>
+                    <option value="mymetropcs.com">Metro PCS</option>
+                    <option value="sms.myboostmobile.com">Boost Mobile</option>
+                    <option value="vmobl.com">Virgin Mobile</option>
+                  </select>
+                </div>
+              </div>
+              <div class="fg" style="margin-bottom:.8rem"><label>Description / Notes</label><textarea id="eDesc"></textarea></div>
+              <button class="btn-p" id="saveEditBtn" onclick="saveEdit()">Save Changes</button>
+              <div id="editMsg"></div>
+            </div>
+            <div class="danger-zone">
+              <h4>Danger Zone</h4>
+              <p style="font-size:.82rem;color:var(--mid);margin-bottom:.75rem">Permanently deletes this project and all its data.</p>
+              <button class="btn-danger" onclick="deleteProject()">Delete This Project</button>
+            </div>
+          </div>
+          <div class="dtab-panel" id="apanel-expenses">
+            <div class="panel">
+              <div class="panel-label">Add Expense</div>
+              <div class="grid3" style="margin-bottom:.8rem">
+                <div class="fg"><label>Category</label>
+                  <select id="expCat"><option>Materials</option><option>Labor</option><option>Permits</option><option>Equipment</option><option>Subcontractor</option><option>Other</option></select>
+                </div>
+                <div class="fg"><label>Description</label><input id="expDesc" placeholder="e.g. Shingles - Home Depot" /></div>
+                <div class="fg"><label>Amount ($)</label><input type="number" id="expAmt" placeholder="0.00" min="0" step="0.01" /></div>
+              </div>
+              <div class="fg" style="max-width:200px;margin-bottom:.8rem"><label>Date</label><input type="date" id="expDate" /></div>
+              <button class="btn-p" id="addExpBtn" onclick="addExpense()">Add Expense</button>
+            </div>
+            <div id="expList" style="margin-top:1.1rem"></div>
+            <div class="exp-total">Total Expenses: <strong id="expTotal">$0.00</strong></div>
+          </div>
+          <div class="dtab-panel" id="apanel-photos">
+            <div class="panel">
+              <div class="panel-label">Upload Photo or PDF</div>
+              <div style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap">
+                <div class="fg"><label>Type</label><select id="photoType"><option value="before">Before</option><option value="after">After</option></select></div>
+                <div class="fg" style="flex:1;min-width:200px"><label>Select File (images max 1.5MB, PDFs max 3MB)</label>
+                  <input type="file" id="photoFile" accept="image/*,.pdf" style="background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--light);font-size:.85rem;padding:.55rem .9rem;width:100%" /></div>
+                <button class="btn-p" id="uploadBtn" onclick="uploadPhoto()" style="margin-top:0">Upload</button>
+              </div>
+              <div id="uploadMsg" style="font-size:.8rem;color:var(--mid);margin-top:.5rem"></div>
+            </div>
+            <div class="photo-grid" id="adminPhotoGrid"></div>
+          </div>
+        </div>
+
+        <!-- CLIENT VIEW -->
+        <div id="clientView" style="display:none">
+          <div class="dtabs">
+            <button class="dtab active" id="ctab-status" onclick="switchClientTab('status')">Project Status</button>
+            <button class="dtab" id="ctab-expenses" onclick="switchClientTab('expenses')">Expenses</button>
+            <button class="dtab" id="ctab-photos" onclick="switchClientTab('photos')">Photos</button>
+          </div>
+          <div class="dtab-panel active" id="cpanel-status"><div id="clientChecklistBody"></div></div>
+          <div class="dtab-panel" id="cpanel-expenses">
+            <div id="clientExpList"></div>
+            <div class="exp-total">Total: <strong id="clientExpTotal">$0.00</strong></div>
+          </div>
+          <div class="dtab-panel" id="cpanel-photos"><div class="photo-grid" id="clientPhotoGrid"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENTS SECTION -->
+    <div class="psection" id="section-clients">
+      <h2 class="section-title">Client Accounts</h2>
+      <div class="info-box" style="margin-bottom:1.25rem">
+        <strong>How it works:</strong> Client creates their account on the portal. They appear below as Pending. Pick their project and click Assign. They instantly see their project.<br><br>
+        <strong>Portal URL:</strong> <code>alisignatureconstruction.com/portal.html</code>
+      </div>
+      <div class="panel"><div class="panel-label">Pending &amp; Active Clients</div><div id="clientList"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="photoOverlay" onclick="closeOverlay()"><img id="photoOverlayImg" src="" alt="" /></div>
+
+<script type="module">
+import { initializeApp }                      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword,
+         createUserWithEmailAndPassword,
+         sendPasswordResetEmail,
+         signOut, onAuthStateChanged }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, doc,
+         addDoc, updateDoc, deleteDoc,
+         getDocs, getDoc, serverTimestamp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FB = {
+  apiKey:            "AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8",
+  authDomain:        "sitecommand-saas.firebaseapp.com",
+  projectId:         "sitecommand-saas",
+  storageBucket:     "sitecommand-saas.firebasestorage.app",
+  messagingSenderId: "309552233436",
+  appId:             "1:309552233436:web:c1dcecb5ed8b9373862d19",
+};
+// Get contractor info from URL slug
+const urlSlug = window.location.hostname.replace('.sitecommand.net','') || 
+                localStorage.getItem('sc_slug') || '';
+const CONTRACTOR_EMAIL = localStorage.getItem('sc_admin_email') || '';
+const ADMIN = CONTRACTOR_EMAIL;
+const COMPANY_COLOR = localStorage.getItem('sc_color') || '#c8a96e';
+const app   = initializeApp(FB);
+const auth  = getAuth(app);
+const db    = getFirestore(app);
+
+
+// Inject contractor brand color
+const _color = localStorage.getItem('sc_color') || '#c8a96e';
+document.documentElement.style.setProperty('--accent', _color);
+document.documentElement.style.setProperty('--accent2', _color);
+let currentUser = null;
+let isAdmin     = false;
+let currentPid  = null;
+let checklistData = {};
+let currentLang = "en";
+let smsHistory  = JSON.parse(localStorage.getItem("asc_sms_hist") || "[]");
+
+/* ── SMS TEMPLATES (all double-quoted, no apostrophes) ── */
+const TMPLS = {
+  en: {
+    update:   "Hi! This is " + (localStorage.getItem("sc_co") || "Your Company") + ". Your project at {address} is {pct}% complete. Status: {status}. Mohamed will be in touch soon. Call (302) 257-8521.",
+    schedule: "Hi! " + (localStorage.getItem("sc_co") || "Your Company") + " here. We are scheduled to work at your property on {date}. Please ensure access is available. Questions? Call (302) 257-8521.",
+    weather:  "Hi! " + (localStorage.getItem("sc_co") || "Your Company") + " here. Due to weather conditions today, work at {address} has been rescheduled. We will contact you with a new date. Call (302) 257-8521.",
+    complete: "Great news! " + (localStorage.getItem("sc_co") || "Your Company") + " has completed work at {address}. Thank you for choosing us! Call Mohamed at (302) 257-8521 with any questions.",
+    reminder: "Reminder from " + (localStorage.getItem("sc_co") || "Your Company") + ": We have a scheduled appointment at {address} tomorrow. Please call (302) 257-8521 to confirm.",
+  },
+  es: {
+    update:   "Hola! Le escribe " + (localStorage.getItem("sc_co") || "Your Company") + ". Su proyecto en {address} esta {pct}% completado. Estado: {status}. Mohamed se pondra en contacto pronto. Llame al (302) 257-8521.",
+    schedule: "Hola! " + (localStorage.getItem("sc_co") || "Your Company") + " aqui. Estamos programados para trabajar en su propiedad el {date}. Asegurese de que haya acceso. Preguntas? Llame al (302) 257-8521.",
+    weather:  "Hola! " + (localStorage.getItem("sc_co") || "Your Company") + ". Debido al clima de hoy, el trabajo en {address} ha sido reprogramado. Le contactaremos con nueva fecha. (302) 257-8521.",
+    complete: "Buenas noticias! Su proyecto en {address} esta COMPLETO. Gracias por elegir " + (localStorage.getItem("sc_co") || "Your Company") + "! Llame al (302) 257-8521.",
+    reminder: "Recordatorio de " + (localStorage.getItem("sc_co") || "Your Company") + ": Tenemos cita en {address} manana. Llame al (302) 257-8521 para confirmar.",
+  },
+  ar: {
+    update:   "\u0645\u0631\u062d\u0628\u0627\u064b! \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address} \u0645\u0643\u062a\u0645\u0644 {pct}%. \u0633\u064a\u062a\u0648\u0627\u0635\u0644 \u0645\u062d\u0645\u062f \u0645\u0639\u0643\u0645 \u0642\u0631\u064a\u0628\u0627\u064b. (302) 257-8521.",
+    schedule: "\u0645\u0631\u062d\u0628\u0627\u064b! \u0644\u062f\u064a\u0646\u0627 \u0645\u0648\u0639\u062f \u0644\u0644\u0639\u0645\u0644 \u0641\u064a \u0639\u0642\u0627\u0631\u0643\u0645 \u064a\u0648\u0645 {date}. \u064a\u0631\u062c\u0649 \u0636\u0645\u0627\u0646 \u0625\u0645\u0643\u0627\u0646\u064a\u0629 \u0627\u0644\u0648\u0635\u0648\u0644. (302) 257-8521.",
+    weather:  "\u0645\u0631\u062d\u0628\u0627\u064b! \u0628\u0633\u0628\u0628 \u0627\u0644\u0623\u062d\u0648\u0627\u0644 \u0627\u0644\u062c\u0648\u064a\u0629\u060c \u062a\u0645 \u062a\u0623\u062c\u064a\u0644 \u0627\u0644\u0639\u0645\u0644 \u0641\u064a {address}. \u0633\u0646\u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0643\u0645 \u0628\u0645\u0648\u0639\u062f \u062c\u062f\u064a\u062f.",
+    complete: "\u0623\u062e\u0628\u0627\u0631 \u0631\u0627\u0626\u0639\u0629! \u0627\u0643\u062a\u0645\u0644 \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address}. \u0634\u0643\u0631\u0627\u064b \u0644\u0627\u062e\u062a\u064a\u0627\u0631\u0643\u0645 \u0634\u0631\u0643\u0629 \u0639\u0644\u064a \u0633\u064a\u063a\u0646\u062a\u0634\u0631! (302) 257-8521.",
+    reminder: "\u062a\u0630\u0643\u064a\u0631: \u0644\u062f\u064a\u0646\u0627 \u0645\u0648\u0639\u062f \u0641\u064a {address} \u063a\u062f\u0627\u064b. \u0627\u062a\u0635\u0644 \u0639\u0644\u0649 (302) 257-8521 \u0644\u0644\u062a\u0623\u0643\u064a\u062f.",
+  }
+};
+const AUTO_SMS = {
+  en: {
+    active:    "Hi {name}! Your project at {address} with " + (localStorage.getItem("sc_co") || "Your Company") + " is now ACTIVE. Mohamed will contact you soon with your schedule. Call (302) 257-8521.",
+    paused:    "Hi {name}! Work at {address} has been temporarily paused. Mohamed will contact you shortly to discuss next steps. Call (302) 257-8521 anytime.",
+    complete:  "Great news {name}! Your project at {address} is COMPLETE. Thank you for choosing " + (localStorage.getItem("sc_co") || "Your Company") + "! Call Mohamed at (302) 257-8521 with any questions.",
+    cancelled: "Hi {name}, your project at {address} has been cancelled. Please call Mohamed at (302) 257-8521 to discuss.",
+    p25:       "Hi {name}! Project update for {address}: 25% complete. We are a quarter of the way there! " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+    p50:       "Hi {name}! Project update for {address}: 50% complete. Halfway done! " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+    p75:       "Hi {name}! Project update for {address}: 75% complete. Almost there! " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+    p100:      "Great news {name}! Your project at {address} is 100% complete! " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+  },
+  es: {
+    active:    "Hola {name}! Su proyecto en {address} esta ahora ACTIVO. Mohamed se pondra en contacto pronto. Llame al (302) 257-8521.",
+    paused:    "Hola {name}! El trabajo en {address} ha sido pausado temporalmente. Mohamed le contactara pronto. Llame al (302) 257-8521.",
+    complete:  "Buenas noticias {name}! Su proyecto en {address} esta COMPLETO. Gracias por elegirnos! Llame al (302) 257-8521.",
+    cancelled: "Hola {name}, su proyecto en {address} ha sido cancelado. Llame a Mohamed al (302) 257-8521.",
+    p25:       "Hola {name}! Actualizacion del proyecto en {address}: 25% completado. " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+    p50:       "Hola {name}! Actualizacion del proyecto en {address}: 50% completado. A mitad de camino! (302) 257-8521.",
+    p75:       "Hola {name}! Actualizacion del proyecto en {address}: 75% completado. Casi listos! (302) 257-8521.",
+    p100:      "Buenas noticias {name}! Su proyecto en {address} esta 100% completo! " + (localStorage.getItem("sc_co") || "Your Company") + " (302) 257-8521.",
+  },
+  ar: {
+    active:    "\u0645\u0631\u062d\u0628\u0627\u064b {name}! \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address} \u0623\u0635\u0628\u062d \u0646\u0634\u0637\u0627\u064b \u0627\u0644\u0622\u0646. \u0633\u064a\u062a\u0648\u0627\u0635\u0644 \u0645\u062d\u0645\u062f \u0645\u0639\u0643\u0645 \u0642\u0631\u064a\u0628\u0627\u064b. (302) 257-8521.",
+    paused:    "\u0645\u0631\u062d\u0628\u0627\u064b {name}! \u062a\u0645 \u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0639\u0645\u0644 \u0641\u064a {address} \u0645\u0624\u0642\u062a\u0627\u064b. \u0633\u064a\u062a\u0648\u0627\u0635\u0644 \u0645\u062d\u0645\u062f \u0645\u0639\u0643\u0645 \u0642\u0631\u064a\u0628\u0627\u064b. (302) 257-8521.",
+    complete:  "\u0623\u062e\u0628\u0627\u0631 \u0631\u0627\u0626\u0639\u0629 {name}! \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address} \u0645\u0643\u062a\u0645\u0644. \u0634\u0643\u0631\u0627\u064b \u0644\u0627\u062e\u062a\u064a\u0627\u0631\u0643\u0645! (302) 257-8521.",
+    cancelled: "\u0645\u0631\u062d\u0628\u0627\u064b {name}\u060c \u062a\u0645 \u0625\u0644\u063a\u0627\u0621 \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address}. \u0627\u062a\u0635\u0644 \u0628\u0645\u062d\u0645\u062f \u0639\u0644\u0649 (302) 257-8521.",
+    p25:       "\u0645\u0631\u062d\u0628\u0627\u064b {name}! \u0645\u0634\u0631\u0648\u0639 {address}: 25% \u0645\u0643\u062a\u0645\u0644. (302) 257-8521.",
+    p50:       "\u0645\u0631\u062d\u0628\u0627\u064b {name}! \u0645\u0634\u0631\u0648\u0639 {address}: 50% \u0645\u0643\u062a\u0645\u0644. \u0646\u0635\u0641 \u0627\u0644\u0637\u0631\u064a\u0642! (302) 257-8521.",
+    p75:       "\u0645\u0631\u062d\u0628\u0627\u064b {name}! \u0645\u0634\u0631\u0648\u0639 {address}: 75% \u0645\u0643\u062a\u0645\u0644. \u0627\u0642\u062a\u0631\u0628\u0646\u0627 \u0645\u0646 \u0627\u0644\u0646\u0647\u0627\u064a\u0629! (302) 257-8521.",
+    p100:      "\u0623\u062e\u0628\u0627\u0631 \u0631\u0627\u0626\u0639\u0629 {name}! \u0645\u0634\u0631\u0648\u0639\u0643\u0645 \u0641\u064a {address} \u0645\u0643\u062a\u0645\u0644 100%! (302) 257-8521.",
+  }
+};
+
+/* ── AUTH STATE ── */
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+  if (!user) { showScreen("auth"); return; }
+  isAdmin = user.email.toLowerCase() === ADMIN.toLowerCase();
+  if (isAdmin) { showPortal(); return; }
+  try {
+    const snap = await getDocs(collection(db, "clients"));
+    let found = null;
+    snap.forEach(ds => { if (ds.data().uid === user.uid) found = ds.data(); });
+    if (found && found.projectId) { showPortal(); }
+    else { document.getElementById("pendingEmail").textContent = "We will notify you at " + user.email; showScreen("pending"); }
+  } catch(e) { console.log("client check:", e.message); showPortal(); }
+});
+
+function showScreen(n) {
+  document.getElementById("authScreen").style.display    = n === "auth"    ? "flex"  : "none";
+  document.getElementById("pendingScreen").style.display = n === "pending" ? "flex"  : "none";
+  document.getElementById("portalScreen").style.display  = n === "portal"  ? "block" : "none";
+}
+
+/* ── AUTH ACTIONS ── */
+window.showAuthTab = tab => {
+  document.getElementById("tabLogin").classList.toggle("active",  tab === "login");
+  document.getElementById("tabSignup").classList.toggle("active", tab === "signup");
+  document.getElementById("loginForm").style.display  = tab === "login"  ? "block" : "none";
+  document.getElementById("signupForm").style.display = tab === "signup" ? "block" : "none";
+};
+
+window.doLogin = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const pass  = document.getElementById("loginPass").value;
+  const err   = document.getElementById("loginErr");
+  const btn   = document.getElementById("loginBtn");
+  err.textContent = "";
+  if (!email) { err.textContent = "Enter your email."; return; }
+  if (!pass)  { err.textContent = "Enter your password."; return; }
+  btn.disabled = true; btn.textContent = "Signing in...";
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    const codes = {
+      "auth/user-not-found":       "No account found with that email.",
+      "auth/wrong-password":       "Wrong password. Try again.",
+      "auth/invalid-credential":   "Wrong email or password.",
+      "auth/invalid-email":        "Invalid email address.",
+      "auth/too-many-requests":    "Too many attempts. Wait a minute and try again.",
+      "auth/network-request-failed": "Network error. Check your connection.",
+    };
+    err.textContent = codes[e.code] || "Login failed: " + e.message;
+    btn.disabled = false; btn.textContent = "Sign In";
+  }
+};
+
+window.doSignup = async () => {
+  const name  = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const pass  = document.getElementById("signupPass").value;
+  const err   = document.getElementById("signupErr");
+  const btn   = document.getElementById("signupBtn");
+  err.textContent = "";
+  if (!name || !email || !pass) { err.textContent = "All fields required."; return; }
+  if (pass.length < 6) { err.textContent = "Password must be at least 6 characters."; return; }
+  btn.disabled = true; btn.textContent = "Creating...";
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await addDoc(collection(db, "clients"), { email, name, uid: cred.user.uid, projectId: null, projectName: null, createdAt: serverTimestamp() });
+  } catch(e) { err.textContent = e.message; btn.disabled = false; btn.textContent = "Create Account"; }
+};
+
+window.doReset = async () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const err   = document.getElementById("loginErr");
+  if (!email) { err.textContent = "Enter your email above first."; return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    err.style.color = "var(--green)"; err.textContent = "Reset email sent! Check your inbox.";
+  } catch(e) { err.textContent = e.message; }
+};
+
+window.doLogout = () => signOut(auth);
+
+window.checkAccess = async () => {
+  if (!currentUser) return;
+  const snap = await getDocs(collection(db, "clients"));
+  let found = null;
+  snap.forEach(ds => { if (ds.data().uid === currentUser.uid) found = ds.data(); });
+  if (found && found.projectId) showPortal();
+  else alert("Your project has not been assigned yet. We will be in touch soon!");
+};
+
+/* ── PORTAL SETUP ── */
+function showPortal() {
+  showScreen("portal");
+  document.getElementById("userLabel").textContent  = currentUser.email;
+  document.getElementById("rolePill").textContent   = isAdmin ? "Admin" : "Client";
+  document.getElementById("rolePill").className     = "role-pill " + (isAdmin ? "role-admin" : "role-client");
+  document.getElementById("adminNav").style.display = isAdmin ? "flex" : "none";
+  document.getElementById("createArea").style.display = isAdmin ? "block" : "none";
+  document.getElementById("listTitle").textContent  = isAdmin ? "All Projects" : "My Project";
+  document.getElementById("weatherBar").style.display = "block";
+  loadWeather();
+  if (isAdmin) {
+    document.getElementById("smsPanel").style.display = "block";
+    renderSmsHistory();
+    loadSmsContacts();
+  }
+  loadProjects();
+}
+
+/* ── WEATHER ── */
+const W_ICON = {0:"☀️",1:"☀️",2:"⛅",3:"☁️",45:"🌫️",48:"🌫️",51:"🌦️",53:"🌦️",55:"🌧️",61:"🌧️",63:"🌧️",65:"🌧️",71:"🌨️",73:"🌨️",75:"❄️",80:"🌦️",82:"⛈️",95:"⛈️"};
+const W_DESC = {0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Foggy",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",80:"Showers",82:"Heavy showers",95:"Thunderstorm"};
+
+async function loadWeather() {
+  const bar = document.getElementById("weatherWidget");
+  try {
+    const pos  = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, {timeout:8000}));
+    const {latitude:lat, longitude:lon} = pos.coords;
+    const r    = await fetch("https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon + "&current=temperature_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch");
+    const d    = await r.json();
+    const c    = d.current;
+    const code = c.weather_code;
+    const temp = Math.round(c.temperature_2m);
+    const feel = Math.round(c.apparent_temperature);
+    const wind = Math.round(c.wind_speed_10m);
+    const gust = Math.round(c.wind_gusts_10m);
+    let alert  = "";
+    if (wind > 25 || gust > 35) alert = "<div class='weather-alert'>⚠️ High winds — roofing caution</div>";
+    if (c.precipitation > 0.1)  alert = "<div class='weather-alert'>⚠️ Rain today — plan work accordingly</div>";
+    if (temp < 32)               alert = "<div class='weather-alert'>⚠️ Freezing — protect materials</div>";
+    bar.innerHTML = "<div style='font-size:2rem'>" + (W_ICON[code] || "🌤️") + "</div>" +
+      "<div><div class='weather-temp'>" + temp + "°F</div><div class='weather-desc'>" + (W_DESC[code] || "") + " · Feels like " + feel + "°F</div></div>" +
+      "<div style='display:flex;gap:1rem;flex-wrap:wrap;margin-left:auto'><div class='weather-detail'>💨 " + wind + " mph</div><div class='weather-detail'>🌪️ " + gust + " mph gusts</div></div>" + alert;
+  } catch { bar.innerHTML = "<div style='font-size:.82rem;color:var(--mid)'>📍 Allow location for weather</div>"; }
+}
+
+/* ── SMS FUNCTIONS ── */
+/* ── TWILIO SMS — credentials stored safely in browser only ── */
+// Credentials never in code — stored in YOUR browser localStorage only
+// Run once in browser console to set up:
+// localStorage.setItem("asc_twilio_sid",   "YOUR_ACCOUNT_SID")
+// localStorage.setItem("asc_twilio_token", "YOUR_AUTH_TOKEN")
+// localStorage.setItem("asc_twilio_from",  "+13022022204")
+
+function getTwilioConfig() {
+  return {
+    sid:   localStorage.getItem("asc_twilio_sid")   || "",
+    token: localStorage.getItem("asc_twilio_token") || "",
+    from:  localStorage.getItem("asc_twilio_from")  || "",
+  };
+}
+
+async function twilioSend(to, body) {
+  const cfg = getTwilioConfig();
+  if (!cfg.sid || !cfg.token || !cfg.from) {
+    throw new Error("Twilio not configured. Run setup in browser console.");
+  }
+  const phone = to.replace(/\D/g,"");
+  const toNum = phone.length === 10 ? "+1" + phone : "+" + phone;
+  const creds = btoa(cfg.sid + ":" + cfg.token);
+  const res = await fetch(
+    "https://api.twilio.com/2010-04-01/Accounts/" + cfg.sid + "/Messages.json",
+    {
+      method: "POST",
+      headers: {
+        "Authorization": "Basic " + creds,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ To: toNum, From: cfg.from, Body: body }),
+    }
+  );
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Send failed");
+  return data;
+}
+
+window.pickContact = val => {
+  if (!val) return;
+  document.getElementById("smsPhone").value = val;
+};
+
+window.setLang = (lang, btn) => {
+  currentLang = lang;
+  document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("smsBody").dir = lang === "ar" ? "rtl" : "ltr";
+};
+
+window.useTemplate = type => {
+  const t    = (TMPLS[currentLang] || TMPLS.en)[type] || "";
+  const addr = document.getElementById("dAddr")?.textContent || "[address]";
+  const pct  = document.getElementById("sumProgress")?.textContent || "0%";
+  const stat = document.getElementById("sumStatus")?.textContent || "active";
+  const date = new Date(Date.now() + 86400000).toLocaleDateString("en-US", {weekday:"long", month:"long", day:"numeric"});
+  document.getElementById("smsBody").value = t.replace("{address}", addr).replace("{pct}", pct).replace("{status}", stat).replace("{date}", date);
+  document.getElementById("smsBody").dir   = lang === "ar" ? "rtl" : "ltr";
+  updateCharCount();
+};
+
+window.updateCharCount = () => {
+  const len = document.getElementById("smsBody").value.length;
+  const el  = document.getElementById("charCount");
+  el.textContent = len;
+  el.style.color = len > 160 ? "var(--red)" : "var(--mid)";
+};
+
+window.sendSMS = async () => {
+  const phone = document.getElementById("smsPhone").value.trim();
+  const body  = document.getElementById("smsBody").value.trim();
+  const msgEl = document.getElementById("smsMsg");
+  msgEl.textContent = "";
+  if (!phone) { msgEl.style.color="#e08080"; msgEl.textContent="Enter a phone number."; return; }
+  if (!body)  { msgEl.style.color="#e08080"; msgEl.textContent="Enter a message."; return; }
+  const btn = document.getElementById("smsSendBtn");
+  btn.disabled = true; btn.textContent = "Sending...";
+  try {
+    await twilioSend(phone, body);
+    msgEl.style.color = "var(--green)";
+    msgEl.textContent = "✅ Text sent from (302) 202-2204!";
+    smsHistory.unshift({to: phone, body, lang: currentLang, at: new Date().toLocaleString()});
+    smsHistory = smsHistory.slice(0, 20);
+    localStorage.setItem("asc_sms_hist", JSON.stringify(smsHistory));
+    renderSmsHistory();
+    document.getElementById("smsBody").value = "";
+    updateCharCount();
+  } catch(e) {
+    msgEl.style.color = "#e08080";
+    if (e.message.includes("unverified")) {
+      msgEl.textContent = "❌ Trial account: add this number at twilio.com → Verified Caller IDs, or upgrade your account.";
+    } else {
+      msgEl.textContent = "❌ Error: " + e.message;
+    }
+  }
+  btn.disabled = false; btn.textContent = "📤 Send Text";
+};
+
+function renderSmsHistory() {
+  const el = document.getElementById("smsHistory");
+  if (!el) return;
+  if (!smsHistory.length) { el.innerHTML = "<div style='font-size:.8rem;color:var(--mid)'>No messages sent yet.</div>"; return; }
+  el.innerHTML = smsHistory.slice(0, 5).map(s =>
+    "<div class='sms-hist-item'>" + s.body.substring(0, 100) + (s.body.length > 100 ? "..." : "") +
+    "<div class='sms-hist-meta'>📱 " + s.to + " &nbsp;·&nbsp; 🕐 " + s.at + " &nbsp;·&nbsp; " + (s.lang === "ar" ? "Arabic" : s.lang === "es" ? "Spanish" : "English") + "</div></div>"
+  ).join("");
+}
+
+async function loadSmsContacts() {
+  const sel = document.getElementById("smsContactPick");
+  if (!sel) return;
+  try {
+    const projSnap = await getDocs(collection(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects"));
+    projSnap.forEach(ds => {
+      const p = ds.data();
+      if (p.clientPhone) {
+        const opt = document.createElement("option");
+        opt.value = p.clientPhone;
+        opt.textContent = "👤 " + p.name + " — " + p.clientPhone;
+        sel.appendChild(opt);
+      }
+    });
+    const crewSnap = await getDocs(collection(db, "crewMembers"));
+    let hasCrew = false;
+    crewSnap.forEach(ds => {
+      const c = ds.data();
+      if (c.phone) {
+        if (!hasCrew) { const sep=document.createElement("option"); sep.disabled=true; sep.textContent="── Crew ──"; sel.appendChild(sep); hasCrew=true; }
+        const opt = document.createElement("option");
+        opt.value = c.phone;
+        opt.textContent = "👷 " + c.name + " — " + c.phone;
+        sel.appendChild(opt);
+      }
+    });
+  } catch(e) { console.log("contacts:", e.message); }
+}
+
+async function autoSendSMS(phone, lang, key, name, address) {
+  if (!phone) return;
+  const msgs = AUTO_SMS[lang] || AUTO_SMS.en;
+  const tmpl = msgs[key]; if (!tmpl) return;
+  const body = tmpl.replace(/{name}/g, name || "there").replace(/{address}/g, address || "your property");
+  try {
+    await twilioSend(phone, body);
+    showToast("✅ Text sent to client from (302) 202-2204!");
+  } catch(e) {
+    console.log("autoSMS error:", e.message);
+    showToast("⚠️ Auto-text failed: " + e.message);
+  }
+}
+
+function showToast(msg) {
+  const t = document.createElement("div");
+  t.style.cssText = "position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:.6rem 1.25rem;border-radius:8px;font-size:.84rem;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.4)";
+  t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ── PROJECTS ── */
+async function loadProjects() {
+  backToList();
+  const list = document.getElementById("projectList");
+  list.innerHTML = "<div class='spin-wrap'><div class='spinner'></div> Loading...</div>";
+  try {
+    let projects = [];
+    if (isAdmin) {
+      const snap = await getDocs(collection(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects"));
+      snap.forEach(ds => projects.push({id: ds.id, ...ds.data()}));
+      projects.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    } else {
+      const cSnap = await getDocs(collection(db, "clients"));
+      let pid = null;
+      cSnap.forEach(ds => { if (ds.data().uid === currentUser.uid && ds.data().projectId) pid = ds.data().projectId; });
+      if (pid) { const p = await getDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", pid)); if (p.exists()) projects.push({id:p.id, ...p.data()}); }
+    }
+    list.innerHTML = "";
+    if (!projects.length) { list.innerHTML = "<p class='empty-txt'>" + (isAdmin ? "No projects yet. Create one above." : "No project assigned to your account yet.") + "</p>"; return; }
+    projects.forEach(p => {
+      const div = document.createElement("div"); div.className = "proj-card";
+      div.innerHTML = "<div class='proj-inner'><div class='sdot s-" + (p.status || "active") + "'></div><div class='proj-info'><div class='proj-name'>" + p.name + "</div><div class='proj-addr'>📍 " + p.address + "</div></div><div class='proj-right'><div class='pmini'><div class='pmini-bar' style='width:" + (p.progress || 0) + "%'></div></div><span class='pmini-lbl'>" + (p.progress || 0) + "%</span><button class='btn-open' onclick=\"openProject('" + p.id + "')\">Open →</button></div></div>";
+      list.appendChild(div);
+    });
+  } catch(e) { list.innerHTML = "<p class='empty-txt' style='color:#e08080'>Error: " + e.message + "</p>"; }
+}
+
+window.createProject = async () => {
+  const name = document.getElementById("newName").value.trim();
+  const addr = document.getElementById("newAddress").value.trim();
+  const msg  = document.getElementById("createMsg");
+  if (!name || !addr) { msg.innerHTML = "<span class='msg-err'>Name and address required.</span>"; return; }
+  const btn = document.getElementById("createBtn"); btn.disabled = true; btn.textContent = "Creating...";
+  try {
+    await addDoc(collection(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects"), {
+      name, address: addr,
+      contractValue: parseFloat(document.getElementById("newContract").value || 0),
+      description:   document.getElementById("newDesc").value.trim(),
+      clientPhone:   document.getElementById("newPhone").value.trim(),
+      clientLang:    document.getElementById("newLang").value,
+      progress: 0, status: "active", checklist: {}, createdAt: serverTimestamp(),
+    });
+    ["newName","newAddress","newContract","newDesc","newPhone"].forEach(id => document.getElementById(id).value = "");
+    msg.innerHTML = "<span class='msg-ok'>✅ Project created!</span>";
+    setTimeout(() => msg.innerHTML = "", 3000);
+    loadProjects();
+  } catch(e) { msg.innerHTML = "<span class='msg-err'>Error: " + e.message + "</span>"; }
+  btn.disabled = false; btn.textContent = "Create Project";
+};
+
+/* ── DETAIL ── */
+window.openProject = async pid => {
+  currentPid = pid;
+  const snap = await getDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", pid));
+  if (!snap.exists()) { alert("Project not found."); return; }
+  const p = snap.data();
+  document.getElementById("listView").style.display   = "none";
+  document.getElementById("detailView").style.display = "block";
+  document.getElementById("dName").textContent = p.name;
+  document.getElementById("dAddr").textContent = p.address;
+  document.getElementById("dDesc").textContent = p.description || "";
+  const sb = document.getElementById("dStatus"); sb.textContent = p.status || "active"; sb.className = "sbadge sb-" + (p.status || "active");
+  setProgressUI(p.progress || 0);
+  document.getElementById("sumProgress").textContent = (p.progress || 0) + "%";
+  document.getElementById("sumStatus").textContent   = p.status || "active";
+  document.getElementById("sumContract").textContent = p.contractValue ? "$" + parseFloat(p.contractValue).toLocaleString() : "-";
+  checklistData = p.checklist || {};
+  if (isAdmin) {
+    document.getElementById("adminTabs").style.display  = "block";
+    document.getElementById("clientView").style.display = "none";
+    document.getElementById("eName").value     = p.name;
+    document.getElementById("eAddr").value     = p.address;
+    document.getElementById("eContract").value = p.contractValue || "";
+    document.getElementById("eDesc").value     = p.description || "";
+    document.getElementById("eStatus").value   = p.status || "active";
+    document.getElementById("ePhone").value    = p.clientPhone || "";
+    document.getElementById("eLang").value     = p.clientLang || "en";
+    switchAdminTab("progress"); renderAdminChecklist(); loadExpenses(); loadPhotos("adminPhotoGrid", true);
+  } else {
+    document.getElementById("adminTabs").style.display  = "none";
+    document.getElementById("clientView").style.display = "block";
+    switchClientTab("status"); renderClientChecklist(); loadClientExpenses(); loadPhotos("clientPhotoGrid", false);
+  }
+};
+
+window.backToList = () => { currentPid = null; document.getElementById("listView").style.display = "block"; document.getElementById("detailView").style.display = "none"; };
+
+function setProgressUI(val) {
+  document.getElementById("pbarFill").style.width = val + "%";
+  document.getElementById("pbarLbl").textContent  = val + "% Complete";
+  document.getElementById("pbarSub").textContent  = val === 100 ? "✅ Project complete!" : val === 0 ? "Not yet started" : "In progress";
+}
+
+window.saveEdit = async () => {
+  const btn = document.getElementById("saveEditBtn"); const msg = document.getElementById("editMsg");
+  btn.disabled = true; btn.textContent = "Saving...";
+  try {
+    const newStatus = document.getElementById("eStatus").value;
+    const oldSnap   = await getDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", currentPid));
+    const oldStatus = oldSnap.exists() ? oldSnap.data().status : "";
+    const phone     = document.getElementById("ePhone").value.trim();
+    const lang      = document.getElementById("eLang").value;
+    const addr      = document.getElementById("eAddr").value.trim();
+    await updateDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", currentPid), {
+      name:          document.getElementById("eName").value.trim(),
+      address:       addr,
+      contractValue: parseFloat(document.getElementById("eContract").value || 0),
+      description:   document.getElementById("eDesc").value.trim(),
+      status:        newStatus, clientPhone: phone, clientLang: lang,
+    });
+    if (newStatus !== oldStatus && phone) {
+      let cname = "there";
+      try { const cs = await getDocs(collection(db,"clients")); cs.forEach(d => { if(d.data().projectId===currentPid&&d.data().name) cname=d.data().name.split(" ")[0]; }); } catch{}
+      await autoSendSMS(phone, lang, newStatus, cname, addr);
+    }
+    msg.className = "msg-ok"; msg.textContent = "✅ Saved.";
+    openProject(currentPid);
+  } catch(e) { msg.className = "msg-err"; msg.textContent = "Error: " + e.message; }
+  btn.disabled = false; btn.textContent = "Save Changes";
+};
+
+window.deleteProject = async () => {
+  if (!confirm("Delete this project and ALL its data? Cannot be undone.")) return;
+  const e = await getDocs(collection(db,"projects",currentPid,"expenses")); for(const d of e.docs) await deleteDoc(d.ref);
+  const h = await getDocs(collection(db,"projects",currentPid,"photos"));   for(const d of h.docs) await deleteDoc(d.ref);
+  await deleteDoc(doc(db,"projects",currentPid)); loadProjects();
+};
+
+/* ── CHECKLIST ── */
+const CL = [
+  {cat:"Site & Permits",items:[{id:"permits",name:"Permits & Approvals",sub:"Building permits pulled and approved"},{id:"site_prep",name:"Site Preparation & Demo",sub:"Cleanup, demolition, debris removal"}]},
+  {cat:"Structural / Framing",items:[{id:"foundation",name:"Foundation Work",sub:"Footings, slab, or crawlspace"},{id:"framing",name:"Framing",sub:"Wall, floor, and roof framing"},{id:"sheathing",name:"Sheathing / Decking",sub:"OSB or plywood installed"},{id:"struct_insp",name:"Structural Inspection",sub:"Framing inspection passed"}]},
+  {cat:"Roofing & Exterior",items:[{id:"roof_tear",name:"Roof Tear-Off",sub:"Old roofing removed"},{id:"roof_install",name:"Roof Installation",sub:"New shingles, membrane, or metal"},{id:"flashing",name:"Flashing & Gutters",sub:"Flashing, drip edge, gutters installed"},{id:"siding",name:"Siding / Exterior Wrap",sub:"House wrap and siding installed"},{id:"windows",name:"Windows",sub:"Windows installed and sealed"},{id:"doors_ext",name:"Exterior Doors",sub:"Entry and exterior doors hung"},{id:"ext_paint",name:"Exterior Paint / Finish",sub:"Paint, stucco, or finish coat applied"}]},
+  {cat:"Rough-In Trades",items:[{id:"plumb_rough",name:"Plumbing Rough-In",sub:"Supply and drain lines installed"},{id:"elec_rough",name:"Electrical Rough-In",sub:"Wiring, panel, and boxes installed"},{id:"hvac_rough",name:"HVAC Rough-In",sub:"Ducts, lines, and units installed"},{id:"rough_insp",name:"Rough-In Inspections",sub:"All trade inspections passed"}]},
+  {cat:"Insulation",items:[{id:"insulation",name:"Insulation",sub:"Walls, attic, and crawlspace insulated"},{id:"insul_insp",name:"Insulation Inspection",sub:"Inspection passed"}]},
+  {cat:"Drywall",items:[{id:"drywall_hang",name:"Drywall Hanging",sub:"Drywall sheets hung throughout"},{id:"drywall_tape",name:"Taping & Mudding",sub:"Tape, mud, and finish coats applied"},{id:"drywall_sand",name:"Sanding & Priming",sub:"Smooth finish and primer coat"}]},
+  {cat:"Flooring",items:[{id:"subfloor",name:"Subfloor Preparation",sub:"Leveling, patching, underlayment"},{id:"tile_floor",name:"Tile Installation",sub:"Tile flooring and grouting"},{id:"hardwood",name:"Hardwood / LVP Flooring",sub:"Wood or LVP planks installed"},{id:"carpet",name:"Carpet",sub:"Carpet and padding installed"},{id:"floor_trim",name:"Floor Transitions & Trim",sub:"Transition strips and base trim"}]},
+  {cat:"Kitchen",items:[{id:"kitchen_cab",name:"Kitchen Cabinets",sub:"Upper and lower cabinets installed"},{id:"countertops",name:"Countertops",sub:"Stone, laminate, or butcher block"},{id:"backsplash",name:"Backsplash",sub:"Tile or panel backsplash installed"},{id:"kitchen_sink",name:"Kitchen Sink & Faucet",sub:"Sink, faucet, and disposal installed"},{id:"appliances",name:"Appliances",sub:"Stove, fridge, dishwasher, microwave"}]},
+  {cat:"Bathrooms",items:[{id:"bath_tile",name:"Bathroom Tile",sub:"Floor and shower / tub tile"},{id:"bath_vanity",name:"Vanity & Sink",sub:"Vanity, sink, and faucet installed"},{id:"toilet",name:"Toilet",sub:"Toilet installed and operational"},{id:"shower_tub",name:"Shower / Tub",sub:"Shower or tub installed"},{id:"bath_access",name:"Mirror & Accessories",sub:"Mirror, towel bars, toilet paper holder"}]},
+  {cat:"Interior Finishes",items:[{id:"int_doors",name:"Interior Doors",sub:"All interior doors hung and trimmed"},{id:"trim_base",name:"Trim & Baseboards",sub:"Window / door casings and baseboards"},{id:"int_paint",name:"Interior Painting",sub:"All rooms painted and finished"},{id:"closets",name:"Closet Shelving",sub:"Shelves, rods, and organizers installed"}]},
+  {cat:"Mechanical Finishes",items:[{id:"plumb_fin",name:"Plumbing Finish",sub:"All fixtures, valves, and connections"},{id:"elec_fin",name:"Electrical Finish",sub:"Outlets, switches, and fixtures installed"},{id:"hvac_fin",name:"HVAC Finish",sub:"Vents, thermostats, equipment startup"}]},
+  {cat:"Final Steps",items:[{id:"cleaning",name:"Final Cleaning",sub:"Deep clean of entire space"},{id:"punch_list",name:"Punch List Completion",sub:"All final items corrected"},{id:"final_insp",name:"Final Inspection",sub:"Certificate of occupancy or sign-off"},{id:"client_walk",name:"Client Walkthrough",sub:"Owner walkthrough and approval"},{id:"handoff",name:"Project Complete",sub:"Keys and handoff to client"}]},
+];
+
+function renderAdminChecklist() {
+  const body = document.getElementById("adminChecklistBody"); body.innerHTML = "";
+  CL.forEach(sec => {
+    const cat  = document.createElement("div"); cat.className = "cl-category";
+    const done = sec.items.filter(i => checklistData[i.id] && checklistData[i.id].done).length;
+    cat.innerHTML = "<div class='cl-cat-header'><span>" + sec.cat + "</span><span class='cl-cat-count'>" + done + " / " + sec.items.length + "</span></div>";
+    sec.items.forEach(item => {
+      const s  = checklistData[item.id] || {done:false,note:""};
+      const el = document.createElement("div"); el.className = "cl-item" + (s.done ? " done" : ""); el.id = "ci-" + item.id;
+      el.innerHTML = "<div class='cl-item-row' onclick=\"toggleItem('" + item.id + "')\">" + "<div class='cl-box'><span class='cl-check'>✓</span></div>" + "<div><div class='cl-name'>" + item.name + "</div><div class='cl-sub'>" + item.sub + "</div></div></div>" + "<div class='cl-note-row'><input type='text' id='cn-" + item.id + "' placeholder='Add a note for the client (optional)' value='" + (s.note || "").replace(/'/g, "&#39;") + "'></div>";
+      cat.appendChild(el);
+    });
+    body.appendChild(cat);
+  });
+}
+
+function renderClientChecklist() {
+  const body = document.getElementById("clientChecklistBody"); body.innerHTML = "";
+  CL.forEach(sec => {
+    const cat = document.createElement("div"); cat.className = "cl-client-category";
+    cat.innerHTML = "<div class='cl-client-cat-title'>" + sec.cat + "</div>";
+    sec.items.forEach(item => {
+      const s   = checklistData[item.id] || {done:false,note:""};
+      const div = document.createElement("div"); div.className = "cl-client-item" + (s.done ? " done" : "");
+      div.innerHTML = "<div style='font-size:.95rem;flex-shrink:0;margin-top:.05rem'>" + (s.done ? "✅" : "⬜") + "</div><div><div class='cl-client-name'>" + item.name + "</div>" + (s.note ? "<div class='cl-client-note'>📝 " + s.note + "</div>" : "") + "</div>";
+      cat.appendChild(div);
+    });
+    body.appendChild(cat);
+  });
+}
+
+window.toggleItem = id => {
+  if (!checklistData[id]) checklistData[id] = {done:false,note:""};
+  checklistData[id].done = !checklistData[id].done;
+  const el = document.getElementById("ci-" + id);
+  if (el) el.className = "cl-item" + (checklistData[id].done ? " done" : "");
+};
+
+window.saveChecklist = async () => {
+  const btn = document.getElementById("saveClBtn"); const msg = document.getElementById("clSaveMsg");
+  btn.disabled = true; btn.textContent = "Saving...";
+  CL.forEach(sec => sec.items.forEach(item => {
+    const noteEl = document.getElementById("cn-" + item.id);
+    if (noteEl) { if (!checklistData[item.id]) checklistData[item.id] = {done:false,note:""}; checklistData[item.id].note = noteEl.value.trim(); }
+  }));
+  let total = 0, done = 0;
+  CL.forEach(sec => sec.items.forEach(item => { total++; if (checklistData[item.id] && checklistData[item.id].done) done++; }));
+  const progress = Math.round((done / total) * 100);
+  await updateDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", currentPid), {checklist: checklistData, progress});
+  setProgressUI(progress);
+  document.getElementById("sumProgress").textContent = progress + "%";
+  msg.textContent = "✅ Saved! Progress: " + progress + "%";
+  setTimeout(() => msg.textContent = "", 3000);
+  btn.disabled = false; btn.textContent = "Save Checklist";
+  renderAdminChecklist();
+  // Auto SMS at milestones
+  try {
+    const ps = await getDoc(doc(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects", currentPid));
+    if (ps.exists()) {
+      const pd = ps.data();
+      if (pd.clientPhone && [25,50,75,100].includes(progress)) {
+        let cname = "there";
+        try { const cs = await getDocs(collection(db,"clients")); cs.forEach(d => { if(d.data().projectId===currentPid&&d.data().name) cname=d.data().name.split(" ")[0]; }); } catch{}
+        await autoSendSMS(pd.clientPhone, pd.clientLang || "en", "p" + progress, cname, pd.address);
+      }
+    }
+  } catch{}
+};
+
+/* ── EXPENSES ── */
+async function loadExpenses() {
+  const list = document.getElementById("expList"); list.innerHTML = "<div class='spin-wrap'><div class='spinner'></div></div>";
+  try { const s = await getDocs(collection(db,"projects",currentPid,"expenses")); renderExp(s,"expList","expTotal",true); } catch(e) { document.getElementById("expList").innerHTML="<p class='empty-txt' style='color:#e08080'>Error: "+e.message+"</p>"; }
+}
+async function loadClientExpenses() {
+  const list = document.getElementById("clientExpList"); list.innerHTML = "<div class='spin-wrap'><div class='spinner'></div></div>";
+  try { const s = await getDocs(collection(db,"projects",currentPid,"expenses")); renderExp(s,"clientExpList","clientExpTotal",false); } catch{}
+}
+function renderExp(snap,listId,totId,canDel) {
+  const list = document.getElementById(listId); list.innerHTML = "";
+  if (!snap||snap.empty){list.innerHTML="<p class='empty-txt'>No expenses yet.</p>";document.getElementById(totId).textContent="$0.00";return;}
+  let total=0;
+  const docs=[...snap.docs].sort((a,b)=>(b.data().date||"")>(a.data().date||"")?-1:1).reverse();
+  docs.forEach(ds=>{
+    const e=ds.data(); total+=parseFloat(e.amount||0);
+    const div=document.createElement("div"); div.className="exp-row";
+    div.innerHTML="<div class='exp-info'><span class='exp-cat'>"+e.category+"</span><span class='exp-desc'>"+e.description+"</span><span class='exp-date'>"+e.date+"</span></div><div class='exp-right'><span class='exp-amt'>$"+parseFloat(e.amount).toFixed(2)+"</span>"+(canDel?"<button class='del-sm' onclick=\"deleteExpense('"+ds.id+"')\">✕</button>":"")+"</div>";
+    list.appendChild(div);
+  });
+  document.getElementById(totId).textContent="$"+total.toFixed(2);
+}
+window.addExpense = async () => {
+  const desc=document.getElementById("expDesc").value.trim(),amt=document.getElementById("expAmt").value,date=document.getElementById("expDate").value;
+  if(!desc||!amt||!date){alert("Fill all expense fields.");return;}
+  const btn=document.getElementById("addExpBtn"); btn.disabled=true; btn.textContent="Adding...";
+  await addDoc(collection(db,"projects",currentPid,"expenses"),{category:document.getElementById("expCat").value,description:desc,amount:parseFloat(amt),date,createdAt:serverTimestamp()});
+  document.getElementById("expDesc").value=document.getElementById("expAmt").value=document.getElementById("expDate").value="";
+  btn.disabled=false; btn.textContent="Add Expense"; loadExpenses();
+};
+window.deleteExpense = async id=>{if(!confirm("Remove this expense?"))return;await deleteDoc(doc(db,"projects",currentPid,"expenses",id));loadExpenses();};
+
+/* ── PHOTOS ── */
+async function loadPhotos(gridId,canDel) {
+  const grid=document.getElementById(gridId); grid.innerHTML="<div class='spin-wrap'><div class='spinner'></div></div>";
+  try {
+    const snap=await getDocs(collection(db,"projects",currentPid,"photos"));
+    grid.innerHTML="";
+    if(snap.empty){grid.innerHTML="<p class='empty-txt'>No photos yet.</p>";return;}
+    snap.forEach(ds=>{
+      const ph=ds.data(); const isPDF=ph.name&&ph.name.toLowerCase().endsWith(".pdf");
+      const div=document.createElement("div"); div.className="photo-item";
+      if(isPDF){
+        div.innerHTML="<div class='pbadge "+ph.type+"'>"+ph.type+"</div><div style='width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;cursor:pointer' onclick=\"downloadFile('"+ds.id+"')\"><div style='font-size:2rem'>📄</div><div style='font-size:.7rem;color:var(--mid);text-align:center;padding:0 .5rem'>"+( ph.name||"document.pdf")+"</div><div style='font-size:.68rem;color:var(--accent)'>Tap to download</div></div>"+(canDel?"<button class='del-photo' onclick=\"deletePhoto('"+ds.id+"')\">✕</button>":"");
+      } else {
+        const badge=document.createElement("div"); badge.className="pbadge "+ph.type; badge.textContent=ph.type;
+        const img=document.createElement("img"); img.alt=ph.type; img.loading="lazy"; img.style.cssText="width:100%;height:100%;object-fit:cover;cursor:zoom-in";
+        if(ph.data) img.src=ph.data;
+        img.onclick=()=>{document.getElementById("photoOverlayImg").src=ph.data||"";document.getElementById("photoOverlay").style.display="flex";};
+        div.appendChild(badge); div.appendChild(img);
+        if(canDel){const d=document.createElement("button");d.className="del-photo";d.textContent="✕";d.onclick=()=>deletePhoto(ds.id);div.appendChild(d);}
+      }
+      grid.appendChild(div);
+    });
+  } catch(e){grid.innerHTML="<p class='empty-txt' style='color:#e08080'>Error: "+e.message+"</p>";}
+}
+window.uploadPhoto = async()=>{
+  const file=document.getElementById("photoFile").files[0]; const type=document.getElementById("photoType").value; const msg=document.getElementById("uploadMsg");
+  if(!file){alert("Select a file first.");return;}
+  const isPDF=file.name.toLowerCase().endsWith(".pdf"); const maxSize=isPDF?3000000:1500000;
+  if(file.size>maxSize){alert(isPDF?"PDF must be under 3MB.":"Image must be under 1.5MB. Compress at squoosh.app");return;}
+  const btn=document.getElementById("uploadBtn"); btn.disabled=true; btn.textContent="Uploading..."; msg.textContent="Reading file...";
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    try{
+      await addDoc(collection(db,"projects",currentPid,"photos"),{type,data:e.target.result,name:file.name,isPDF,createdAt:serverTimestamp()});
+      document.getElementById("photoFile").value=""; msg.textContent=isPDF?"✅ PDF uploaded!":"✅ Photo uploaded!";
+      loadPhotos("adminPhotoGrid",true);
+    }catch(err){msg.textContent="Error: "+err.message;}
+    btn.disabled=false; btn.textContent="Upload";
+  };
+  reader.readAsDataURL(file);
+};
+window.downloadFile=async id=>{const s=await getDoc(doc(db,"projects",currentPid,"photos",id));if(!s.exists())return;const ph=s.data();const a=document.createElement("a");a.href=ph.data;a.download=ph.name||"document.pdf";document.body.appendChild(a);a.click();document.body.removeChild(a);};
+window.deletePhoto=async id=>{if(!confirm("Delete this photo?"))return;await deleteDoc(doc(db,"projects",currentPid,"photos",id));loadPhotos("adminPhotoGrid",true);};
+window.closeOverlay=()=>{document.getElementById("photoOverlay").style.display="none";};
+
+/* ── CLIENTS ── */
+async function loadClients() {
+  const list=document.getElementById("clientList"); list.innerHTML="<div class='spin-wrap'><div class='spinner'></div></div>";
+  const projSnap=await getDocs(collection(db,"projects")); const projects=[];
+  projSnap.forEach(ds=>projects.push({id:ds.id,name:ds.data().name})); projects.sort((a,b)=>a.name.localeCompare(b.name));
+  const clientSnap=await getDocs(collection(db,"clients")); list.innerHTML="";
+  if(clientSnap.empty){list.innerHTML="<p class='empty-txt'>No client accounts yet.</p>";return;}
+  clientSnap.forEach(ds=>{
+    const c=ds.data(); const cid=ds.id; const assigned=!!c.projectId;
+    const opts=projects.map(p=>"<option value='"+p.id+"'"+(c.projectId===p.id?" selected":"")+">"+p.name+"</option>").join("");
+    const div=document.createElement("div"); div.className="client-row";
+    div.innerHTML="<div class='client-info'><div class='client-email'>"+(c.name||"")+" <span style='font-weight:400;color:var(--mid)'>&lt;"+c.email+"&gt;</span></div><div class='client-sub'>"+(assigned?"📁 "+c.projectName:"⏳ Awaiting project assignment")+"</div></div>"+"<span class='client-pill "+(assigned?"cp-assigned":"cp-pending")+"'>"+(assigned?"Assigned":"Pending")+"</span>"+"<div class='client-actions'><select id='psel-"+cid+"'><option value=''>Select project</option>"+opts+"</select>"+"<button class='btn-p' style='margin-top:0;padding:.35rem .9rem' onclick=\"assignProject('"+cid+"','"+c.email+"')\">Assign</button>"+"<button class='btn-p' style='margin-top:0;padding:.35rem .9rem;background:var(--red)' onclick=\"removeClient('"+cid+"')\">Remove</button></div>";
+    list.appendChild(div);
+  });
+}
+window.assignProject=async(cid,email)=>{
+  const sel=document.getElementById("psel-"+cid); const pid=sel.value;
+  if(!pid){alert("Select a project first.");return;}
+  const ps=await getDoc(doc(db,"projects",pid)); if(!ps.exists()){alert("Project not found.");return;}
+  await updateDoc(doc(db,"clients",cid),{projectId:pid,projectName:ps.data().name});
+  alert("✅ Project assigned to "+email+".");
+  loadClients();
+};
+window.removeClient=async id=>{if(!confirm("Remove this client?"))return;await deleteDoc(doc(db,"clients",id));loadClients();};
+
+/* ── UI ── */
+window.showSection=(id,btn)=>{
+  document.querySelectorAll(".psection").forEach(s=>s.classList.remove("active"));
+  document.querySelectorAll(".pnav-btn").forEach(b=>b.classList.remove("active"));
+  document.getElementById("section-"+id).classList.add("active");
+  if(btn)btn.classList.add("active");
+  if(id==="clients")loadClients();
+};
+window.switchAdminTab=id=>{
+  ["progress","edit","expenses","photos"].forEach(t=>{document.getElementById("atab-"+t).classList.toggle("active",t===id);document.getElementById("apanel-"+t).classList.toggle("active",t===id);});
+};
+window.switchClientTab=id=>{
+  ["status","expenses","photos"].forEach(t=>{document.getElementById("ctab-"+t).classList.toggle("active",t===id);document.getElementById("cpanel-"+t).classList.toggle("active",t===id);});
+};
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.getElementById("authScreen").style.display !== "none") doLogin();
+  if (e.key === "Escape") closeOverlay();
+});
+</script>
+</body>
+</html>
