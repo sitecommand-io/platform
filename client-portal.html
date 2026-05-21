@@ -254,7 +254,7 @@
       <button class="auth-btn" id="signupBtn" onclick="doSignup()">Create Account</button>
       <div class="auth-err" id="signupErr"></div>
     </div>
-    <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:1.4rem">Questions? <a href="mailto:info@alisignatureconstruction.com" style="color:var(--accent)">info@alisignatureconstruction.com</a></p>
+    <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:1.4rem">Questions? <a href="mailto:" + (localStorage.getItem("sc_admin_email") || "support@sitecommand.net") + "" style="color:var(--accent)">" + (localStorage.getItem("sc_admin_email") || "support@sitecommand.net") + "</a></p>
   </div>
 </div>
 
@@ -513,7 +513,7 @@
       <h2 class="section-title">Client Accounts</h2>
       <div class="info-box" style="margin-bottom:1.25rem">
         <strong>How it works:</strong> Client creates their account on the portal. They appear below as Pending. Pick their project and click Assign. They instantly see their project.<br><br>
-        <strong>Portal URL:</strong> <code>alisignatureconstruction.com/portal.html</code>
+        <strong>Portal URL:</strong> <code>" + (localStorage.getItem("sc_slug")||"your-company") + ".sitecommand.net/portal</code>
       </div>
       <div class="panel"><div class="panel-label">Pending &amp; Active Clients</div><div id="clientList"></div></div>
     </div>
