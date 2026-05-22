@@ -544,8 +544,9 @@ const FB = {
 // Get contractor info from URL slug
 const urlSlug = window.location.hostname.replace('.sitecommand.net','') || 
                 localStorage.getItem('sc_slug') || '';
+// Get contractor email from localStorage (injected by worker) or from URL
 const CONTRACTOR_EMAIL = localStorage.getItem('sc_admin_email') || '';
-const ADMIN = CONTRACTOR_EMAIL;
+const ADMIN = CONTRACTOR_EMAIL; // empty string = no admin bypass (safe default)
 const COMPANY_COLOR = localStorage.getItem('sc_color') || '#c8a96e';
 const app   = initializeApp(FB);
 const auth  = getAuth(app);
@@ -624,15 +625,11 @@ const AUTO_SMS = {
 onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (!user) { showScreen("auth"); return; }
-  isAdmin = user.email.toLowerCase() === ADMIN.toLowerCase();
+  isAdmin = ADMIN && user.email && user.email.toLowerCase() === ADMIN.toLowerCase();
   if (isAdmin) { showPortal(); return; }
-  try {
-    const snap = await getDocs(collection(db, "clients"));
-    let found = null;
-    snap.forEach(ds => { if (ds.data().uid === user.uid) found = ds.data(); });
-    if (found && found.projectId) { showPortal(); }
-    else { document.getElementById("pendingEmail").textContent = "We will notify you at " + user.email; showScreen("pending"); }
-  } catch(e) { console.log("client check:", e.message); showPortal(); }
+  // Any authenticated user can view the portal
+  // They will only see projects assigned to them
+  showPortal();
 });
 
 function showScreen(n) {
@@ -871,7 +868,27 @@ async function loadSmsContacts() {
   const sel = document.getElementById("smsContactPick");
   if (!sel) return;
   try {
-    const projSnap = await getDocs(collection(db, "contractors", (localStorage.getItem("sc_slug")||"default"), "projects"));
+    // Find contractor document - try UID first, then slug
+    const slug = localStorage.getItem('sc_slug') || urlSlug || '';
+    const uid  = localStorage.getItem('sc_uid')  || '';
+    let contractorDocId = uid || slug;
+    
+    // If we have a UID, use it directly
+    // If we only have slug, search for the matching document
+    if (!uid && slug) {
+      try {
+        const allContractors = await getDocs(collection(db, 'contractors'));
+        allContractors.forEach(d => {
+          const data = d.data();
+          if (data.slug === slug || data.uid === slug) {
+            contractorDocId = d.id;
+          }
+        });
+      } catch(e) { console.log('Contractor lookup:', e.message); }
+    }
+    
+    console.log('Loading projects for contractor:', contractorDocId);
+    const projSnap = await getDocs(collection(db, "contractors", contractorDocId, "projects"));
     projSnap.forEach(ds => {
       const p = ds.data();
       if (p.clientPhone) {
