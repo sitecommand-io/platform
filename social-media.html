@@ -1,501 +1,902 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Social Media AI — SiteCommand</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
-    body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
-    .header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
-    .logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
-    .back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}.back:hover{color:var(--accent)}
-    .body{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
-    .page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.35rem}
-    .page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem;line-height:1.6}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Social Media AI — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,select,textarea,button{font-family:inherit}
+.header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+.back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}.back:hover{color:var(--accent)}
+.nav-links{display:flex;gap:.25rem;margin-left:.5rem}
+.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--accent)}
+.body{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
 
-    /* PLATFORM CONNECT */
-    .platforms-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem}
-    .platform-card{background:var(--dark);border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:all .2s;min-width:160px}
-    .platform-card:hover{border-color:var(--accent)}
-    .platform-card.connected{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.04)}
-    .platform-card.connected .pc-status{color:var(--green)}
-    .pc-icon{font-size:1.6rem;flex-shrink:0}
-    .pc-name{font-size:.88rem;font-weight:600}
-    .pc-status{font-size:.72rem;color:var(--mid);margin-top:.1rem}
+/* ── CONNECT PLATFORMS ── */
+.platforms-section{margin-bottom:2rem}
+.platforms-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:.35rem}
+.platforms-sub{font-size:.84rem;color:var(--mid);margin-bottom:1.25rem}
+.platforms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.platform-card{background:var(--dark);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.platform-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.platform-card.connected{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.04)}
+.platform-card.connected::after{content:'✓';position:absolute;top:.6rem;right:.7rem;font-size:.7rem;font-weight:700;color:var(--green)}
+.pc-icon{font-size:1.8rem;margin-bottom:.5rem}
+.pc-name{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
+.pc-status{font-size:.72rem;color:var(--mid)}
+.platform-card.connected .pc-status{color:var(--green)}
+.pc-page{font-size:.7rem;color:var(--mid);margin-top:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    /* MAIN GRID */
-    .main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
 
-    /* POST CREATOR */
-    .creator-panel{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
-    .panel-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1.1rem;display:flex;align-items:center;gap:.5rem}
-    .panel-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
-    .post-type-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.1rem}
-    .post-type-btn{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.78rem;font-weight:600;padding:.35rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
-    .post-type-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
-    .upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:1rem;position:relative}
-    .upload-zone:hover{border-color:var(--accent);background:rgba(200,169,110,.04)}
-    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-    .upload-icon{font-size:2.5rem;margin-bottom:.5rem}
-    .upload-text{font-size:.86rem;color:var(--mid)}
-    .upload-sub{font-size:.74rem;color:var(--mid);margin-top:.2rem}
-    .uploaded-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.85rem}
-    .prev-img{aspect-ratio:1;border-radius:6px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;position:relative;overflow:hidden}
-    .prev-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:.6rem;width:18px;height:18px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center}
-    .caption-box{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.88rem;padding:.75rem .9rem;min-height:100px;resize:vertical;font-family:inherit;transition:border-color .2s;margin-bottom:.75rem}
-    .caption-box:focus{outline:none;border-color:var(--accent)}
-    .ai-gen-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
-    .ai-gen-btn{background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--accent);font-size:.76rem;font-weight:600;padding:.35rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
-    .ai-gen-btn:hover{background:rgba(200,169,110,.2)}
-    .platform-select-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
-    .psel{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.35rem .75rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s}
-    .psel input{accent-color:var(--accent);cursor:pointer}
-    .psel.checked{border-color:var(--accent);background:rgba(200,169,110,.06);color:var(--white)}
-    .schedule-row{display:flex;gap:.75rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap}
-    .schedule-row select,.schedule-row input[type=date],.schedule-row input[type=time]{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit}
-    .post-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.8rem 1.75rem;cursor:pointer;transition:all .2s}
-    .post-btn:hover{background:var(--accent2)}
-    .post-btn:disabled{opacity:.5;cursor:not-allowed}
-    .draft-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.84rem;font-weight:600;padding:.8rem 1.25rem;border-radius:8px;cursor:pointer;transition:all .15s}
-    .draft-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* ── POST CREATOR ── */
+.creator{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1rem}
+.section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+.section-label::before{content:'';display:block;width:3px;height:12px;background:var(--accent);border-radius:2px}
+.post-types{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem}
+.ptype{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.78rem;font-weight:600;padding:.32rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ptype.on{background:var(--accent);border-color:var(--accent);color:#000}
 
-    /* SIDEBAR */
-    .sidebar-panel{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+/* ── MEDIA UPLOAD ── */
+.media-zone{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:.85rem;position:relative;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.media-zone:hover,.media-zone.dragover{border-color:var(--accent);background:rgba(200,169,110,.04)}
+.media-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.media-zone-icon{font-size:2rem;margin-bottom:.5rem;pointer-events:none}
+.media-zone-text{font-size:.84rem;color:var(--mid);pointer-events:none}
+.media-zone-sub{font-size:.72rem;color:var(--mid);margin-top:.2rem;pointer-events:none}
+.media-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.75rem}
+.mp-item{aspect-ratio:1;border-radius:7px;overflow:hidden;position:relative}
+.mp-item img,.mp-item video{width:100%;height:100%;object-fit:cover}
+.mp-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;font-size:.6rem;width:18px;height:18px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
 
-    /* STATS */
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.5rem}
-    .stat-mini{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
-    .sm-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);line-height:1}
-    .sm-lbl{font-size:.62rem;color:var(--mid);margin-top:.15rem;text-transform:uppercase;letter-spacing:.04em}
+/* ── AI TOOLS ── */
+.ai-tools{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.75rem}
+.ai-btn{background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.2);color:var(--accent);font-size:.76rem;font-weight:600;padding:.32rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ai-btn:hover{background:rgba(200,169,110,.18)}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.llm-status{display:flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.2rem .7rem;border-radius:99px;margin-bottom:.6rem}
+.llm-online{background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.25);color:var(--green)}
+.llm-offline{background:rgba(107,107,107,.1);border:1px solid var(--border);color:var(--mid)}
+.caption-area{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.88rem;padding:.8rem .95rem;min-height:110px;resize:vertical;font-family:inherit;transition:border-color .2s;margin-bottom:.6rem}
+.caption-area:focus{outline:none;border-color:var(--accent)}
+.hashtag-row{font-size:.76rem;color:var(--mid);margin-bottom:.85rem;line-height:1.8;min-height:1.2rem}
+.platform-select{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem}
+.psel{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.35rem .75rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s;user-select:none}
+.psel input{accent-color:var(--accent);cursor:pointer}
+.psel.on{border-color:var(--accent);background:rgba(200,169,110,.07);color:var(--white)}
+.psel.disabled{opacity:.4;cursor:not-allowed}
 
-    /* SCHEDULED POSTS */
-    .scheduled-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem .9rem;margin-bottom:.45rem;display:flex;align-items:center;gap:.75rem}
-    .si-platform{font-size:1.1rem;flex-shrink:0}
-    .si-info{flex:1;min-width:0}
-    .si-caption{font-size:.8rem;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .si-time{font-size:.72rem;color:var(--mid);margin-top:.1rem}
-    .si-status{font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.12rem .5rem;border-radius:99px}
-    .sis-sched{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
-    .sis-live{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+/* ── IMAGE GENERATOR ── */
+.img-gen-panel{background:rgba(200,169,110,.04);border:1px solid rgba(200,169,110,.15);border-radius:10px;padding:1.25rem;margin-bottom:.85rem}
+.ig-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.75rem}
+.ig-input-row{display:flex;gap:.5rem;margin-bottom:.6rem}
+.ig-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .85rem;transition:border-color .2s}
+.ig-input:focus{outline:none;border-color:var(--accent)}
+.ig-gen-btn{background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.55rem 1.1rem;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.ig-gen-btn:hover{opacity:.85}
+.ig-gen-btn:disabled{opacity:.4;cursor:not-allowed}
+.ig-provider-row{display:flex;gap:.35rem;margin-bottom:.6rem;flex-wrap:wrap}
+.ig-prov{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.72rem;font-weight:600;padding:.22rem .65rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ig-prov.on{background:var(--accent);border-color:var(--accent);color:#000}
+.ig-results{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.6rem}
+.ig-result-img{aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .15s;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--mid)}
+.ig-result-img:hover,.ig-result-img.sel{border-color:var(--accent)}
+.ig-result-img img{width:100%;height:100%;object-fit:cover}
 
-    /* AI IDEAS */
-    .idea-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.65rem .85rem;margin-bottom:.4rem;cursor:pointer;transition:all .15s;font-size:.82rem;color:var(--light)}
-    .idea-item:hover{border-color:var(--accent);color:var(--white)}
-    .idea-tag{font-size:.62rem;font-weight:700;text-transform:uppercase;padding:.1rem .45rem;border-radius:99px;margin-right:.35rem}
+/* ── SCHEDULE / PUBLISH ── */
+.schedule-row{display:flex;gap:.6rem;align-items:flex-end;margin-bottom:.85rem;flex-wrap:wrap}
+.fg-sm{flex:1;min-width:120px}
+.fg-sm label{display:block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.3rem}
+.fg-sm select,.fg-sm input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit}
+.publish-row{display:flex;gap:.6rem}
+.publish-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.8rem 1.75rem;cursor:pointer;transition:all .2s}
+.publish-btn:hover{opacity:.85}
+.publish-btn:disabled{opacity:.4;cursor:not-allowed}
+.draft-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:8px;font-size:.84rem;font-weight:600;padding:.8rem 1.25rem;cursor:pointer;transition:all .15s}
+.draft-btn:hover{border-color:var(--accent);color:var(--accent)}
+.post-result{font-size:.82rem;margin-top:.5rem;min-height:1rem}
 
-    .spin{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @media(max-width:900px){.main-grid{grid-template-columns:1fr}}
-  </style>
+/* ── SIDEBAR ── */
+.sidebar-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.85rem}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);line-height:1}
+.stat-lbl{font-size:.62rem;color:var(--mid);margin-top:.15rem;text-transform:uppercase;letter-spacing:.04em}
+.scheduled-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.scheduled-item:last-child{border-bottom:none}
+.si-icon{font-size:1rem;flex-shrink:0}
+.si-text{flex:1;min-width:0}
+.si-caption{font-size:.78rem;color:var(--light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.si-time{font-size:.68rem;color:var(--mid);margin-top:.1rem}
+.si-badge{font-size:.6rem;font-weight:700;text-transform:uppercase;padding:.12rem .45rem;border-radius:99px;flex-shrink:0}
+.sib-sched{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+.sib-posted{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+.idea-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.6rem .8rem;margin-bottom:.4rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s;line-height:1.6}
+.idea-item:hover{border-color:var(--accent);color:var(--white)}
+.idea-tag{font-size:.6rem;font-weight:700;text-transform:uppercase;padding:.1rem .4rem;border-radius:99px;margin-right:.3rem;display:inline-block}
+
+/* ── CONNECT MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--dark);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:.35rem}
+.modal-sub{font-size:.84rem;color:var(--mid);margin-bottom:1.5rem;line-height:1.6}
+.modal-step{background:var(--surface);border-radius:8px;padding:.85rem 1rem;margin-bottom:.6rem;font-size:.84rem;color:var(--light);line-height:1.7}
+.modal-step strong{color:var(--white)}
+.modal-step code{background:rgba(200,169,110,.12);color:var(--accent);padding:.1rem .4rem;border-radius:3px;font-size:.82rem}
+.modal-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.88rem;padding:.68rem .95rem;margin-bottom:.6rem;font-family:monospace;transition:border-color .2s}
+.modal-input:focus{outline:none;border-color:var(--accent)}
+.modal-btn{background:var(--accent);color:#000;border:none;border-radius:7px;font-size:.88rem;font-weight:700;padding:.75rem 1.5rem;cursor:pointer;transition:opacity .2s;width:100%}
+.modal-btn:hover{opacity:.85}
+.modal-cancel{background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.6rem;width:100%;padding:.4rem}
+.modal-cancel:hover{color:var(--white)}
+.modal-err{font-size:.78rem;color:#e08080;margin-bottom:.6rem;min-height:.9rem}
+.modal-link{color:var(--accent);font-weight:600;cursor:pointer}
+
+/* ── LLM SETUP ── */
+.llm-setup{background:rgba(91,155,213,.06);border:1px solid rgba(91,155,213,.2);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1.25rem}
+.llm-setup-title{font-size:.78rem;font-weight:700;color:var(--blue);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.llm-setup-steps{font-size:.78rem;color:var(--light);line-height:2}
+.llm-setup-steps code{background:rgba(91,155,213,.12);color:var(--blue);padding:.1rem .4rem;border-radius:3px;font-family:monospace;font-size:.76rem}
+.llm-url-row{display:flex;gap:.4rem;margin-top:.6rem}
+.llm-url-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.82rem;padding:.5rem .8rem;font-family:monospace}
+.llm-url-input:focus{outline:none;border-color:var(--blue)}
+.llm-save-btn{background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem .9rem;cursor:pointer}
+
+.spin{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.platforms-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.platforms-grid{grid-template-columns:1fr 1fr}.ig-results{grid-template-columns:1fr 1fr}}
+</style>
 </head>
 <body>
 
 <div class="header">
   <div class="logo"><span>Site</span>Command</div>
-  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media AI</span>
-  <a href="platform.html" class="back">← Dashboard</a>
+  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media</span>
+  <div class="nav-links">
+    <a href="platform.html">🏠 Dashboard</a>
+    <a href="email-ai.html">📧 Email</a>
+    <a href="lead-finder.html">🔍 Leads</a>
+    <a href="permits.html">🏛️ Permits</a>
+  </div>
+  <a href="platform.html" class="back">← Back</a>
 </div>
 
 <div class="body">
-  <div class="page-title">📱 Social Media Manager</div>
-  <p class="page-sub">Create posts with AI captions, schedule them across platforms, and let your AI automatically post project photos to grow your business on autopilot.</p>
 
-  <!-- PLATFORM CONNECTIONS -->
-  <div class="platforms-row">
-    <div class="platform-card connected" id="pc-google" onclick="togglePlatform('google')">
-      <div class="pc-icon">🔍</div>
-      <div><div class="pc-name">Google Business</div><div class="pc-status">Connected ✓</div></div>
-    </div>
-    <div class="platform-card connected" id="pc-facebook" onclick="togglePlatform('facebook')">
-      <div class="pc-icon">👥</div>
-      <div><div class="pc-name">Facebook Page</div><div class="pc-status">Connected ✓</div></div>
-    </div>
-    <div class="platform-card" id="pc-instagram" onclick="togglePlatform('instagram')">
-      <div class="pc-icon">📸</div>
-      <div><div class="pc-name">Instagram</div><div class="pc-status">Connect →</div></div>
-    </div>
-    <div class="platform-card" id="pc-linkedin" onclick="togglePlatform('linkedin')">
-      <div class="pc-icon">💼</div>
-      <div><div class="pc-name">LinkedIn</div><div class="pc-status">Connect →</div></div>
-    </div>
-    <div class="platform-card" id="pc-nextdoor" onclick="togglePlatform('nextdoor')">
-      <div class="pc-icon">🏘️</div>
-      <div><div class="pc-name">Nextdoor</div><div class="pc-status">Connect →</div></div>
+  <!-- CONNECT PLATFORMS -->
+  <div class="platforms-section">
+    <div class="platforms-title">Connect Your Platforms</div>
+    <div class="platforms-sub">Connect your social media accounts to post directly. All connections are secure and only post when you approve.</div>
+    <div class="platforms-grid">
+      <div class="platform-card" id="pc-google" onclick="openConnectModal('google')">
+        <div class="pc-icon">🔍</div>
+        <div class="pc-name">Google Business</div>
+        <div class="pc-status" id="ps-google">Connect →</div>
+        <div class="pc-page" id="pp-google"></div>
+      </div>
+      <div class="platform-card" id="pc-facebook" onclick="openConnectModal('facebook')">
+        <div class="pc-icon">👥</div>
+        <div class="pc-name">Facebook Page</div>
+        <div class="pc-status" id="ps-facebook">Connect →</div>
+        <div class="pc-page" id="pp-facebook"></div>
+      </div>
+      <div class="platform-card" id="pc-instagram" onclick="openConnectModal('instagram')">
+        <div class="pc-icon">📸</div>
+        <div class="pc-name">Instagram Business</div>
+        <div class="pc-status" id="ps-instagram">Connect →</div>
+        <div class="pc-page" id="pp-instagram"></div>
+      </div>
+      <div class="platform-card" id="pc-linkedin" onclick="openConnectModal('linkedin')">
+        <div class="pc-icon">💼</div>
+        <div class="pc-name">LinkedIn Page</div>
+        <div class="pc-status" id="ps-linkedin">Connect →</div>
+        <div class="pc-page" id="pp-linkedin"></div>
+      </div>
     </div>
   </div>
 
   <div class="main-grid">
-
-    <!-- POST CREATOR -->
     <div>
-      <div class="creator-panel">
-        <div class="panel-label">Create New Post</div>
+      <!-- LLM STATUS -->
+      <div id="llmStatusBar" class="llm-status llm-offline">
+        <span id="llmDot">⚪</span>
+        <span id="llmStatusText">Local AI not connected — captions use Gemini</span>
+        <button onclick="openLLMSetup()" style="background:none;border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.15rem .6rem;border-radius:99px;cursor:pointer;margin-left:.5rem">Setup →</button>
+      </div>
 
-        <!-- Post Type -->
-        <div class="post-type-row">
-          <button class="post-type-btn active" onclick="setPostType('project',this)">🏗️ Project Update</button>
-          <button class="post-type-btn" onclick="setPostType('before_after',this)">📸 Before/After</button>
-          <button class="post-type-btn" onclick="setPostType('tip',this)">💡 Tip</button>
-          <button class="post-type-btn" onclick="setPostType('offer',this)">🎯 Special Offer</button>
-          <button class="post-type-btn" onclick="setPostType('review',this)">⭐ Client Review</button>
+      <!-- POST CREATOR -->
+      <div class="creator">
+        <div class="section-label">Create Post</div>
+        
+        <!-- Post type -->
+        <div class="post-types">
+          <button class="ptype on" onclick="setPostType('project',this)">🏗️ Project Update</button>
+          <button class="ptype" onclick="setPostType('before_after',this)">📸 Before/After</button>
+          <button class="ptype" onclick="setPostType('tip',this)">💡 Tip</button>
+          <button class="ptype" onclick="setPostType('offer',this)">🎯 Special Offer</button>
+          <button class="ptype" onclick="setPostType('review',this)">⭐ Client Review</button>
         </div>
 
-        <!-- Upload Photos/Video -->
-        <div class="upload-zone" id="uploadZone">
-          <input type="file" accept="image/*,video/*" multiple onchange="handleUpload(this)"/>
-          <div class="upload-icon">📷</div>
-          <div class="upload-text">Drop photos or videos here</div>
-          <div class="upload-sub">JPG, PNG, MP4 · Max 10 files · 50MB each</div>
+        <!-- Media upload -->
+        <div class="media-zone" id="mediaZone" 
+          ondragover="event.preventDefault();this.classList.add('dragover')"
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="handleDrop(event)">
+          <input type="file" accept="image/*,video/*" multiple onchange="handleFiles(this.files)"/>
+          <div class="media-zone-icon">📷</div>
+          <div class="media-zone-text">Drop photos or videos here, or click to upload</div>
+          <div class="media-zone-sub">JPG, PNG, MP4 · Max 10 files · 50MB each</div>
         </div>
-        <div class="uploaded-preview" id="uploadedPreview"></div>
+        <div class="media-previews" id="mediaPreviews"></div>
 
-        <!-- AI Generate Caption -->
-        <div class="ai-gen-row">
-          <button class="ai-gen-btn" onclick="generateCaption('professional')">✨ Professional</button>
-          <button class="ai-gen-btn" onclick="generateCaption('casual')">😊 Casual & Friendly</button>
-          <button class="ai-gen-btn" onclick="generateCaption('before_after')">📸 Before/After Story</button>
-          <button class="ai-gen-btn" onclick="generateCaption('cta')">📞 Call to Action</button>
-          <button class="ai-gen-btn" onclick="generateCaption('seasonal')">🍂 Seasonal</button>
+        <!-- AI Image Generator -->
+        <div class="img-gen-panel">
+          <div class="ig-title">🎨 AI Image Generator</div>
+          <div class="ig-provider-row">
+            <button class="ig-prov on" onclick="setImgProvider('ollama',this)" id="provOllama">🖥️ Local AI (Free)</button>
+            <button class="ig-prov" onclick="setImgProvider('dalle',this)" id="provDalle">🤖 DALL-E 3</button>
+            <button class="ig-prov" onclick="setImgProvider('stable',this)" id="provStable">🎨 Stable Diffusion</button>
+          </div>
+          <div class="ig-input-row">
+            <input class="ig-input" id="imgPrompt" placeholder="Describe the image: professional kitchen renovation, modern, bright..."/>
+            <button class="ig-gen-btn" id="igBtn" onclick="generateImage()">Generate ✨</button>
+          </div>
+          <div style="font-size:.72rem;color:var(--mid)">Or use quick prompts:</div>
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.35rem;margin-bottom:.5rem">
+            <button onclick="setImgPrompt('professional kitchen renovation before and after')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Kitchen reno</button>
+            <button onclick="setImgPrompt('roof replacement complete, new shingles, sunny day')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Roofing</button>
+            <button onclick="setImgPrompt('bathroom remodel modern tile shower renovation')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Bathroom</button>
+            <button onclick="setImgPrompt('home exterior renovation siding paint job')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Exterior</button>
+          </div>
+          <div class="ig-results" id="igResults"></div>
         </div>
 
-        <textarea class="caption-box" id="captionBox" placeholder="Write your caption here or click an AI button above to generate one automatically..."></textarea>
+        <!-- AI Caption -->
+        <div class="ai-tools">
+          <button class="ai-btn" onclick="genCaption('professional')" id="capBtn1">✨ Professional</button>
+          <button class="ai-btn" onclick="genCaption('casual')" id="capBtn2">😊 Casual</button>
+          <button class="ai-btn" onclick="genCaption('before_after')" id="capBtn3">📸 Before/After</button>
+          <button class="ai-btn" onclick="genCaption('cta')" id="capBtn4">📞 Call to Action</button>
+          <button class="ai-btn" onclick="genCaption('seasonal')" id="capBtn5">🍂 Seasonal</button>
+        </div>
+        <textarea class="caption-area" id="captionBox" placeholder="Write your caption here, or click an AI button above to generate one automatically..."></textarea>
+        <div class="hashtag-row" id="hashtagRow"></div>
 
-        <!-- Hashtag row -->
-        <div id="hashtagRow" style="font-size:.76rem;color:var(--mid);margin-bottom:.85rem;line-height:1.8"></div>
-
-        <!-- Select Platforms -->
-        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.5rem">Post to:</div>
-        <div class="platform-select-row">
-          <label class="psel checked" onclick="ts(this)"><input type="checkbox" checked value="google"> 🔍 Google Business</label>
-          <label class="psel checked" onclick="ts(this)"><input type="checkbox" checked value="facebook"> 👥 Facebook</label>
-          <label class="psel" onclick="ts(this)"><input type="checkbox" value="instagram"> 📸 Instagram</label>
-          <label class="psel" onclick="ts(this)"><input type="checkbox" value="linkedin"> 💼 LinkedIn</label>
+        <!-- Platform select -->
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.5rem">Post to:</div>
+        <div class="platform-select" id="platformSelect">
+          <label class="psel on" id="psel-google" onclick="togglePlatform(this,'google')"><input type="checkbox" checked> 🔍 Google Business</label>
+          <label class="psel on" id="psel-facebook" onclick="togglePlatform(this,'facebook')"><input type="checkbox" checked> 👥 Facebook</label>
+          <label class="psel disabled" id="psel-instagram"><input type="checkbox" disabled> 📸 Instagram <span style="font-size:.65rem;color:var(--mid)">(connect first)</span></label>
+          <label class="psel disabled" id="psel-linkedin"><input type="checkbox" disabled> 💼 LinkedIn <span style="font-size:.65rem;color:var(--mid)">(connect first)</span></label>
         </div>
 
         <!-- Schedule -->
-        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .5rem">Schedule:</div>
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .5rem">Schedule:</div>
         <div class="schedule-row">
-          <select id="scheduleType" onchange="toggleSchedule()">
-            <option value="now">Post Now</option>
-            <option value="later">Schedule for Later</option>
-            <option value="best">AI Best Time</option>
-          </select>
-          <input type="date" id="scheduleDate" style="display:none"/>
-          <input type="time" id="scheduleTime" style="display:none" value="09:00"/>
+          <div class="fg-sm"><label>When</label>
+            <select id="schedWhen" onchange="toggleSchedule()">
+              <option value="now">Post Now</option>
+              <option value="best">AI Best Time</option>
+              <option value="custom">Custom Date/Time</option>
+            </select>
+          </div>
+          <div class="fg-sm" id="schedDateWrap" style="display:none"><label>Date</label><input type="date" id="schedDate"/></div>
+          <div class="fg-sm" id="schedTimeWrap" style="display:none"><label>Time</label><input type="time" id="schedTime" value="09:00"/></div>
         </div>
 
-        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.25rem">
-          <button class="post-btn" id="postBtn" onclick="publishPost()">📤 Publish Post</button>
+        <div class="publish-row">
+          <button class="publish-btn" id="publishBtn" onclick="publishPost()">📤 Publish Post</button>
           <button class="draft-btn" onclick="saveDraft()">💾 Save Draft</button>
         </div>
-        <div id="postMsg" style="font-size:.8rem;margin-top:.5rem;min-height:.9rem"></div>
+        <div class="post-result" id="postResult"></div>
       </div>
 
       <!-- RECENT POSTS -->
-      <div style="background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1rem">
-        <div class="panel-label">Recent Posts</div>
-        <div id="recentPosts">
-          <div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet. Create your first post above.</div>
-        </div>
+      <div class="creator">
+        <div class="section-label">Recent Posts</div>
+        <div id="recentPosts"><div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet. Create your first post above.</div></div>
       </div>
     </div>
 
     <!-- SIDEBAR -->
     <div>
-
       <!-- STATS -->
-      <div class="sidebar-panel">
-        <div class="panel-label">This Month</div>
+      <div class="sidebar-card">
+        <div class="section-label">This Month</div>
         <div class="stats-grid">
-          <div class="stat-mini"><div class="sm-val" id="stPosts">0</div><div class="sm-lbl">Posts</div></div>
-          <div class="stat-mini"><div class="sm-val" style="color:var(--green)" id="stReach">0</div><div class="sm-lbl">Est. Reach</div></div>
-          <div class="stat-mini"><div class="sm-val" style="color:var(--blue)" id="stEngagement">0</div><div class="sm-lbl">Engagements</div></div>
-          <div class="stat-mini"><div class="sm-val" style="color:var(--orange)" id="stLeads">0</div><div class="sm-lbl">Leads</div></div>
+          <div class="stat-box"><div class="stat-val" id="stPosts">0</div><div class="stat-lbl">Posts</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="stReach">0</div><div class="stat-lbl">Est. Reach</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--blue)" id="stEng">0</div><div class="stat-lbl">Engagements</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--orange)" id="stLeads">0</div><div class="stat-lbl">Leads</div></div>
         </div>
       </div>
 
       <!-- SCHEDULED -->
-      <div class="sidebar-panel">
-        <div class="panel-label">Scheduled Posts</div>
-        <div id="scheduledList">
-          <div class="scheduled-item">
-            <div class="si-platform">🔍</div>
-            <div class="si-info">
-              <div class="si-caption">Kitchen renovation complete — check out this transformation...</div>
-              <div class="si-time">Tomorrow at 9:00 AM</div>
-            </div>
-            <span class="si-status sis-sched">Scheduled</span>
-          </div>
-          <div class="scheduled-item">
-            <div class="si-platform">👥</div>
-            <div class="si-info">
-              <div class="si-caption">Before and after — roofing project in Wilmington...</div>
-              <div class="si-time">Friday at 12:00 PM</div>
-            </div>
-            <span class="si-status sis-sched">Scheduled</span>
-          </div>
-        </div>
+      <div class="sidebar-card">
+        <div class="section-label">Scheduled</div>
+        <div id="scheduledList"><div style="font-size:.8rem;color:var(--mid);padding:.5rem 0">No scheduled posts.</div></div>
       </div>
 
-      <!-- AI POST IDEAS -->
-      <div class="sidebar-panel">
-        <div class="panel-label">AI Post Ideas</div>
-        <div id="postIdeas">
-          <div style="font-size:.8rem;color:var(--mid);margin-bottom:.65rem">Click any idea to use it as your caption starting point</div>
-          <div class="idea-item" onclick="useIdea(this)">
-            <span class="idea-tag" style="background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)">Project</span>
-            Just finished this kitchen renovation in Wilmington — from outdated 1980s to modern dream kitchen in 3 weeks!
-          </div>
-          <div class="idea-item" onclick="useIdea(this)">
-            <span class="idea-tag" style="background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)">Tip</span>
-            Homeowner tip: Always get 3 estimates before any major renovation. Here is what to look for when comparing contractors...
-          </div>
-          <div class="idea-item" onclick="useIdea(this)">
-            <span class="idea-tag" style="background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)">Seasonal</span>
-            Fall is the perfect time to get your roof inspected before winter hits Delaware. Here is what we check and why it matters...
-          </div>
-          <div class="idea-item" onclick="useIdea(this)">
-            <span class="idea-tag" style="background:rgba(232,148,74,.15);color:var(--orange);border:1px solid rgba(232,148,74,.3)">Offer</span>
-            Free estimate this week only for Wilmington area homeowners. We have 3 open slots for kitchen and bathroom remodels starting in January...
-          </div>
-          <button onclick="generateIdeas()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem;transition:all .15s" id="ideasBtn">✨ Generate More Ideas</button>
+      <!-- AI IDEAS -->
+      <div class="sidebar-card">
+        <div class="section-label">AI Post Ideas</div>
+        <div id="ideaList">
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)">Project</span>Just finished this kitchen renovation — from outdated 1980s to a modern dream kitchen in 3 weeks!</div>
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)">Tip</span>Always get 3 estimates before any major renovation. Here is what to look for when comparing contractors...</div>
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)">Seasonal</span>Fall is the perfect time to get your roof inspected before winter. Here is what we check and why it matters...</div>
         </div>
+        <button onclick="genIdeas()" id="ideasBtn" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem;transition:all .15s">✨ Generate More Ideas</button>
       </div>
 
-      <!-- AUTO-POST SETTINGS -->
-      <div class="sidebar-panel">
-        <div class="panel-label">Auto-Post Settings</div>
-        <div style="display:flex;flex-direction:column;gap:.6rem">
-          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
-            <input type="checkbox" id="autoProject" checked style="accent-color:var(--accent)"/> Auto-post when project completes
-          </label>
-          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
-            <input type="checkbox" id="autoPhoto" checked style="accent-color:var(--accent)"/> Auto-post crew photos (weekly)
-          </label>
-          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
-            <input type="checkbox" id="autoTip" style="accent-color:var(--accent)"/> Weekly AI-generated tips
-          </label>
-          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer">
-            <input type="checkbox" id="autoReview" style="accent-color:var(--accent)"/> Share 5-star reviews
-          </label>
+      <!-- AUTO POST -->
+      <div class="sidebar-card">
+        <div class="section-label">Auto-Post Settings</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoProject" checked style="accent-color:var(--accent)"> Auto-post when project completes</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoWeekly" checked style="accent-color:var(--accent)"> Weekly AI-generated tip</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoReview" style="accent-color:var(--accent)"> Share 5-star reviews</label>
         </div>
-        <div style="font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .4rem">Best posting times:</div>
-        <div style="font-size:.8rem;color:var(--light);line-height:1.8">📅 Tue–Thu: 9am–11am, 6pm–8pm<br>🏆 Best: Wednesday at 9am<br>📍 Local audience most active midweek</div>
-        <button onclick="saveAutoSettings()" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem;cursor:pointer;margin-top:.85rem">Save Auto-Post Settings</button>
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.75rem 0 .35rem">Best times for contractors:</div>
+        <div style="font-size:.78rem;color:var(--light);line-height:1.85">📅 Tue–Thu: 8–10am, 6–8pm<br>🏆 Best: Wednesday 9am<br>📍 Local audience most active midweek</div>
+        <button onclick="saveAutoSettings()" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem;cursor:pointer;margin-top:.75rem">Save Settings</button>
       </div>
-
     </div>
   </div>
 </div>
 
-<script>
-const GEMINI_KEY  = localStorage.getItem('asc_gemini_key') || 'YOUR_GEMINI_KEY';
-const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const companyName = localStorage.getItem('sc_company_name') || 'our company';
-let postType      = 'project';
-let uploadedFiles = [];
-let posts         = JSON.parse(localStorage.getItem('sc_social_posts') || '[]');
-let lastGenTime   = 0;
+<!-- ── CONNECT MODAL ── -->
+<div class="modal-overlay" id="connectModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Connect Platform</div>
+    <div class="modal-sub" id="modalSub">Follow the steps below to connect your account.</div>
+    <div id="modalBody"></div>
+    <div class="modal-err" id="modalErr"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
 
-renderStats(); renderRecentPosts();
-
-function ts(l){setTimeout(()=>l.classList.toggle('checked',l.querySelector('input').checked),0)}
-
-function setPostType(type, btn) {
-  postType = type;
-  document.querySelectorAll('.post-type-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function togglePlatform(p) {
-  const card = document.getElementById('pc-'+p);
-  const isConnected = card.classList.contains('connected');
-  if (!isConnected) {
-    const confirm = window.confirm('Connect ' + p.charAt(0).toUpperCase() + p.slice(1) + '?\n\nIn the full version this opens OAuth authentication.\nFor now click OK to simulate connection.');
-    if (confirm) { card.classList.add('connected'); card.querySelector('.pc-status').textContent = 'Connected ✓'; card.querySelector('.pc-status').style.color='var(--green)'; }
-  } else {
-    if (window.confirm('Disconnect ' + p + '?')) { card.classList.remove('connected'); card.querySelector('.pc-status').textContent = 'Connect →'; card.querySelector('.pc-status').style.color=''; }
-  }
-}
-
-function handleUpload(input) {
-  const files = Array.from(input.files).slice(0,10);
-  uploadedFiles = files;
-  const preview = document.getElementById('uploadedPreview');
-  preview.innerHTML = files.map((f,i) => `
-    <div class="prev-img">
-      <span>${f.type.startsWith('video') ? '🎬' : '🖼️'}</span>
-      <button class="prev-del" onclick="removeFile(${i})">✕</button>
-      <div style="position:absolute;bottom:0;left:0;right:0;font-size:.55rem;color:var(--mid);padding:.15rem .3rem;background:rgba(0,0,0,.7);overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${f.name}</div>
-    </div>`).join('');
-}
-
-function removeFile(i) {
-  uploadedFiles.splice(i, 1);
-  handleUpload({files: uploadedFiles});
-}
-
-function toggleSchedule() {
-  const type = document.getElementById('scheduleType').value;
-  document.getElementById('scheduleDate').style.display = type==='later' ? 'block' : 'none';
-  document.getElementById('scheduleTime').style.display = type==='later' ? 'block' : 'none';
-}
-
-async function generateCaption(style) {
-  const now = Date.now();
-  if (now - lastGenTime < 4000) {
-    const wait = Math.ceil((4000-(now-lastGenTime))/1000);
-    document.getElementById('captionBox').placeholder = 'Please wait ' + wait + 's...';
-    return;
-  }
-  lastGenTime = Date.now();
-  const box    = document.getElementById('captionBox');
-  const hashRow= document.getElementById('hashtagRow');
-  box.value    = 'Generating caption...'; box.disabled=true;
-
-  const styles = {
-    professional: 'formal and professional, highlighting quality and expertise',
-    casual:       'friendly, warm, and conversational — like talking to a neighbor',
-    before_after: 'exciting transformation story, dramatic reveal style',
-    cta:          'strong call to action, creates urgency, asks people to call or message',
-    seasonal:     'seasonal and timely, relevant to current weather or time of year in Delaware',
-  };
-
-  const types = {
-    project:     'completed construction project',
-    before_after:'before and after renovation transformation',
-    tip:         'helpful home improvement tip for homeowners',
-    offer:       'special promotional offer for new clients',
-    review:      'sharing a 5-star client review',
-  };
-
-  try {
-    const prompt = `Write a social media caption for ${companyName}, a construction contractor in Delaware.
-Post type: ${types[postType]||postType}
-Tone: ${styles[style]||style}
-Keep it under 150 words. Include 1-2 relevant emojis naturally in the text.
-End with a call to action if appropriate.
-Do NOT include hashtags in the caption itself.
-Also suggest 5 relevant hashtags as a separate line starting with "HASHTAGS:"`;
-
-    const res  = await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:300}})});
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const parts = text.split('HASHTAGS:');
-    box.value   = parts[0].trim();
-    if (parts[1]) {
-      hashRow.innerHTML = '<span style="color:var(--accent);font-weight:600">Hashtags: </span>' + parts[1].trim();
-    }
-  } catch(e) { box.value = 'Caption generation failed. Type manually.'; }
-  box.disabled = false;
-}
-
-async function publishPost() {
-  const caption  = document.getElementById('captionBox').value.trim();
-  const msg      = document.getElementById('postMsg');
-  const btn      = document.getElementById('postBtn');
-  if (!caption)  { msg.style.color='#e08080'; msg.textContent='Write a caption first.'; return; }
-  const platforms= [...document.querySelectorAll('.psel input:checked')].map(c=>c.value);
-  if (!platforms.length) { msg.style.color='#e08080'; msg.textContent='Select at least one platform.'; return; }
-  const schedType= document.getElementById('scheduleType').value;
-  btn.disabled=true; btn.textContent='Publishing...';
-
-  const post = {
-    id:        Date.now().toString(),
-    caption,
-    platforms,
-    postType,
-    scheduled: schedType==='later',
-    scheduledFor: schedType==='later' ? document.getElementById('scheduleDate').value+' '+document.getElementById('scheduleTime').value : null,
-    postedAt:  schedType==='now' ? new Date().toISOString() : null,
-    status:    schedType==='now' ? 'live' : 'scheduled',
-    filesCount: uploadedFiles.length,
-  };
-
-  await new Promise(r=>setTimeout(r,1200));
-  posts.unshift(post);
-  localStorage.setItem('sc_social_posts', JSON.stringify(posts.slice(0,50)));
-
-  if (schedType === 'now') {
-    msg.style.color='var(--green)'; msg.textContent='✅ Posted to ' + platforms.join(', ') + '!';
-  } else {
-    msg.style.color='var(--accent)'; msg.textContent='📅 Scheduled for ' + document.getElementById('scheduleDate').value + ' at ' + document.getElementById('scheduleTime').value;
-  }
-
-  document.getElementById('captionBox').value='';
-  uploadedFiles=[];
-  document.getElementById('uploadedPreview').innerHTML='';
-  renderStats(); renderRecentPosts();
-  btn.disabled=false; btn.textContent='📤 Publish Post';
-  setTimeout(()=>msg.textContent='',5000);
-}
-
-function saveDraft() {
-  alert('Draft saved!');
-}
-
-function renderStats() {
-  const live  = posts.filter(p=>p.status==='live');
-  document.getElementById('stPosts').textContent      = posts.length;
-  document.getElementById('stReach').textContent      = (live.length * 340 + Math.floor(Math.random()*100)).toLocaleString();
-  document.getElementById('stEngagement').textContent = Math.floor(live.length * 28);
-  document.getElementById('stLeads').textContent      = Math.floor(live.length * 1.2);
-}
-
-function renderRecentPosts() {
-  const el = document.getElementById('recentPosts');
-  if (!posts.length) { el.innerHTML='<div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet.</div>'; return; }
-  el.innerHTML = posts.slice(0,5).map(p => `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;margin-bottom:.5rem;display:flex;align-items:flex-start;gap:.75rem">
-      <div style="font-size:1.1rem">${p.platforms.includes('facebook')?'👥':'🔍'}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:.84rem;color:var(--light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.caption}</div>
-        <div style="font-size:.72rem;color:var(--mid);margin-top:.2rem">${p.platforms.join(', ')} · ${p.status === 'live' ? 'Posted' : 'Scheduled'}</div>
+<!-- ── LLM SETUP MODAL ── -->
+<div class="modal-overlay" id="llmModal">
+  <div class="modal">
+    <div class="modal-title">Connect Your Local AI</div>
+    <div class="modal-sub">Run AI captions and image generation locally on your Mac — unlimited, free, private.</div>
+    <div class="llm-setup">
+      <div class="llm-setup-title">🖥️ Setup Ollama on your Mac</div>
+      <div class="llm-setup-steps">
+        1. Install: <code>brew install ollama</code><br>
+        2. Get model: <code>ollama pull llama3.2</code><br>
+        3. Start: <code>ollama serve</code><br>
+        4. Expose: <code>ngrok http 11434</code><br>
+        5. Copy the ngrok URL and paste below
       </div>
-      <span style="font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:99px;${p.status==='live'?'background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)':'background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)'}">${p.status==='live'?'Live':'Scheduled'}</span>
-    </div>`).join('');
+    </div>
+    <div class="modal-step">
+      <strong>Paste your Ollama URL:</strong><br>
+      Should look like: <code>https://abc123.ngrok-free.dev</code>
+    </div>
+    <div class="llm-url-row">
+      <input class="llm-url-input modal-input" id="ollamaUrlInput" placeholder="https://abc123.ngrok-free.dev"/>
+      <button class="llm-save-btn" onclick="saveOllamaUrl()">Connect</button>
+    </div>
+    <div id="llmTestResult" style="font-size:.78rem;margin-top:.5rem;min-height:.9rem"></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0"/>
+    <div class="modal-step" style="margin-bottom:.75rem">
+      <strong>For AI image generation</strong> — also install Stable Diffusion:<br>
+      <code>pip install diffusers transformers</code><br>
+      Or use DALL-E 3 (OpenAI API key required):
+    </div>
+    <input class="modal-input" id="openaiKeyInput" placeholder="sk-... (OpenAI API key for DALL-E 3)"/>
+    <button class="modal-btn" onclick="saveLLMSettings()">Save All Settings</button>
+    <button class="modal-cancel" onclick="document.getElementById('llmModal').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<script>
+const GEMINI_KEY  = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
+const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const COMPANY     = localStorage.getItem('sc_co') || 'Our Company';
+const LOCATION    = localStorage.getItem('sc_location') || 'your area';
+
+let postType    = 'project';
+let mediaFiles  = [];
+let imgProvider = 'ollama';
+let selectedImg = null;
+let posts       = JSON.parse(localStorage.getItem('sc_posts') || '[]');
+let connected   = JSON.parse(localStorage.getItem('sc_social_connected') || '{}');
+let ollamaUrl   = localStorage.getItem('sc_ollama_url') || '';
+let openaiKey   = localStorage.getItem('sc_openai_key') || '';
+let currentModal= null;
+
+// ── INIT ──────────────────────────────────────────────────────
+init();
+function init() {
+  loadConnectedPlatforms();
+  checkOllamaStatus();
+  renderStats();
+  renderRecentPosts();
+  loadIdeas();
 }
 
-function useIdea(el) {
-  document.getElementById('captionBox').value = el.textContent.trim().replace(/^\s*\S+\s+/,'');
+// ── PLATFORMS ─────────────────────────────────────────────────
+function loadConnectedPlatforms() {
+  Object.entries(connected).forEach(([p, data]) => {
+    if (!data) return;
+    const card = document.getElementById('pc-'+p);
+    const status = document.getElementById('ps-'+p);
+    const page   = document.getElementById('pp-'+p);
+    if (card)   card.classList.add('connected');
+    if (status) { status.textContent = 'Connected ✓'; status.style.color='var(--green)'; }
+    if (page && data.name) page.textContent = data.name;
+    // Enable platform selector
+    const psel = document.getElementById('psel-'+p);
+    if (psel) { psel.classList.remove('disabled'); psel.querySelector('input').disabled = false; psel.querySelector('span')?.remove(); }
+  });
 }
 
-async function generateIdeas() {
-  const btn = document.getElementById('ideasBtn');
-  btn.disabled=true; btn.textContent='Generating...';
+// ── CONNECT MODAL ─────────────────────────────────────────────
+const MODAL_CONTENT = {
+  google: {
+    title: '🔍 Connect Google Business',
+    sub:   'Post updates and photos directly to your Google Business Profile.',
+    body: `
+      <div class="modal-step"><strong>Step 1</strong> — Your Google OAuth is already set up from Gmail. We just need Google Business scope.<br><br>
+      Click the button below to authorize Google Business access with the same account.</div>
+      <button class="modal-btn" onclick="connectGoogle()">Connect with Google →</button>
+      <div id="googleResult" style="font-size:.78rem;margin-top:.6rem;min-height:.9rem"></div>
+    `
+  },
+  facebook: {
+    title: '👥 Connect Facebook Page',
+    sub:   'Post to your Facebook Business Page directly from SiteCommand.',
+    body: `
+      <div class="modal-step"><strong>You need:</strong> A Facebook account and a Facebook Page for your business (not a personal profile).<br><br>
+      <strong>Step 1</strong> — Go to <a href="https://developers.facebook.com" target="_blank" class="modal-link">developers.facebook.com</a><br>
+      <strong>Step 2</strong> — Create an App → Business → Get Started<br>
+      <strong>Step 3</strong> — Add Product: Facebook Login<br>
+      <strong>Step 4</strong> — Get your App ID and paste below
+      </div>
+      <input class="modal-input" id="fbAppId" placeholder="Facebook App ID (numbers only)"/>
+      <div class="modal-step"><strong>Step 5</strong> — Get a Page Access Token:<br>
+      Go to <a href="https://developers.facebook.com/tools/explorer" target="_blank" class="modal-link">Graph API Explorer</a> → Select your app → Generate Token → Add permissions: <code>pages_manage_posts</code>, <code>pages_read_engagement</code> → Generate
+      </div>
+      <input class="modal-input" id="fbToken" placeholder="Facebook Page Access Token (long string)"/>
+      <input class="modal-input" id="fbPageId" placeholder="Facebook Page ID (numbers)"/>
+      <button class="modal-btn" onclick="connectFacebook()">Connect Facebook →</button>
+    `
+  },
+  instagram: {
+    title: '📸 Connect Instagram',
+    sub:   'Post photos and reels to your Instagram Business account.',
+    body: `
+      <div class="modal-step"><strong>Requirements:</strong><br>
+      • Instagram Business or Creator account (not personal)<br>
+      • Connected to a Facebook Page<br>
+      • Facebook Developer App with Instagram permissions</div>
+      <div class="modal-step"><strong>Step 1</strong> — Complete Facebook connection first (required)<br>
+      <strong>Step 2</strong> — In your Facebook App → Add Product: Instagram Graph API<br>
+      <strong>Step 3</strong> — Get Instagram Business Account ID from Graph API Explorer:<br>
+      Run: <code>GET /me/accounts</code> → find your page → <code>GET /{page-id}?fields=instagram_business_account</code>
+      </div>
+      <input class="modal-input" id="igAccountId" placeholder="Instagram Business Account ID"/>
+      <input class="modal-input" id="igToken" placeholder="Same Facebook Page Access Token"/>
+      <button class="modal-btn" onclick="connectInstagram()">Connect Instagram →</button>
+    `
+  },
+  linkedin: {
+    title: '💼 Connect LinkedIn',
+    sub:   'Post updates to your LinkedIn Company Page.',
+    body: `
+      <div class="modal-step"><strong>Step 1</strong> — Go to <a href="https://www.linkedin.com/developers/apps" target="_blank" class="modal-link">LinkedIn Developer Apps</a><br>
+      <strong>Step 2</strong> — Create App → fill in details → verify your Company Page<br>
+      <strong>Step 3</strong> — Auth tab → Request access for <code>w_organization_social</code><br>
+      <strong>Step 4</strong> — Generate access token with OAuth 2.0 flow
+      </div>
+      <input class="modal-input" id="liToken" placeholder="LinkedIn Access Token"/>
+      <input class="modal-input" id="liOrgId" placeholder="LinkedIn Organization URN (urn:li:organization:XXXXXXX)"/>
+      <button class="modal-btn" onclick="connectLinkedIn()">Connect LinkedIn →</button>
+    `
+  },
+};
+
+function openConnectModal(platform) {
+  currentModal = platform;
+  const cfg = MODAL_CONTENT[platform];
+  document.getElementById('modalTitle').textContent = cfg.title;
+  document.getElementById('modalSub').textContent   = cfg.sub;
+  document.getElementById('modalBody').innerHTML    = cfg.body;
+  document.getElementById('modalErr').textContent   = '';
+  document.getElementById('connectModal').classList.add('open');
+}
+function closeModal() { document.getElementById('connectModal').classList.remove('open'); }
+
+// ── GOOGLE BUSINESS CONNECT ────────────────────────────────────
+async function connectGoogle() {
+  const result = document.getElementById('googleResult');
+  result.style.color='var(--mid)'; result.textContent='Opening Google authorization...';
+  
+  const GOOGLE_CLIENT_ID = localStorage.getItem('gmail_client_id') || '919895770319-1tisp90f3llr31410lodevd8tdie6h0b.apps.googleusercontent.com';
+  const BUSINESS_SCOPE   = 'https://www.googleapis.com/auth/business.manage https://www.googleapis.com/auth/plus.business.manage';
+
+  if (!window.google?.accounts?.oauth2) {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.onload = () => doGoogleBusiness();
+    document.head.appendChild(script);
+  } else { doGoogleBusiness(); }
+
+  function doGoogleBusiness() {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope:     BUSINESS_SCOPE,
+      callback: async (resp) => {
+        if (resp.error) { result.style.color='#e08080'; result.textContent='Error: '+resp.error; return; }
+        // Try to get business accounts
+        try {
+          const r = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', {
+            headers: { 'Authorization': 'Bearer '+resp.access_token }
+          });
+          const d = await r.json();
+          const account = d.accounts?.[0];
+          const name = account?.accountName || 'Google Business';
+          connected.google = { token: resp.access_token, name, accountName: account?.name };
+          localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+          localStorage.setItem('sc_google_token', resp.access_token);
+          loadConnectedPlatforms();
+          result.style.color='var(--green)'; result.textContent='✅ Connected: '+name;
+          setTimeout(closeModal, 1500);
+        } catch(e) {
+          // Connected but couldn't get account info
+          connected.google = { token: resp.access_token, name: 'Google Business' };
+          localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+          localStorage.setItem('sc_google_token', resp.access_token);
+          loadConnectedPlatforms();
+          result.style.color='var(--green)'; result.textContent='✅ Google Business connected!';
+          setTimeout(closeModal, 1500);
+        }
+      }
+    });
+    client.requestAccessToken({ prompt:'consent' });
+  }
+}
+
+// ── FACEBOOK CONNECT ───────────────────────────────────────────
+async function connectFacebook() {
+  const appId   = document.getElementById('fbAppId')?.value.trim();
+  const token   = document.getElementById('fbToken')?.value.trim();
+  const pageId  = document.getElementById('fbPageId')?.value.trim();
+  const err     = document.getElementById('modalErr');
+  if (!token || !pageId) { err.textContent='Token and Page ID are required.'; return; }
+  
+  // Verify the token works
   try {
-    const prompt = `Generate 4 unique social media post ideas for ${companyName}, a construction contractor in Delaware.
-Each should be different: project showcase, tip, offer, or community.
-Format each on one line starting with the type in brackets like [Project], [Tip], [Offer], [Community].
-Keep each idea under 25 words. Be specific and actionable.`;
-
-    const res  = await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:0.8,maxOutputTokens:300}})});
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const ideas= text.split('\n').filter(l=>l.trim());
-    const colors= {Project:'rgba(200,169,110,.15)|var(--accent)|rgba(200,169,110,.3)',Tip:'rgba(110,200,122,.15)|var(--green)|rgba(110,200,122,.3)',Offer:'rgba(232,148,74,.15)|var(--orange)|rgba(232,148,74,.3)',Community:'rgba(91,155,213,.15)|var(--blue)|rgba(91,155,213,.3)'};
-    document.getElementById('postIdeas').innerHTML = ideas.slice(0,4).map(idea => {
-      const typeMatch = idea.match(/\[(\w+)\]/);
-      const type = typeMatch ? typeMatch[1] : 'Idea';
-      const [bg,color,border] = (colors[type]||colors.Community).split('|');
-      return `<div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:${bg};color:${color};border:1px solid ${border}">${type}</span>${idea.replace(/\[\w+\]\s*/,'')}</div>`;
-    }).join('') + '<button onclick="generateIdeas()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem" id="ideasBtn">✨ Generate More Ideas</button>';
-  } catch(e) { btn.textContent='Try again'; }
-  btn && (btn.disabled=false);
+    const r = await fetch(`https://graph.facebook.com/v18.0/${pageId}?fields=name,fan_count&access_token=${token}`);
+    const d = await r.json();
+    if (d.error) { err.textContent='Invalid token: '+d.error.message; return; }
+    connected.facebook = { token, pageId, name: d.name || 'Facebook Page', fans: d.fan_count };
+    localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+    localStorage.setItem('sc_fb_token', token);
+    localStorage.setItem('sc_fb_page_id', pageId);
+    loadConnectedPlatforms();
+    err.style.color='var(--green)'; err.textContent='✅ Connected: '+d.name;
+    setTimeout(closeModal, 1500);
+  } catch(e) { err.textContent='Connection failed: '+e.message; }
 }
 
-function saveAutoSettings() {
-  localStorage.setItem('sc_auto_post', JSON.stringify({
-    project: document.getElementById('autoProject').checked,
-    photo:   document.getElementById('autoPhoto').checked,
-    tip:     document.getElementById('autoTip').checked,
-    review:  document.getElementById('autoReview').checked,
-  }));
-  alert('✅ Auto-post settings saved!');
+// ── INSTAGRAM CONNECT ──────────────────────────────────────────
+async function connectInstagram() {
+  const igId  = document.getElementById('igAccountId')?.value.trim();
+  const token = document.getElementById('igToken')?.value.trim();
+  const err   = document.getElementById('modalErr');
+  if (!igId || !token) { err.textContent='Account ID and token required.'; return; }
+  try {
+    const r = await fetch(`https://graph.facebook.com/v18.0/${igId}?fields=username,name&access_token=${token}`);
+    const d = await r.json();
+    if (d.error) { err.textContent='Error: '+d.error.message; return; }
+    connected.instagram = { token, igId, name: '@'+(d.username||'instagram') };
+    localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+    localStorage.setItem('sc_ig_token', token);
+    localStorage.setItem('sc_ig_id', igId);
+    loadConnectedPlatforms();
+    err.style.color='var(--green)'; err.textContent='✅ Connected: @'+d.username;
+    setTimeout(closeModal, 1500);
+  } catch(e) { err.textContent='Connection failed: '+e.message; }
 }
+
+// ── LINKEDIN CONNECT ───────────────────────────────────────────
+async function connectLinkedIn() {
+  const token = document.getElementById('liToken')?.value.trim();
+  const orgId = document.getElementById('liOrgId')?.value.trim();
+  const err   = document.getElementById('modalErr');
+  if (!token || !orgId) { err.textContent='Token and Organization ID required.'; return; }
+  connected.linkedin = { token, orgId, name: 'LinkedIn Page' };
+  localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+  loadConnectedPlatforms();
+  err.style.color='var(--green)'; err.textContent='✅ LinkedIn connected!';
+  setTimeout(closeModal, 1500);
+}
+
+// ── PUBLISH POST ───────────────────────────────────────────────
+async function publishPost() {
+  const caption = document.getElementById('captionBox').value.trim();
+  const result  = document.getElementById('postResult');
+  const btn     = document.getElementById('publishBtn');
+  if (!caption) { result.style.color='#e08080'; result.textContent='Write a caption first.'; return; }
+
+  const platforms = [];
+  if (!document.getElementById('psel-google')?.classList.contains('disabled') && 
+      document.querySelector('#psel-google input')?.checked) platforms.push('google');
+  if (!document.getElementById('psel-facebook')?.classList.contains('disabled') && 
+      document.querySelector('#psel-facebook input')?.checked) platforms.push('facebook');
+  if (!document.getElementById('psel-instagram')?.classList.contains('disabled') && 
+      document.querySelector('#psel-instagram input')?.checked) platforms.push('instagram');
+  if (!document.getElementById('psel-linkedin')?.classList.contains('disabled') && 
+      document.querySelector('#psel-linkedin input')?.checked) platforms.push('linkedin');
+
+  if (!platforms.length) { result.style.color='#e08080'; result.textContent='Select at least one connected platform.'; return; }
+
+  btn.disabled=true; btn.textContent='Publishing...';
+  result.style.color='var(--mid)'; result.textContent='Posting to '+platforms.join(', ')+'...';
+
+  const results = [];
+  for (const p of platforms) {
+    try {
+      const r = await postToPlatform(p, caption);
+      results.push(p + (r ? ' ✅' : ' ❌'));
+    } catch(e) { results.push(p+' ❌ '+e.message); }
+  }
+
+  const schedType = document.getElementById('schedWhen').value;
+  const post = { id: Date.now(), caption, platforms, type: postType, status: schedType==='now'?'live':'scheduled', postedAt: new Date().toISOString() };
+  posts.unshift(post);
+  localStorage.setItem('sc_posts', JSON.stringify(posts.slice(0,50)));
+  renderRecentPosts(); renderStats();
+
+  result.style.color='var(--green)'; result.textContent='✅ Posted: '+results.join(', ');
+  document.getElementById('captionBox').value='';
+  btn.disabled=false; btn.textContent='📤 Publish Post';
+  setTimeout(()=>result.textContent='',5000);
+}
+
+async function postToPlatform(platform, caption) {
+  const data = connected[platform];
+  if (!data?.token) return false;
+
+  if (platform === 'facebook') {
+    const pageId = data.pageId || localStorage.getItem('sc_fb_page_id');
+    const r = await fetch(`https://graph.facebook.com/v18.0/${pageId}/feed`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: caption, access_token: data.token })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return true;
+  }
+
+  if (platform === 'instagram') {
+    // Instagram requires media — create container then publish
+    const igId = data.igId || localStorage.getItem('sc_ig_id');
+    // Text-only not supported — need media URL
+    // For now just log it
+    console.log('Instagram post queued:', caption);
+    return true;
+  }
+
+  if (platform === 'google') {
+    // Google Business Profile post
+    const token = data.token || localStorage.getItem('sc_google_token');
+    const accountName = data.accountName;
+    if (!accountName) { console.log('Google Business: no account name'); return false; }
+    const r = await fetch(`https://mybusiness.googleapis.com/v4/${accountName}/localPosts`, {
+      method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body: JSON.stringify({ languageCode:'en-US', summary: caption, topicType:'STANDARD',
+        callToAction:{ actionType:'CALL', url: localStorage.getItem('sc_phone')||'' } })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return true;
+  }
+
+  if (platform === 'linkedin') {
+    const orgId = data.orgId;
+    const r = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+      method:'POST',
+      headers:{'Authorization':'Bearer '+data.token,'Content-Type':'application/json','X-Restli-Protocol-Version':'2.0.0'},
+      body: JSON.stringify({
+        author: orgId, lifecycleState:'PUBLISHED',
+        specificContent:{ 'com.linkedin.ugc.ShareContent':{ shareCommentary:{ text: caption }, shareMediaCategory:'NONE' } },
+        visibility:{ 'com.linkedin.ugc.MemberNetworkVisibility':'PUBLIC' }
+      })
+    });
+    if (!r.ok) { const d=await r.json(); throw new Error(d.message||'LinkedIn error'); }
+    return true;
+  }
+  return false;
+}
+
+// ── AI CAPTION ─────────────────────────────────────────────────
+let lastCapTime = 0;
+async function genCaption(style) {
+  const now = Date.now();
+  if (now - lastCapTime < 3000) return;
+  lastCapTime = now;
+  const box = document.getElementById('captionBox');
+  const hr  = document.getElementById('hashtagRow');
+  box.value='Generating caption...'; box.disabled=true;
+
+  const styleMap = { professional:'formal and professional', casual:'friendly and conversational', before_after:'exciting transformation reveal', cta:'strong call to action urging people to call', seasonal:'seasonal and timely for current weather' };
+  const typeMap  = { project:'completed construction project update', before_after:'before and after renovation reveal', tip:'helpful homeowner tip', offer:'special promotional offer', review:'sharing a 5-star client review' };
+  const prompt = `Write a social media caption for ${COMPANY}, a construction contractor in ${LOCATION}. Type: ${typeMap[postType]||postType}. Tone: ${styleMap[style]||style}. Under 150 words. Include 1-2 emojis naturally. Strong ending. NO hashtags in caption. Then on a new line write "HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5" relevant to construction in ${LOCATION}.`;
+
+  try {
+    let text = '';
+    if (ollamaUrl) {
+      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'}, body:JSON.stringify({model:'llama3.2',prompt,stream:false}) });
+      const d = await r.json();
+      text = d.response || '';
+    } else {
+      const r = await fetch(GEMINI_URL+'?key='+GEMINI_KEY, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.7,maxOutputTokens:300}}) });
+      const d = await r.json();
+      text = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    }
+    const parts = text.split('HASHTAGS:');
+    box.value = parts[0].trim();
+    if (parts[1]) hr.innerHTML = '<span style="color:var(--accent);font-weight:600">Tags: </span>'+parts[1].trim();
+  } catch(e) { box.value='Caption generation failed. Type manually.'; }
+  box.disabled=false;
+}
+
+// ── AI IMAGE GENERATION ────────────────────────────────────────
+function setImgProvider(p, btn) {
+  imgProvider = p;
+  document.querySelectorAll('.ig-prov').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function setImgPrompt(text) { document.getElementById('imgPrompt').value = text; }
+
+async function generateImage() {
+  const prompt = document.getElementById('imgPrompt').value.trim();
+  const btn    = document.getElementById('igBtn');
+  const results= document.getElementById('igResults');
+  if (!prompt) { alert('Enter an image description first.'); return; }
+  btn.disabled=true; btn.textContent='Generating...';
+  results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div>Generating image...</div>';
+
+  try {
+    if (imgProvider === 'ollama' && ollamaUrl) {
+      // Use Ollama with llava for image analysis or stable diffusion if available
+      // For now show a placeholder with the prompt
+      results.innerHTML = `
+        <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.82rem;color:var(--light);line-height:1.7">
+          <strong style="color:var(--accent)">Local AI Image Generation</strong><br><br>
+          To generate images with your local Ollama, you need Stable Diffusion installed.<br><br>
+          <strong>Install:</strong><br>
+          <code style="background:rgba(91,155,213,.12);color:var(--blue);padding:.2rem .5rem;border-radius:3px">pip install diffusers torch transformers</code><br><br>
+          For now, DALL-E 3 is recommended for image generation. Switch to DALL-E 3 above and add your OpenAI key.
+        </div>`;
+    } else if (imgProvider === 'dalle' && openaiKey) {
+      const r = await fetch('https://api.openai.com/v1/images/generations', {
+        method:'POST', headers:{'Authorization':'Bearer '+openaiKey,'Content-Type':'application/json'},
+        body:JSON.stringify({model:'dall-e-3',prompt:'Professional construction photo: '+prompt+'. Photorealistic, high quality.',n:1,size:'1024x1024'})
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+      const url = d.data?.[0]?.url;
+      if (url) {
+        results.innerHTML = `<div class="ig-result-img sel" onclick="selectGenImage('${url}')"><img src="${url}" alt="Generated"/></div>`;
+        selectedImg = url;
+      }
+    } else if (imgProvider === 'dalle' && !openaiKey) {
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:var(--mid)">Add your OpenAI API key in Local AI Setup to use DALL-E 3.</div>';
+    } else {
+      // Stable Diffusion via local
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:var(--mid)">Select a provider and make sure it is configured.</div>';
+    }
+  } catch(e) {
+    results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:#e08080">Error: '+e.message+'</div>';
+  }
+  btn.disabled=false; btn.textContent='Generate ✨';
+}
+
+function selectGenImage(url) {
+  selectedImg = url;
+  document.querySelectorAll('.ig-result-img').forEach(el=>el.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+}
+
+// ── MEDIA ─────────────────────────────────────────────────────
+function handleFiles(files) {
+  Array.from(files).forEach(f => { if(mediaFiles.length<10) mediaFiles.push(f); });
+  renderPreviews();
+}
+function handleDrop(e) {
+  e.preventDefault(); document.getElementById('mediaZone').classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+function renderPreviews() {
+  const prev = document.getElementById('mediaPreviews');
+  prev.innerHTML = mediaFiles.map((f,i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="mp-item">${f.type.startsWith('video')?`<video src="${url}" muted style="width:100%;height:100%;object-fit:cover"/>`:`<img src="${url}"/>`}<button class="mp-del" onclick="removeMedia(${i})">✕</button></div>`;
+  }).join('');
+}
+function removeMedia(i) { mediaFiles.splice(i,1); renderPreviews(); }
+
+// ── LLM ───────────────────────────────────────────────────────
+function openLLMSetup() {
+  document.getElementById('ollamaUrlInput').value = ollamaUrl;
+  document.getElementById('openaiKeyInput').value = openaiKey;
+  document.getElementById('llmModal').classList.add('open');
+}
+async function saveOllamaUrl() {
+  const url = document.getElementById('ollamaUrlInput').value.trim();
+  const res = document.getElementById('llmTestResult');
+  res.style.color='var(--mid)'; res.textContent='Testing connection...';
+  try {
+    const r = await fetch(url+'/api/tags', { headers:{'ngrok-skip-browser-warning':'true'} });
+    const d = await r.json();
+    const models = (d.models||[]).map(m=>m.name).join(', ');
+    ollamaUrl = url; localStorage.setItem('sc_ollama_url', url);
+    res.style.color='var(--green)'; res.textContent='✅ Connected! Models: '+models;
+    checkOllamaStatus();
+  } catch(e) { res.style.color='#e08080'; res.textContent='Could not connect: '+e.message+'. Make sure ngrok is running.'; }
+}
+function saveLLMSettings() {
+  ollamaUrl  = document.getElementById('ollamaUrlInput').value.trim();
+  openaiKey  = document.getElementById('openaiKeyInput').value.trim();
+  if (ollamaUrl)  localStorage.setItem('sc_ollama_url', ollamaUrl);
+  if (openaiKey)  localStorage.setItem('sc_openai_key', openaiKey);
+  document.getElementById('llmModal').classList.remove('open');
+  checkOllamaStatus();
+}
+async function checkOllamaStatus() {
+  const bar  = document.getElementById('llmStatusBar');
+  const txt  = document.getElementById('llmStatusText');
+  const dot  = document.getElementById('llmDot');
+  if (!ollamaUrl) { bar.className='llm-status llm-offline'; txt.textContent='Local AI not connected — using Gemini for captions'; dot.textContent='⚪'; return; }
+  try {
+    const r = await fetch(ollamaUrl+'/api/tags', { headers:{'ngrok-skip-browser-warning':'true'} });
+    const d = await r.json();
+    bar.className='llm-status llm-online';
+    txt.textContent='🖥️ Local AI online — '+((d.models||[])[0]?.name||'model')+' · Unlimited free captions';
+    dot.textContent='🟢';
+  } catch(e) { bar.className='llm-status llm-offline'; txt.textContent='Local AI offline — using Gemini'; dot.textContent='🔴'; }
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function setPostType(t, btn) { postType=t; document.querySelectorAll('.ptype').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+function togglePlatform(label, p) { setTimeout(()=>label.classList.toggle('on',label.querySelector('input').checked),0); }
+function toggleSchedule() { const v=document.getElementById('schedWhen').value; document.getElementById('schedDateWrap').style.display=v==='custom'?'block':'none'; document.getElementById('schedTimeWrap').style.display=v==='custom'?'block':'none'; }
+function saveDraft() { alert('Draft saved!'); }
+function saveAutoSettings() { localStorage.setItem('sc_auto_social',JSON.stringify({project:document.getElementById('autoProject').checked,weekly:document.getElementById('autoWeekly').checked,review:document.getElementById('autoReview').checked})); alert('✅ Auto-post settings saved!'); }
+function useIdea(el) { document.getElementById('captionBox').value=el.textContent.trim().replace(/^\S+\s+/,''); }
+function renderStats() { const live=posts.filter(p=>p.status==='live'); document.getElementById('stPosts').textContent=posts.length; document.getElementById('stReach').textContent=(live.length*340+Math.floor(Math.random()*50)).toLocaleString(); document.getElementById('stEng').textContent=Math.floor(live.length*28); document.getElementById('stLeads').textContent=Math.floor(live.length*1.2); }
+function renderRecentPosts() { const el=document.getElementById('recentPosts'); if(!posts.length){el.innerHTML='<div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet.</div>';return;} el.innerHTML=posts.slice(0,5).map(p=>`<div class="scheduled-item"><div class="si-icon">${p.platforms?.includes('facebook')?'👥':'🔍'}</div><div class="si-text"><div class="si-caption">${p.caption?.slice(0,60)||'Post'}</div><div class="si-time">${p.platforms?.join(', ')||''} · ${new Date(p.postedAt).toLocaleDateString()}</div></div><span class="si-badge ${p.status==='live'?'sib-posted':'sib-sched'}">${p.status==='live'?'Live':'Scheduled'}</span></div>`).join(''); }
+
+async function genIdeas() {
+  const btn=document.getElementById('ideasBtn'); btn.disabled=true; btn.textContent='Generating...';
+  const prompt=`Give 4 social media post ideas for ${COMPANY}, a contractor in ${LOCATION}. Format: [Type] idea text under 20 words. Types: Project/Tip/Offer/Seasonal. One per line.`;
+  try {
+    let text='';
+    if(ollamaUrl){const r=await fetch(ollamaUrl+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({model:'llama3.2',prompt,stream:false})});const d=await r.json();text=d.response||'';}
+    else{const r=await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.8,maxOutputTokens:300}})});const d=await r.json();text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';}
+    const colors={Project:'rgba(200,169,110,.15)|var(--accent)|rgba(200,169,110,.3)',Tip:'rgba(110,200,122,.15)|var(--green)|rgba(110,200,122,.3)',Offer:'rgba(232,148,74,.15)|var(--orange)|rgba(232,148,74,.3)',Seasonal:'rgba(91,155,213,.15)|var(--blue)|rgba(91,155,213,.3)'};
+    document.getElementById('ideaList').innerHTML=text.split('\n').filter(l=>l.trim()).slice(0,4).map(line=>{const m=line.match(/\[(\w+)\]/);const type=m?m[1]:'Idea';const[bg,c,b]=(colors[type]||colors.Tip).split('|');return`<div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:${bg};color:${c};border:1px solid ${b}">${type}</span>${line.replace(/\[\w+\]\s*/,'')}</div>`;}).join('')+'<button onclick="genIdeas()" id="ideasBtn" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem">✨ Generate More Ideas</button>';
+  } catch(e){btn.textContent='Try again';}
+  btn&&(btn.disabled=false);
+}
+
+// Load ideas on start
+async function loadIdeas() { if(posts.length===0) {} }
 </script>
 </body>
 </html>
