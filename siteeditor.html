@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Website Editor — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+.header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+.header-actions{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+.save-btn{background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.84rem;font-weight:700;padding:.45rem 1.25rem;cursor:pointer;transition:opacity .2s}
+.save-btn:hover{opacity:.85}
+.save-btn:disabled{opacity:.5;cursor:not-allowed}
+.preview-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:6px;font-size:.84rem;font-weight:600;padding:.45rem 1.1rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.save-msg{font-size:.78rem;color:var(--green);min-width:80px}
+
+.layout{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 58px)}
+.editor-panel{border-right:1px solid var(--border);overflow-y:auto;height:calc(100vh - 58px);background:var(--dark)}
+.preview-panel{background:var(--surface);overflow:hidden;height:calc(100vh - 58px);position:relative}
+
+/* TABS */
+.tab-bar{display:flex;border-bottom:1px solid var(--border);background:var(--black)}
+.tab{flex:1;background:none;border:none;color:var(--mid);font-size:.78rem;font-weight:600;padding:.7rem .5rem;cursor:pointer;transition:all .15s;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.04em}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* SECTIONS */
+.ed-section{padding:1.25rem;border-bottom:1px solid var(--border)}
+.ed-section-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--mid);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+.ed-section-title::before{content:'';display:block;width:3px;height:11px;background:var(--accent);border-radius:2px}
+.fg{margin-bottom:.85rem}
+.fg label{display:block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.35rem}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.86rem;padding:.6rem .85rem;transition:border-color .2s;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:75px}
+
+/* COLORS */
+.color-swatches{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem}
+.cswatch{width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:all .15s}
+.cswatch.sel{border-color:var(--white);transform:scale(1.15)}
+.color-custom{display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+.color-custom input[type=color]{width:34px;height:28px;border:none;border-radius:5px;cursor:pointer;background:none;padding:0}
+.color-custom input[type=text]{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.82rem;padding:.4rem .7rem;font-family:monospace}
+
+/* PHOTOS */
+.photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.photo-slot{aspect-ratio:4/3;border-radius:8px;border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--surface)}
+.photo-slot:hover{border-color:var(--accent)}
+.photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.photo-slot-add{font-size:1.5rem;color:var(--mid);pointer-events:none}
+.photo-slot input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);border:none;color:#fff;font-size:.65rem;width:20px;height:20px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+
+/* LOGO OPTIONS */
+.logo-options{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.logo-opt{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.85rem;cursor:pointer;text-align:center;transition:all .15s}
+.logo-opt:hover,.logo-opt.sel{border-color:var(--accent);background:rgba(200,169,110,.06)}
+.logo-opt svg,.logo-opt canvas{width:100%;height:52px;display:block;margin-bottom:.35rem}
+.logo-opt-name{font-size:.68rem;color:var(--mid)}
+.gen-logo-btn{width:100%;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.3);color:var(--accent);border-radius:7px;font-size:.8rem;font-weight:600;padding:.6rem;cursor:pointer;transition:all .15s;margin-bottom:.6rem}
+.gen-logo-btn:hover{background:rgba(200,169,110,.2)}
+
+/* SERVICES */
+.svc-list{display:flex;flex-direction:column;gap:.35rem}
+.svc-row{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.45rem .7rem}
+.svc-row-name{flex:1;font-size:.84rem}
+.svc-row-del{background:none;border:none;color:var(--mid);cursor:pointer;font-size:.8rem}
+.svc-row-del:hover{color:var(--red)}
+.add-svc-row{display:flex;gap:.4rem;margin-top:.5rem}
+.add-svc-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.82rem;padding:.5rem .75rem}
+.add-svc-input:focus{outline:none;border-color:var(--accent)}
+.add-svc-btn{background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.76rem;font-weight:700;padding:.5rem .9rem;cursor:pointer;white-space:nowrap}
+
+/* PREVIEW */
+.preview-frame{width:100%;height:100%;border:none;display:block}
+.preview-label{position:absolute;top:.75rem;left:50%;transform:translateX(-50%);background:rgba(10,10,10,.9);border:1px solid var(--border);border-radius:99px;font-size:.7rem;color:var(--mid);padding:.2rem .85rem;pointer-events:none;white-space:nowrap}
+.preview-toolbar{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:.35rem;background:rgba(10,10,10,.95);border:1px solid var(--border);border-radius:8px;padding:.35rem}
+.pt-btn{background:none;border:none;color:var(--mid);font-size:.75rem;padding:.25rem .65rem;border-radius:5px;cursor:pointer;transition:all .15s}
+.pt-btn.on,.pt-btn:hover{background:var(--surface);color:var(--white)}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr}.preview-panel{display:none}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo"><span>Site</span>Command</div>
+  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🌐 Website Editor</span>
+  <div class="header-actions">
+    <span class="save-msg" id="saveMsg"></span>
+    <a id="previewLink" href="#" target="_blank" class="preview-btn">🔗 View Live</a>
+    <button class="save-btn" id="saveBtn" onclick="saveChanges()">Save Changes</button>
+    <a href="platform.html" style="font-size:.78rem;color:var(--mid);padding:.35rem .75rem;text-decoration:none">← Dashboard</a>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- EDITOR PANEL -->
+  <div class="editor-panel">
+    <div class="tab-bar">
+      <button class="tab on" onclick="showTab('content',this)">Content</button>
+      <button class="tab" onclick="showTab('design',this)">Design</button>
+      <button class="tab" onclick="showTab('photos',this)">Photos</button>
+      <button class="tab" onclick="showTab('logo',this)">Logo</button>
+    </div>
+
+    <!-- CONTENT TAB -->
+    <div id="tab-content">
+      <div class="ed-section">
+        <div class="ed-section-title">Business Info</div>
+        <div class="fg"><label>Company Name</label><input id="eCoName" oninput="liveUpdate()" placeholder="Smith Roofing LLC"/></div>
+        <div class="fg"><label>Tagline</label><input id="eTagline" oninput="liveUpdate()" placeholder="Quality work, honest price"/></div>
+        <div class="fg"><label>About Your Business</label><textarea id="eAbout" oninput="liveUpdate()" placeholder="Tell clients about your company, your experience, what makes you different..."></textarea></div>
+      </div>
+      <div class="ed-section">
+        <div class="ed-section-title">Contact Info</div>
+        <div class="fg"><label>Phone Number</label><input id="ePhone" oninput="liveUpdate()" placeholder="(302) 000-0000" type="tel"/></div>
+        <div class="fg"><label>Email</label><input id="eEmail" oninput="liveUpdate()" placeholder="info@yourcompany.com" type="email"/></div>
+        <div class="fg"><label>City & State</label><input id="eLocation" oninput="liveUpdate()" placeholder="Wilmington, DE"/></div>
+      </div>
+      <div class="ed-section">
+        <div class="ed-section-title">Services</div>
+        <div class="svc-list" id="svcList"></div>
+        <div class="add-svc-row">
+          <input class="add-svc-input" id="addSvcInput" placeholder="Add a service..." onkeydown="if(event.key==='Enter')addService()"/>
+          <button class="add-svc-btn" onclick="addService()">+ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN TAB -->
+    <div id="tab-design" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-title">Brand Color</div>
+        <div class="color-swatches" id="colorSwatches">
+          <div class="cswatch sel" style="background:#c8a96e" data-c="#c8a96e" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#4a9eff" data-c="#4a9eff" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#6ec87a" data-c="#6ec87a" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#e05252" data-c="#e05252" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#9b59b6" data-c="#9b59b6" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#e67e22" data-c="#e67e22" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#1abc9c" data-c="#1abc9c" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#e91e8c" data-c="#e91e8c" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#2c3e50" data-c="#2c3e50" onclick="setColor(this)"></div>
+          <div class="cswatch" style="background:#7f8c8d" data-c="#7f8c8d" onclick="setColor(this)"></div>
+        </div>
+        <div class="color-custom">
+          <input type="color" id="colorPicker" onchange="setColorFromPicker(this)"/>
+          <input type="text" id="colorHex" placeholder="#c8a96e" onchange="setColorFromHex(this)"/>
+        </div>
+      </div>
+      <div class="ed-section">
+        <div class="ed-section-title">Hero Background Photo</div>
+        <div class="fg"><label>Or enter a photo URL</label><input id="eHeroPhoto" oninput="liveUpdate()" placeholder="https://images.unsplash.com/..."/></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
+          ${[
+            'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&q=70',
+            'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',
+            'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=400&q=70',
+            'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&q=70',
+          ].map((url,i) => `
+          <div onclick="setHeroPhoto('${url.replace('w=400','w=1400')}')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='transparent'">
+            <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTOS TAB -->
+    <div id="tab-photos" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-title">Project Photos</div>
+        <p style="font-size:.78rem;color:var(--mid);margin-bottom:.85rem;line-height:1.6">Upload photos of your completed projects. They appear in your website gallery and project pages automatically.</p>
+        <div class="photo-grid" id="photoGrid"></div>
+        <p style="font-size:.72rem;color:var(--mid);margin-top:.6rem">Tap any slot to upload. JPG or PNG, max 10MB.</p>
+      </div>
+      <div class="ed-section">
+        <div class="ed-section-title">Photo URLs (alternative)</div>
+        <p style="font-size:.78rem;color:var(--mid);margin-bottom:.65rem">Paste photo URLs if you have them hosted elsewhere.</p>
+        ${[0,1,2,3,4,5].map(i => `<div class="fg" style="margin-bottom:.5rem"><label>Photo ${i+1}</label><input id="photoUrl${i}" oninput="updatePhotoUrl(${i})" placeholder="https://..."/></div>`).join('')}
+      </div>
+    </div>
+
+    <!-- LOGO TAB -->
+    <div id="tab-logo" style="display:none">
+      <div class="ed-section">
+        <div class="ed-section-title">Generate a Logo</div>
+        <p style="font-size:.8rem;color:var(--mid);margin-bottom:.85rem;line-height:1.65">Click Generate to get 6 logo options created by AI for your company. Pick the one you like best.</p>
+        <button class="gen-logo-btn" id="genLogoBtn" onclick="generateLogos()">✨ Generate Logo Options</button>
+        <div id="logoOptions" class="logo-options"></div>
+        <div id="selectedLogoPreview" style="margin-top:.85rem;display:none">
+          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--green);margin-bottom:.4rem">✓ Logo Selected</div>
+          <canvas id="selectedLogoCanvas" width="280" height="80" style="width:100%;border-radius:7px;background:var(--surface);border:1px solid var(--border)"></canvas>
+        </div>
+      </div>
+      <div class="ed-section">
+        <div class="ed-section-title">Upload Your Own Logo</div>
+        <div class="photo-slot" style="width:100%;aspect-ratio:3/1" id="logoUploadSlot">
+          <input type="file" accept="image/*" onchange="uploadLogo(this)"/>
+          <div class="photo-slot-add">🖼️</div>
+          <div style="font-size:.72rem;color:var(--mid);margin-top:.25rem;pointer-events:none">Upload logo image</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW PANEL -->
+  <div class="preview-panel">
+    <div class="preview-label" id="previewLabel">Live Preview</div>
+    <iframe id="previewFrame" class="preview-frame" src="about:blank"></iframe>
+    <div class="preview-toolbar">
+      <button class="pt-btn on" onclick="setPreviewPage('/',this)">Home</button>
+      <button class="pt-btn" onclick="setPreviewPage('/services',this)">Services</button>
+      <button class="pt-btn" onclick="setPreviewPage('/projects',this)">Projects</button>
+      <button class="pt-btn" onclick="setPreviewPage('/about',this)">About</button>
+      <button class="pt-btn" onclick="setPreviewPage('/contact',this)">Contact</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FB = {
+  apiKey:'AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8',
+  authDomain:'sitecommand-saas.firebaseapp.com',
+  projectId:'sitecommand-saas',
+  storageBucket:'sitecommand-saas.firebasestorage.app',
+  messagingSenderId:'309552233436',
+  appId:'1:309552233436:web:c1dcecb5ed8b9373862d19',
+};
+const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+
+const app  = initializeApp(FB,'editor');
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let userData  = null;
+let userUID   = null;
+let previewPage = '/';
+let selectedColor = '#c8a96e';
+let projectPhotos = [];
+let selectedLogo  = null;
+let saveTimeout   = null;
+
+// ── LOAD DATA ──────────────────────────────────────────────────
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href='platform.html'; return; }
+  userUID = user.uid;
+  const snap = await getDoc(doc(db,'contractors',user.uid));
+  if (!snap.exists()) { window.location.href='platform.html'; return; }
+  userData = snap.data();
+  populateFields();
+  updatePreview();
+  const slug = userData.slug || '';
+  document.getElementById('previewLink').href = 'https://'+slug+'.sitecommand.net';
+});
+
+function populateFields() {
+  const d = userData;
+  document.getElementById('eCoName').value   = d.companyName  || '';
+  document.getElementById('eTagline').value  = d.tagline      || '';
+  document.getElementById('eAbout').value    = d.about        || '';
+  document.getElementById('ePhone').value    = d.bizPhone     || '';
+  document.getElementById('eEmail').value    = d.email        || '';
+  document.getElementById('eLocation').value = d.location     || (d.city+', '+d.state) || '';
+  document.getElementById('eHeroPhoto').value= d.heroPhoto    || '';
+  selectedColor = d.color || '#c8a96e';
+  document.querySelectorAll('.cswatch').forEach(s => {
+    s.classList.toggle('sel', s.dataset.c === selectedColor);
+  });
+  document.getElementById('colorPicker').value = selectedColor;
+  document.getElementById('colorHex').value   = selectedColor;
+  projectPhotos = d.projectPhotos || [];
+  (d.projectPhotoUrls||[]).forEach((url,i) => {
+    const inp = document.getElementById('photoUrl'+i);
+    if (inp) inp.value = url;
+  });
+  renderServices();
+  renderPhotoGrid();
+}
+
+// ── SERVICES ──────────────────────────────────────────────────
+function renderServices() {
+  const svcs = userData.services || [];
+  document.getElementById('svcList').innerHTML = svcs.map((s,i) => `
+    <div class="svc-row">
+      <span class="svc-row-name">${s}</span>
+      <button class="svc-row-del" onclick="removeService(${i})">✕</button>
+    </div>`).join('');
+}
+window.removeService = i => {
+  userData.services.splice(i,1);
+  renderServices();
+  scheduleSave();
+};
+window.addService = () => {
+  const inp = document.getElementById('addSvcInput');
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!userData.services) userData.services = [];
+  userData.services.push(val);
+  inp.value = '';
+  renderServices();
+  scheduleSave();
+};
+
+// ── PHOTOS ────────────────────────────────────────────────────
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  const slots = 6;
+  grid.innerHTML = Array.from({length:slots},(_,i) => {
+    const url = projectPhotos[i] || '';
+    return `<div class="photo-slot" id="photoSlot${i}">
+      <input type="file" accept="image/*" onchange="uploadPhoto(${i},this)"/>
+      ${url ? `<img src="${url}" alt="Project ${i+1}"/>
+        <button class="photo-del" onclick="removePhoto(${i},event)">✕</button>` :
+        `<div class="photo-slot-add">📷</div>`}
+    </div>`;
+  }).join('');
+}
+window.uploadPhoto = (i, input) => {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    projectPhotos[i] = e.target.result;
+    renderPhotoGrid();
+    scheduleSave();
+    updatePreview();
+  };
+  reader.readAsDataURL(input.files[0]);
+};
+window.removePhoto = (i, e) => {
+  e.preventDefault(); e.stopPropagation();
+  projectPhotos.splice(i,1);
+  renderPhotoGrid();
+  scheduleSave();
+};
+window.updatePhotoUrl = i => {
+  const url = document.getElementById('photoUrl'+i)?.value.trim();
+  if (url) { projectPhotos[i] = url; updatePreview(); scheduleSave(); }
+};
+
+// ── LOGO GENERATION ───────────────────────────────────────────
+window.generateLogos = async () => {
+  const btn  = document.getElementById('genLogoBtn');
+  const opts = document.getElementById('logoOptions');
+  const name = document.getElementById('eCoName').value.trim() || userData?.companyName || 'My Company';
+  btn.disabled = true; btn.textContent = '✨ Generating logos...';
+  opts.innerHTML = '<div style="font-size:.8rem;color:var(--mid);padding:1rem;text-align:center">Creating 6 unique logo options...</div>';
+
+  const styles = [
+    {style:'Modern minimal — bold sans-serif initials in a geometric shape', name:'Modern'},
+    {style:'Classic serif — company name in elegant serif font with a horizontal rule', name:'Classic'},
+    {style:'Badge style — circular emblem with company name around the edge', name:'Badge'},
+    {style:'Construction icon — simple hard hat or tool icon with company name', name:'Icon'},
+    {style:'Monogram — decorative intertwined initials in a square', name:'Monogram'},
+    {style:'Wordmark — clean bold lettering, first word in accent color', name:'Wordmark'},
+  ];
+
+  const color = selectedColor;
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+  // Generate all 6 logos as SVG (no API needed — pure SVG)
+  const logos = generateSVGLogos(name, initials, color);
+  
+  opts.innerHTML = logos.map((svg,i) => `
+    <div class="logo-opt" id="logoOpt${i}" onclick="selectLogo(${i},'${encodeURIComponent(svg)}')">
+      <div style="background:var(--black);border-radius:5px;padding:.5rem;margin-bottom:.3rem">${svg}</div>
+      <div class="logo-opt-name">${styles[i].name}</div>
+    </div>`).join('');
+
+  btn.disabled = false; btn.textContent = '✨ Regenerate Logos';
+};
+
+function generateSVGLogos(name, initials, color) {
+  const shortName = name.replace(/\b(llc|inc|co|corp|ltd)\b/gi,'').trim();
+  const words = shortName.split(' ');
+  const first = words[0] || name;
+  const rest  = words.slice(1).join(' ');
+
+  return [
+    // 1. Modern — square with initials
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="40" height="40" rx="6" fill="${color}"/>
+      <text x="22" y="31" text-anchor="middle" font-family="Helvetica Neue,Arial" font-weight="800" font-size="20" fill="#000">${initials}</text>
+      <text x="52" y="24" font-family="Helvetica Neue,Arial" font-weight="700" font-size="13" fill="#f5f3ef">${first}</text>
+      <text x="52" y="38" font-family="Helvetica Neue,Arial" font-weight="300" font-size="10" fill="#888">${rest||'Construction'}</text>
+    </svg>`,
+    // 2. Classic — name with line
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <text x="70" y="20" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="14" fill="#f5f3ef">${first.toUpperCase()}</text>
+      <line x1="20" y1="26" x2="120" y2="26" stroke="${color}" stroke-width="1.5"/>
+      <text x="70" y="38" text-anchor="middle" font-family="Georgia,serif" font-weight="400" font-size="10" fill="#888" letter-spacing="2">${(rest||'CONSTRUCTION').toUpperCase()}</text>
+    </svg>`,
+    // 3. Badge — circle
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="70" cy="24" r="22" fill="none" stroke="${color}" stroke-width="1.5"/>
+      <circle cx="70" cy="24" r="18" fill="none" stroke="${color}" stroke-width=".5" stroke-dasharray="3 2"/>
+      <text x="70" y="20" text-anchor="middle" font-family="Helvetica Neue,Arial" font-weight="800" font-size="12" fill="${color}">${initials}</text>
+      <text x="70" y="31" text-anchor="middle" font-family="Helvetica Neue,Arial" font-weight="500" font-size="6" fill="#888" letter-spacing="1">${shortName.slice(0,12).toUpperCase()}</text>
+    </svg>`,
+    // 4. Icon — hard hat + name
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="16" width="28" height="16" rx="3" fill="${color}"/>
+      <rect x="10" y="10" width="20" height="10" rx="10" fill="${color}" opacity=".7"/>
+      <rect x="4" y="30" width="32" height="4" rx="2" fill="${color}"/>
+      <text x="48" y="22" font-family="Helvetica Neue,Arial" font-weight="700" font-size="12" fill="#f5f3ef">${first}</text>
+      <text x="48" y="36" font-family="Helvetica Neue,Arial" font-weight="400" font-size="9" fill="#888">${rest||'Construction'}</text>
+    </svg>`,
+    // 5. Monogram — decorative
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="4" width="40" height="40" rx="3" fill="none" stroke="${color}" stroke-width="1.5"/>
+      <rect x="6" y="8" width="32" height="32" rx="2" fill="${color}" opacity=".12"/>
+      <text x="22" y="32" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="22" fill="${color}">${initials}</text>
+      <text x="52" y="26" font-family="Georgia,serif" font-weight="400" font-size="11" fill="#f5f3ef" font-style="italic">${shortName.slice(0,16)}</text>
+    </svg>`,
+    // 6. Wordmark — clean
+    `<svg viewBox="0 0 140 48" xmlns="http://www.w3.org/2000/svg">
+      <text x="8" y="28" font-family="Helvetica Neue,Arial" font-weight="800" font-size="18" fill="${color}">${first.toUpperCase()}</text>
+      <text x="${8 + first.length * 10.5}" y="28" font-family="Helvetica Neue,Arial" font-weight="300" font-size="18" fill="#f5f3ef">${rest ? ' '+rest.toUpperCase() : ''}</text>
+      <rect x="8" y="33" width="${Math.min(shortName.length*6,120)}" height="2" fill="${color}"/>
+      <text x="8" y="43" font-family="Helvetica Neue,Arial" font-weight="400" font-size="7" fill="#666" letter-spacing="2">LICENSED CONTRACTOR · ${(userData?.location||'').toUpperCase()}</text>
+    </svg>`,
+  ];
+}
+
+window.selectLogo = (i, svgEncoded) => {
+  document.querySelectorAll('.logo-opt').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('logoOpt'+i)?.classList.add('sel');
+  const svg = decodeURIComponent(svgEncoded);
+  selectedLogo = svg;
+  document.getElementById('selectedLogoPreview').style.display='block';
+  const preview = document.getElementById('selectedLogoCanvas');
+  const ctx     = preview.getContext('2d');
+  // Render SVG to canvas for preview
+  const img = new Image();
+  const blob= new Blob([svg],{type:'image/svg+xml'});
+  img.onload = () => { ctx.clearRect(0,0,280,80); ctx.drawImage(img,0,0,280,80); URL.revokeObjectURL(img.src); };
+  img.src = URL.createObjectURL(blob);
+  scheduleSave();
+};
+
+window.uploadLogo = inp => {
+  if (!inp.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    userData.logoUrl = e.target.result;
+    const slot = document.getElementById('logoUploadSlot');
+    slot.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:contain;padding:.5rem"/>`;
+    scheduleSave();
+  };
+  reader.readAsDataURL(inp.files[0]);
+};
+
+// ── COLORS ────────────────────────────────────────────────────
+window.setColor = el => {
+  document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedColor = el.dataset.c;
+  document.getElementById('colorPicker').value = selectedColor;
+  document.getElementById('colorHex').value    = selectedColor;
+  scheduleSave(); updatePreview();
+};
+window.setColorFromPicker = inp => {
+  selectedColor = inp.value;
+  document.getElementById('colorHex').value = selectedColor;
+  document.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('sel'));
+  scheduleSave(); updatePreview();
+};
+window.setColorFromHex = inp => {
+  const v = inp.value.trim();
+  if (/^#[0-9a-f]{6}$/i.test(v)) { selectedColor=v; document.getElementById('colorPicker').value=v; scheduleSave(); updatePreview(); }
+};
+window.setHeroPhoto = url => {
+  document.getElementById('eHeroPhoto').value = url;
+  scheduleSave(); updatePreview();
+};
+
+// ── LIVE PREVIEW ─────────────────────────────────────────────
+let previewTimeout = null;
+function liveUpdate() { if(previewTimeout)clearTimeout(previewTimeout); previewTimeout=setTimeout(updatePreview,800); scheduleSave(); }
+window.liveUpdate = liveUpdate;
+
+function updatePreview() {
+  const slug = userData?.slug || '';
+  if (!slug) return;
+  const frame = document.getElementById('previewFrame');
+  frame.src = 'https://'+slug+'.sitecommand.net'+previewPage+'?preview='+Date.now();
+}
+
+window.setPreviewPage = (page, btn) => {
+  previewPage = page;
+  document.querySelectorAll('.pt-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  updatePreview();
+};
+
+// ── SAVE ─────────────────────────────────────────────────────
+function scheduleSave() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(saveChanges, 3000);
+}
+
+window.saveChanges = async () => {
+  if (!userUID) return;
+  const btn = document.getElementById('saveBtn');
+  const msg = document.getElementById('saveMsg');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  
+  const updates = {
+    companyName:     document.getElementById('eCoName').value.trim(),
+    tagline:         document.getElementById('eTagline').value.trim(),
+    about:           document.getElementById('eAbout').value.trim(),
+    bizPhone:        document.getElementById('ePhone').value.trim(),
+    email:           document.getElementById('eEmail').value.trim(),
+    location:        document.getElementById('eLocation').value.trim(),
+    heroPhoto:       document.getElementById('eHeroPhoto').value.trim(),
+    color:           selectedColor,
+    services:        userData?.services || [],
+    projectPhotos:   projectPhotos.filter(Boolean),
+    projectPhotoUrls:[...Array(6)].map((_,i)=>document.getElementById('photoUrl'+i)?.value.trim()||'').filter(Boolean),
+    updatedAt:       serverTimestamp(),
+  };
+  if (selectedLogo) updates.logoSvg = selectedLogo;
+  if (userData?.logoUrl) updates.logoUrl = userData.logoUrl;
+
+  try {
+    await updateDoc(doc(db,'contractors',userUID), updates);
+    Object.assign(userData, updates);
+    msg.textContent = '✅ Saved!';
+    setTimeout(()=>msg.textContent='',3000);
+  } catch(e) {
+    msg.style.color='#e08080'; msg.textContent='Error: '+e.message;
+    setTimeout(()=>{msg.textContent='';msg.style.color='var(--green)'},4000);
+  }
+  btn.disabled=false; btn.textContent='Save Changes';
+};
+
+// ── TABS ─────────────────────────────────────────────────────
+window.showTab = (id, btn) => {
+  ['content','design','photos','logo'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===id?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+};
+</script>
+</body>
+</html>
