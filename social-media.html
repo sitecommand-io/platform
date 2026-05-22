@@ -388,6 +388,15 @@ input,select,textarea,button{font-family:inherit}
       <input class="llm-url-input modal-input" id="ollamaUrlInput" placeholder="https://abc123.ngrok-free.dev"/>
       <button class="llm-save-btn" onclick="saveOllamaUrl()">Connect</button>
     </div>
+    <div class="modal-step" style="margin-top:.75rem">
+      <strong>ComfyUI URL</strong> (for image generation):<br>
+      Your ComfyUI Cloudflare URL:
+    </div>
+    <div class="llm-url-row">
+      <input class="llm-url-input modal-input" id="comfyUrlInput" placeholder="https://xxx.trycloudflare.com"/>
+      <button class="llm-save-btn" onclick="saveComfyUrl()">Save</button>
+    </div>
+    <div id="comfyTestResult" style="font-size:.78rem;margin-top:.35rem;min-height:.9rem"></div>
     <div id="llmTestResult" style="font-size:.78rem;margin-top:.5rem;min-height:.9rem"></div>
     <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0"/>
     <div class="modal-step" style="margin-bottom:.75rem">
@@ -764,47 +773,126 @@ function setImgProvider(p, btn) {
 function setImgPrompt(text) { document.getElementById('imgPrompt').value = text; }
 
 async function generateImage() {
-  const prompt = document.getElementById('imgPrompt').value.trim();
-  const btn    = document.getElementById('igBtn');
-  const results= document.getElementById('igResults');
+  const prompt  = document.getElementById('imgPrompt').value.trim();
+  const btn     = document.getElementById('igBtn');
+  const results = document.getElementById('igResults');
+  const sdUrl   = localStorage.getItem('sc_sd_url') || '';
   if (!prompt) { alert('Enter an image description first.'); return; }
   btn.disabled=true; btn.textContent='Generating...';
-  results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div>Generating image...</div>';
+  results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div><div style="margin-top:.5rem">Generating image — takes 15-30 seconds...</div></div>';
 
   try {
-    if (imgProvider === 'ollama' && ollamaUrl) {
-      // Use Ollama with llava for image analysis or stable diffusion if available
-      // For now show a placeholder with the prompt
-      results.innerHTML = `
-        <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.82rem;color:var(--light);line-height:1.7">
-          <strong style="color:var(--accent)">Local AI Image Generation</strong><br><br>
-          To generate images with your local Ollama, you need Stable Diffusion installed.<br><br>
-          <strong>Install:</strong><br>
-          <code style="background:rgba(91,155,213,.12);color:var(--blue);padding:.2rem .5rem;border-radius:3px">pip install diffusers torch transformers</code><br><br>
-          For now, DALL-E 3 is recommended for image generation. Switch to DALL-E 3 above and add your OpenAI key.
-        </div>`;
-    } else if (imgProvider === 'dalle' && openaiKey) {
+    // ── ComfyUI API ──
+    if (imgProvider === 'stable' && sdUrl) {
+      const fullPrompt = 'professional construction photography, ' + prompt + ', photorealistic, high quality, 4k, sharp focus, good lighting';
+      
+      // ComfyUI workflow for basic txt2img
+      const workflow = {
+        "3": { "class_type": "KSampler", "inputs": { "cfg": 7, "denoise": 1, "latent_image": ["5", 0], "model": ["4", 0], "negative": ["7", 0], "positive": ["6", 0], "sampler_name": "euler", "scheduler": "normal", "seed": Math.floor(Math.random()*999999999), "steps": 20 } },
+        "4": { "class_type": "CheckpointLoaderSimple", "inputs": { "ckpt_name": "sd15.safetensors" } },
+        "5": { "class_type": "EmptyLatentImage", "inputs": { "batch_size": 1, "height": 512, "width": 512 } },
+        "6": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["4", 1], "text": fullPrompt } },
+        "7": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["4", 1], "text": "blurry, low quality, watermark, text, ugly, distorted, cartoon, unrealistic" } },
+        "8": { "class_type": "VAEDecode", "inputs": { "samples": ["3", 0], "vae": ["4", 2] } },
+        "9": { "class_type": "SaveImage", "inputs": { "filename_prefix": "sitecommand", "images": ["8", 0] } }
+      };
+
+      // Queue the prompt
+      const queueRes = await fetch(sdUrl + '/prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: workflow, client_id: 'sitecommand' })
+      });
+      const queueData = await queueRes.json();
+      const promptId  = queueData.prompt_id;
+      
+      if (!promptId) throw new Error('Failed to queue image generation');
+      
+      // Poll for completion
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div><div style="margin-top:.5rem" id="genStatus">Generating... 0s</div></div>';
+      
+      let elapsed = 0;
+      const statusInterval = setInterval(() => {
+        elapsed++;
+        const el = document.getElementById('genStatus');
+        if (el) el.textContent = 'Generating... ' + elapsed + 's';
+      }, 1000);
+
+      let imageUrl = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        const histRes  = await fetch(sdUrl + '/history/' + promptId);
+        const histData = await histRes.json();
+        const result   = histData[promptId];
+        if (result?.outputs) {
+          const images = result.outputs['9']?.images;
+          if (images?.length) {
+            imageUrl = sdUrl + '/view?filename=' + images[0].filename + '&subfolder=' + (images[0].subfolder||'') + '&type=output';
+            break;
+          }
+        }
+      }
+      clearInterval(statusInterval);
+
+      if (imageUrl) {
+        results.innerHTML = `
+          <div class="ig-result-img sel" onclick="selectGenImage('${imageUrl}',this)" style="grid-column:span 3;aspect-ratio:1">
+            <img src="${imageUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/>
+          </div>`;
+        selectedImg = imageUrl;
+        // Also add to media files
+        const response = await fetch(imageUrl);
+        const blob     = await response.blob();
+        const file     = new File([blob], 'generated.png', { type: 'image/png' });
+        mediaFiles.push(file);
+        renderPreviews();
+      } else {
+        throw new Error('Generation timed out. Try again.');
+      }
+
+    // ── DALL-E 3 ──
+    } else if (imgProvider === 'dalle') {
+      const key = openaiKey || localStorage.getItem('sc_openai_key') || '';
+      if (!key) {
+        results.innerHTML = '<div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.84rem;color:var(--light);line-height:1.7"><strong style="color:var(--accent)">Add OpenAI API Key</strong><br><br>Get a free key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--accent)">platform.openai.com</a> then paste it in the Local AI Setup panel.<br><br>DALL-E 3 costs $0.04 per image — about $0.40/month for 10 posts.</div>';
+        btn.disabled=false; btn.textContent='Generate ✨';
+        return;
+      }
       const r = await fetch('https://api.openai.com/v1/images/generations', {
-        method:'POST', headers:{'Authorization':'Bearer '+openaiKey,'Content-Type':'application/json'},
-        body:JSON.stringify({model:'dall-e-3',prompt:'Professional construction photo: '+prompt+'. Photorealistic, high quality.',n:1,size:'1024x1024'})
+        method:'POST', headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+        body:JSON.stringify({ model:'dall-e-3', prompt:'Professional construction photography: '+prompt+'. Photorealistic, 4K, high quality.', n:1, size:'1024x1024' })
       });
       const d = await r.json();
       if (d.error) throw new Error(d.error.message);
       const url = d.data?.[0]?.url;
       if (url) {
-        results.innerHTML = `<div class="ig-result-img sel" onclick="selectGenImage('${url}')"><img src="${url}" alt="Generated"/></div>`;
+        results.innerHTML = `<div class="ig-result-img sel" onclick="selectGenImage('${url}',this)" style="grid-column:span 3;aspect-ratio:1"><img src="${url}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/></div>`;
         selectedImg = url;
       }
-    } else if (imgProvider === 'dalle' && !openaiKey) {
-      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:var(--mid)">Add your OpenAI API key in Local AI Setup to use DALL-E 3.</div>';
+
+    // ── LOCAL OLLAMA (caption only — no image gen) ──
+    } else if (imgProvider === 'ollama') {
+      const sdConfigured = !!localStorage.getItem('sc_sd_url');
+      results.innerHTML = `
+        <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.84rem;color:var(--light);line-height:1.8">
+          <strong style="color:var(--accent)">🖥️ Local Image Generation</strong><br><br>
+          Your ComfyUI is running! Switch to <strong style="color:var(--white)">Stable Diffusion</strong> tab above to generate images.<br><br>
+          ${sdConfigured ? '<span style="color:var(--green)">✅ ComfyUI URL is saved</span>' : 'Save your ComfyUI URL in Local AI Setup first.'}
+        </div>`;
+
     } else {
-      // Stable Diffusion via local
-      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:var(--mid)">Select a provider and make sure it is configured.</div>';
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;font-size:.84rem;color:var(--mid)">Configure your image provider in the Local AI Setup panel.</div>';
     }
   } catch(e) {
-    results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:#e08080">Error: '+e.message+'</div>';
+    results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:#e08080">❌ Error: '+e.message+'</div>';
   }
   btn.disabled=false; btn.textContent='Generate ✨';
+}
+
+function selectGenImage(url, el) {
+  selectedImg = url;
+  document.querySelectorAll('.ig-result-img').forEach(e=>e.classList.remove('sel'));
+  el?.classList.add('sel');
 }
 
 function selectGenImage(url) {
@@ -835,6 +923,7 @@ function removeMedia(i) { mediaFiles.splice(i,1); renderPreviews(); }
 function openLLMSetup() {
   document.getElementById('ollamaUrlInput').value = ollamaUrl;
   document.getElementById('openaiKeyInput').value = openaiKey;
+  document.getElementById('comfyUrlInput').value  = localStorage.getItem('sc_sd_url') || '';
   document.getElementById('llmModal').classList.add('open');
 }
 async function saveOllamaUrl() {
@@ -850,11 +939,30 @@ async function saveOllamaUrl() {
     checkOllamaStatus();
   } catch(e) { res.style.color='#e08080'; res.textContent='Could not connect: '+e.message+'. Make sure ngrok is running.'; }
 }
+async function saveComfyUrl() {
+  const url = document.getElementById('comfyUrlInput').value.trim();
+  const res = document.getElementById('comfyTestResult');
+  if (!url) return;
+  res.style.color='var(--mid)'; res.textContent='Testing ComfyUI connection...';
+  try {
+    const r = await fetch(url + '/system_stats');
+    const d = await r.json();
+    localStorage.setItem('sc_sd_url', url);
+    res.style.color='var(--green)'; res.textContent='✅ ComfyUI connected! Switch to Stable Diffusion to generate images.';
+    // Auto-switch provider
+    imgProvider='stable';
+    document.querySelectorAll('.ig-prov').forEach(b=>b.classList.remove('on'));
+    document.getElementById('provStable')?.classList.add('on');
+  } catch(e) { res.style.color='#e08080'; res.textContent='Could not connect: '+e.message; }
+}
+
 function saveLLMSettings() {
-  ollamaUrl  = document.getElementById('ollamaUrlInput').value.trim();
-  openaiKey  = document.getElementById('openaiKeyInput').value.trim();
-  if (ollamaUrl)  localStorage.setItem('sc_ollama_url', ollamaUrl);
-  if (openaiKey)  localStorage.setItem('sc_openai_key', openaiKey);
+  ollamaUrl = document.getElementById('ollamaUrlInput').value.trim();
+  openaiKey = document.getElementById('openaiKeyInput').value.trim();
+  const sdUrl = document.getElementById('comfyUrlInput').value.trim();
+  if (ollamaUrl) localStorage.setItem('sc_ollama_url', ollamaUrl);
+  if (openaiKey) localStorage.setItem('sc_openai_key', openaiKey);
+  if (sdUrl)     localStorage.setItem('sc_sd_url', sdUrl);
   document.getElementById('llmModal').classList.remove('open');
   checkOllamaStatus();
 }
