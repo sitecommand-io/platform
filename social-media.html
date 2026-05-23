@@ -579,38 +579,41 @@ async function connectGoogle() {
       result.textContent = 'Getting your business profile...';
 
       try {
-        // Get business accounts
-        const accountsRes = await fetch(
-          'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
-          { headers: { 'Authorization': 'Bearer ' + token } }
-        );
-        const accountsData = await accountsRes.json();
-        const accounts     = accountsData.accounts || [];
-
-        if (!accounts.length) {
-          result.style.color = '#e08080';
-          result.innerHTML = '❌ No Google Business Profile found.<br><a href="https://business.google.com" target="_blank" style="color:var(--accent)">Create one at business.google.com →</a>';
-          if (btn) btn.disabled = false;
-          return;
-        }
+        // Get business accounts (handle rate limiting)
+        let accounts = [];
+        try {
+          const accountsRes  = await fetch(
+            'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          if (accountsRes.status === 429) {
+            // Rate limited - still connect with token, get location later
+            result.textContent = 'Rate limited — connecting anyway...';
+            await new Promise(r => setTimeout(r, 2000));
+          } else {
+            const accountsData = await accountsRes.json();
+            accounts = accountsData.accounts || [];
+          }
+        } catch(e) { accounts = []; }
 
         // Get locations for first account
         const account  = accounts[0];
         let locationName = account.accountName || 'Google Business';
         let locationId   = account.name;
 
-        try {
-          const locRes  = await fetch(
-            'https://mybusinessbusinessinformation.googleapis.com/v1/' + account.name + '/locations?readMask=name,title',
-            { headers: { 'Authorization': 'Bearer ' + token } }
-          );
-          const locData = await locRes.json();
-          const locs    = locData.locations || [];
-          if (locs.length) {
-            locationName = locs[0].title || locationName;
-            locationId   = locs[0].name  || locationId;
-          }
-        } catch(e) {}
+          try {
+            const locRes  = await fetch(
+              'https://mybusinessbusinessinformation.googleapis.com/v1/' + account.name + '/locations?readMask=name,title',
+              { headers: { 'Authorization': 'Bearer ' + token } }
+            );
+            const locData = await locRes.json();
+            const locs    = locData.locations || [];
+            if (locs.length) {
+              locationName = locs[0].title || locationName;
+              locationId   = locs[0].name  || locationId;
+            }
+          } catch(e) {}
+        } // end if accounts.length
 
         // Save connection
         connected.google = {
