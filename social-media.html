@@ -835,30 +835,33 @@ async function generateImage() {
       clearInterval(statusInterval);
 
       if (imageUrl) {
-        // Fetch image as blob through proxy with ngrok header
+        // Fetch image as blob and display using object URL
         try {
           const imgResp = await fetch(imageUrl, { 
             headers: { 'ngrok-skip-browser-warning': 'true' } 
           });
-          const blob    = await imgResp.blob();
-          const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob); });
+          const blob   = await imgResp.blob();
+          const objUrl = URL.createObjectURL(blob);
           
           results.innerHTML = `
-            <div class="ig-result-img sel" onclick="selectGenImage('${dataUrl}',this)" style="grid-column:span 3;aspect-ratio:1">
-              <img src="${dataUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/>
-            </div>`;
-          selectedImg = dataUrl;
+            <div class="ig-result-img sel" style="grid-column:span 3;aspect-ratio:1;cursor:pointer" id="genImgWrap">
+              <img src="${objUrl}" alt="Generated image" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:7px"/>
+            </div>
+            <div style="grid-column:span 3;text-align:center;font-size:.78rem;color:var(--green);margin-top:.35rem">✅ Image generated — added to your post</div>`;
           
-          // Add to media files
-          const file = new File([blob], 'generated.png', { type: 'image/png' });
+          selectedImg = objUrl;
+          
+          // Add to media files for posting
+          const file = new File([blob], 'ai-generated.png', { type: 'image/png' });
           mediaFiles.push(file);
           renderPreviews();
+          
         } catch(imgErr) {
-          // Fallback — show direct URL
+          console.error('Image load error:', imgErr);
           results.innerHTML = `
-            <div class="ig-result-img sel" style="grid-column:span 3;aspect-ratio:1">
-              <img src="${imageUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover" crossorigin="anonymous"/>
-              <div style="font-size:.72rem;color:var(--green);padding:.35rem;text-align:center">✅ Image generated! If not visible, <a href="${imageUrl}" target="_blank" style="color:var(--accent)">open here</a></div>
+            <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;text-align:center">
+              <div style="color:var(--green);font-size:.88rem;font-weight:600;margin-bottom:.5rem">✅ Image Generated Successfully!</div>
+              <div style="font-size:.78rem;color:var(--mid)">Image saved to your Mac. <a href="${imageUrl}" target="_blank" style="color:var(--accent)">Click to view →</a></div>
             </div>`;
           selectedImg = imageUrl;
         }
