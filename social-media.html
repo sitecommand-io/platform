@@ -835,17 +835,33 @@ async function generateImage() {
       clearInterval(statusInterval);
 
       if (imageUrl) {
-        results.innerHTML = `
-          <div class="ig-result-img sel" onclick="selectGenImage('${imageUrl}',this)" style="grid-column:span 3;aspect-ratio:1">
-            <img src="${imageUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/>
-          </div>`;
-        selectedImg = imageUrl;
-        // Also add to media files
-        const response = await fetch(imageUrl);
-        const blob     = await response.blob();
-        const file     = new File([blob], 'generated.png', { type: 'image/png' });
-        mediaFiles.push(file);
-        renderPreviews();
+        // Fetch image as blob through proxy with ngrok header
+        try {
+          const imgResp = await fetch(imageUrl, { 
+            headers: { 'ngrok-skip-browser-warning': 'true' } 
+          });
+          const blob    = await imgResp.blob();
+          const dataUrl = await new Promise(r => { const fr = new FileReader(); fr.onload = e => r(e.target.result); fr.readAsDataURL(blob); });
+          
+          results.innerHTML = `
+            <div class="ig-result-img sel" onclick="selectGenImage('${dataUrl}',this)" style="grid-column:span 3;aspect-ratio:1">
+              <img src="${dataUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/>
+            </div>`;
+          selectedImg = dataUrl;
+          
+          // Add to media files
+          const file = new File([blob], 'generated.png', { type: 'image/png' });
+          mediaFiles.push(file);
+          renderPreviews();
+        } catch(imgErr) {
+          // Fallback — show direct URL
+          results.innerHTML = `
+            <div class="ig-result-img sel" style="grid-column:span 3;aspect-ratio:1">
+              <img src="${imageUrl}" alt="Generated" style="width:100%;height:100%;object-fit:cover" crossorigin="anonymous"/>
+              <div style="font-size:.72rem;color:var(--green);padding:.35rem;text-align:center">✅ Image generated! If not visible, <a href="${imageUrl}" target="_blank" style="color:var(--accent)">open here</a></div>
+            </div>`;
+          selectedImg = imageUrl;
+        }
       } else {
         throw new Error('Generation timed out. Try again.');
       }
