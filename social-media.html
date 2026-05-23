@@ -749,7 +749,7 @@ async function genCaption(style) {
   try {
     let text = '';
     if (ollamaUrl) {
-      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'}, body:JSON.stringify({model:'llama3.2',prompt,stream:false}) });
+      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true','Accept':'application/json'}, body:JSON.stringify({model:'llama3.2',prompt,stream:false}) });
       const d = await r.json();
       text = d.response || '';
     } else {
@@ -800,7 +800,7 @@ async function generateImage() {
       // Queue the prompt
       const queueRes = await fetch(sdUrl + '/prompt', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
         body: JSON.stringify({ prompt: workflow, client_id: 'sitecommand' })
       });
       const queueData = await queueRes.json();
@@ -821,7 +821,7 @@ async function generateImage() {
       let imageUrl = null;
       for (let i = 0; i < 60; i++) {
         await new Promise(r => setTimeout(r, 1000));
-        const histRes  = await fetch(sdUrl + '/history/' + promptId);
+        const histRes  = await fetch(sdUrl + '/history/' + promptId, { headers: { 'ngrok-skip-browser-warning': 'true', 'Accept': 'application/json' } });
         const histData = await histRes.json();
         const result   = histData[promptId];
         if (result?.outputs) {
@@ -945,7 +945,7 @@ async function saveComfyUrl() {
   if (!url) return;
   res.style.color='var(--mid)'; res.textContent='Testing ComfyUI connection...';
   try {
-    const r = await fetch(url + '/system_stats');
+    const r = await fetch(url + '/system_stats', { headers: { 'ngrok-skip-browser-warning': 'true' } });
     const d = await r.json();
     localStorage.setItem('sc_sd_url', url);
     res.style.color='var(--green)'; res.textContent='✅ ComfyUI connected! Switch to Stable Diffusion to generate images.';
@@ -972,7 +972,7 @@ async function checkOllamaStatus() {
   const dot  = document.getElementById('llmDot');
   if (!ollamaUrl) { bar.className='llm-status llm-offline'; txt.textContent='Local AI not connected — using Gemini for captions'; dot.textContent='⚪'; return; }
   try {
-    const r = await fetch(ollamaUrl+'/api/tags', { headers:{'ngrok-skip-browser-warning':'true'} });
+    const r = await fetch(ollamaUrl+'/api/tags', { method:'GET', headers:{'ngrok-skip-browser-warning':'true','Accept':'application/json'} });
     const d = await r.json();
     bar.className='llm-status llm-online';
     txt.textContent='🖥️ Local AI online — '+((d.models||[])[0]?.name||'model')+' · Unlimited free captions';
