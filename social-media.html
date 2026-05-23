@@ -413,8 +413,8 @@ input,select,textarea,button{font-family:inherit}
 <script>
 const GEMINI_KEY  = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
 const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const COMPANY     = localStorage.getItem('sc_co') || 'Our Company';
-const LOCATION    = localStorage.getItem('sc_location') || 'your area';
+const COMPANY     = localStorage.getItem('sc_co') || localStorage.getItem('asc_company') || 'Ali Signature Construction';
+const LOCATION    = localStorage.getItem('sc_location') || localStorage.getItem('asc_location') || 'Delaware';
 
 let postType    = 'project';
 let mediaFiles  = [];
@@ -456,12 +456,22 @@ function loadConnectedPlatforms() {
 const MODAL_CONTENT = {
   google: {
     title: '🔍 Connect Google Business',
-    sub:   'Post updates and photos directly to your Google Business Profile.',
+    sub:   'Post updates and photos directly to your Google Business Profile. One click — no setup needed.',
     body: `
-      <div class="modal-step"><strong>Step 1</strong> — Your Google OAuth is already set up from Gmail. We just need Google Business scope.<br><br>
-      Click the button below to authorize Google Business access with the same account.</div>
-      <button class="modal-btn" onclick="connectGoogle()">Connect with Google →</button>
-      <div id="googleResult" style="font-size:.78rem;margin-top:.6rem;min-height:.9rem"></div>
+      <div class="modal-step" style="margin-bottom:1rem">
+        <strong>What you need:</strong><br>
+        ✓ A Google account<br>
+        ✓ A verified Google Business Profile<br><br>
+        Click below to sign in with Google and connect your Business Profile instantly.
+      </div>
+      <button class="modal-btn" onclick="connectGoogle()" id="googleConnectBtn">
+        <img src="https://www.google.com/favicon.ico" width="16" style="vertical-align:middle;margin-right:.5rem"/> Connect with Google →
+      </button>
+      <div id="googleResult" style="font-size:.82rem;margin-top:.85rem;min-height:.9rem;line-height:1.7"></div>
+      <p style="font-size:.74rem;color:var(--mid);margin-top:.75rem">
+        Don't have a Google Business Profile? 
+        <a href="https://business.google.com" target="_blank" style="color:var(--accent)">Create one free →</a>
+      </p>
     `
   },
   facebook: {
@@ -531,51 +541,110 @@ function closeModal() { document.getElementById('connectModal').classList.remove
 // ── GOOGLE BUSINESS CONNECT ────────────────────────────────────
 async function connectGoogle() {
   const result = document.getElementById('googleResult');
-  result.style.color='var(--mid)'; result.textContent='Opening Google authorization...';
-  
-  const GOOGLE_CLIENT_ID = localStorage.getItem('gmail_client_id') || '919895770319-1tisp90f3llr31410lodevd8tdie6h0b.apps.googleusercontent.com';
-  const BUSINESS_SCOPE   = 'https://www.googleapis.com/auth/business.manage https://www.googleapis.com/auth/plus.business.manage';
+  const btn    = document.getElementById('googleConnectBtn');
+  result.style.color = 'var(--mid)';
+  result.textContent = 'Opening Google sign-in...';
+  if (btn) btn.disabled = true;
 
+  const GOOGLE_CLIENT_ID = '919895770319-1tisp90f3llr31410lodevd8tdie6h0b.apps.googleusercontent.com';
+  const SCOPES = [
+    'https://www.googleapis.com/auth/business.manage',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile'
+  ].join(' ');
+
+  // Load Google Identity Services if not loaded
   if (!window.google?.accounts?.oauth2) {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.onload = () => doGoogleBusiness();
-    document.head.appendChild(script);
-  } else { doGoogleBusiness(); }
-
-  function doGoogleBusiness() {
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope:     BUSINESS_SCOPE,
-      callback: async (resp) => {
-        if (resp.error) { result.style.color='#e08080'; result.textContent='Error: '+resp.error; return; }
-        // Try to get business accounts
-        try {
-          const r = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', {
-            headers: { 'Authorization': 'Bearer '+resp.access_token }
-          });
-          const d = await r.json();
-          const account = d.accounts?.[0];
-          const name = account?.accountName || 'Google Business';
-          connected.google = { token: resp.access_token, name, accountName: account?.name };
-          localStorage.setItem('sc_social_connected', JSON.stringify(connected));
-          localStorage.setItem('sc_google_token', resp.access_token);
-          loadConnectedPlatforms();
-          result.style.color='var(--green)'; result.textContent='✅ Connected: '+name;
-          setTimeout(closeModal, 1500);
-        } catch(e) {
-          // Connected but couldn't get account info
-          connected.google = { token: resp.access_token, name: 'Google Business' };
-          localStorage.setItem('sc_social_connected', JSON.stringify(connected));
-          localStorage.setItem('sc_google_token', resp.access_token);
-          loadConnectedPlatforms();
-          result.style.color='var(--green)'; result.textContent='✅ Google Business connected!';
-          setTimeout(closeModal, 1500);
-        }
-      }
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
     });
-    client.requestAccessToken({ prompt:'consent' });
   }
+
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope:     SCOPES,
+    callback:  async (resp) => {
+      if (resp.error) {
+        result.style.color = '#e08080';
+        result.textContent = '❌ ' + (resp.error_description || resp.error);
+        if (btn) btn.disabled = false;
+        return;
+      }
+
+      const token = resp.access_token;
+      result.textContent = 'Getting your business profile...';
+
+      try {
+        // Get business accounts
+        const accountsRes = await fetch(
+          'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
+          { headers: { 'Authorization': 'Bearer ' + token } }
+        );
+        const accountsData = await accountsRes.json();
+        const accounts     = accountsData.accounts || [];
+
+        if (!accounts.length) {
+          result.style.color = '#e08080';
+          result.innerHTML = '❌ No Google Business Profile found.<br><a href="https://business.google.com" target="_blank" style="color:var(--accent)">Create one at business.google.com →</a>';
+          if (btn) btn.disabled = false;
+          return;
+        }
+
+        // Get locations for first account
+        const account  = accounts[0];
+        let locationName = account.accountName || 'Google Business';
+        let locationId   = account.name;
+
+        try {
+          const locRes  = await fetch(
+            'https://mybusinessbusinessinformation.googleapis.com/v1/' + account.name + '/locations?readMask=name,title',
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          const locData = await locRes.json();
+          const locs    = locData.locations || [];
+          if (locs.length) {
+            locationName = locs[0].title || locationName;
+            locationId   = locs[0].name  || locationId;
+          }
+        } catch(e) {}
+
+        // Save connection
+        connected.google = {
+          token,
+          name:        locationName,
+          accountName: account.name,
+          locationId,
+          connectedAt: new Date().toISOString()
+        };
+        localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+        localStorage.setItem('sc_google_token',     token);
+        localStorage.setItem('sc_google_location',  locationId);
+
+        loadConnectedPlatforms();
+        result.style.color = 'var(--green)';
+        result.innerHTML   = '✅ Connected: <strong>' + locationName + '</strong><br><span style="color:var(--mid);font-size:.76rem">Ready to post updates and photos</span>';
+        setTimeout(closeModal, 2000);
+
+      } catch(e) {
+        // Still save token even if account fetch fails
+        connected.google = { token, name: 'Google Business', connectedAt: new Date().toISOString() };
+        localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+        localStorage.setItem('sc_google_token', token);
+        loadConnectedPlatforms();
+        result.style.color = 'var(--green)';
+        result.textContent = '✅ Google connected! You can now post to Google Business.';
+        setTimeout(closeModal, 2000);
+      }
+
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  client.requestAccessToken({ prompt: 'consent' });
 }
 
 // ── FACEBOOK CONNECT ───────────────────────────────────────────
@@ -701,15 +770,24 @@ async function postToPlatform(platform, caption) {
   }
 
   if (platform === 'google') {
-    // Google Business Profile post
-    const token = data.token || localStorage.getItem('sc_google_token');
-    const accountName = data.accountName;
-    if (!accountName) { console.log('Google Business: no account name'); return false; }
-    const r = await fetch(`https://mybusiness.googleapis.com/v4/${accountName}/localPosts`, {
-      method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-      body: JSON.stringify({ languageCode:'en-US', summary: caption, topicType:'STANDARD',
-        callToAction:{ actionType:'CALL', url: localStorage.getItem('sc_phone')||'' } })
-    });
+    const token      = data.token || localStorage.getItem('sc_google_token');
+    const locationId = data.locationId || localStorage.getItem('sc_google_location') || data.accountName;
+    if (!token) throw new Error('Google not connected');
+    
+    // Post using Google Business Profile API v1
+    const r = await fetch(
+      'https://mybusiness.googleapis.com/v4/' + locationId + '/localPosts',
+      {
+        method:  'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          languageCode: 'en-US',
+          summary:      caption,
+          topicType:    'STANDARD',
+          callToAction: { actionType: 'CALL' }
+        })
+      }
+    );
     const d = await r.json();
     if (d.error) throw new Error(d.error.message);
     return true;
@@ -744,7 +822,9 @@ async function genCaption(style) {
 
   const styleMap = { professional:'formal and professional', casual:'friendly and conversational', before_after:'exciting transformation reveal', cta:'strong call to action urging people to call', seasonal:'seasonal and timely for current weather' };
   const typeMap  = { project:'completed construction project update', before_after:'before and after renovation reveal', tip:'helpful homeowner tip', offer:'special promotional offer', review:'sharing a 5-star client review' };
-  const prompt = `Write a social media caption for ${COMPANY}, a construction contractor in ${LOCATION}. Type: ${typeMap[postType]||postType}. Tone: ${styleMap[style]||style}. Under 150 words. Include 1-2 emojis naturally. Strong ending. NO hashtags in caption. Then on a new line write "HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5" relevant to construction in ${LOCATION}.`;
+  const coName   = localStorage.getItem('sc_co') || COMPANY;
+  const loc      = localStorage.getItem('sc_location') || LOCATION;
+  const prompt = `Write a social media caption for a construction contractor company called "${coName}" based in ${loc}. Post type: ${typeMap[postType]||postType}. Tone: ${styleMap[style]||style}. Rules: Under 150 words. Include 1-2 emojis naturally. Strong ending with a call to action. NEVER use placeholder text like [Property Name] or [Your Company] - always use "${coName}" as the company name. NO hashtags in the caption body. After the caption, on a new line write "HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5" relevant to construction and home renovation in ${loc}.`;
 
   try {
     let text = '';
@@ -1011,7 +1091,9 @@ function renderRecentPosts() { const el=document.getElementById('recentPosts'); 
 
 async function genIdeas() {
   const btn=document.getElementById('ideasBtn'); btn.disabled=true; btn.textContent='Generating...';
-  const prompt=`Give 4 social media post ideas for ${COMPANY}, a contractor in ${LOCATION}. Format: [Type] idea text under 20 words. Types: Project/Tip/Offer/Seasonal. One per line.`;
+  const coName = localStorage.getItem('sc_co') || COMPANY;
+  const loc    = localStorage.getItem('sc_location') || LOCATION;
+  const prompt=`Give 4 social media post ideas for "${coName}", a contractor in ${loc}. Format: [Type] idea text under 20 words. Types: Project/Tip/Offer/Seasonal. One per line. Never use placeholder text.`;
   try {
     let text='';
     if(ollamaUrl){const r=await fetch(ollamaUrl+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({model:'llama3.2',prompt,stream:false})});const d=await r.json();text=d.response||'';}
