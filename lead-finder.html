@@ -286,10 +286,29 @@ async function fetchLeads(area, maxPrice, leadType) {
     if (pr) pr.style.width = pct + '%';
   };
 
-  // ── 1. CRAIGSLIST RSS (real, free, no API key) ──
+  // ── 1. CRAIGSLIST RSS via server proxy (real data) ──
+  const SERVER = localStorage.getItem('sc_ollama_url')?.replace('/ollama','') || 'https://recapture-anime-wrench.ngrok-free.dev';
   if (activeSources.has('craigslist')) {
     setStatus('Scanning Craigslist...', 20);
     try {
+      // Try server proxy first
+      let clListings = [];
+      try {
+        const clResp = await fetch(SERVER + '/property/listings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+          body: JSON.stringify({ area, maxPrice: parseInt(maxPrice) })
+        });
+        if (clResp.ok) {
+          const clData = await clResp.json();
+          clListings = clData.listings || [];
+          leads.push(...clListings);
+          setStatus(`Found ${clListings.length} Craigslist listings`, 30);
+        }
+      } catch(e) {}
+      
+      // Fallback to corsproxy
+      if (!clListings.length) {
       const city = getCraigslistCity(area);
       const maxP = parseInt(maxPrice);
       const url  = `https://corsproxy.io/?${encodeURIComponent(`https://${city}.craigslist.org/search/rea?format=atom&max_price=${maxP}&hasPic=1`)}`;
@@ -496,70 +515,129 @@ async function runDeepResearch() {
   const result   = document.getElementById('researchResult');
   const progress = document.getElementById('researchProgress');
   const fill     = document.getElementById('researchFill');
+  const SERVER   = localStorage.getItem('sc_ollama_url')?.replace('/ollama','') || 'https://recapture-anime-wrench.ngrok-free.dev';
 
   btn.disabled = true; btn.textContent = 'Researching...';
   progress.style.display = 'block';
   result.style.display   = 'none';
+  fill.style.width = '5%';
 
-  const steps = [
-    [15, 'Looking up property records...'],
-    [30, 'Checking ownership history...'],
-    [45, 'Analyzing comparable sales...'],
-    [60, 'Estimating renovation costs...'],
-    [75, 'Checking permit history...'],
-    [88, 'Calculating investment potential...'],
-    [95, 'Generating AI report...'],
-  ];
-
-  for (const [pct, msg] of steps) {
-    fill.style.width = pct + '%';
-    btn.textContent  = msg.replace('...','');
-    await new Promise(r => setTimeout(r, 600));
+  // Step 1 - Scrape real property data
+  let realData = null;
+  try {
+    fill.style.width = '20%'; btn.textContent = 'Looking up Zillow...';
+    const scrapeResp = await fetch(SERVER + '/property/research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify({ address: addr })
+    });
+    if (scrapeResp.ok) {
+      realData = await scrapeResp.json();
+      console.log('Real property data:', realData);
+    }
+  } catch(e) {
+    console.log('Scraper not available:', e.message);
   }
 
-  const prompt = `You are a real estate investment analyst. Do a DEEP analysis of this property for a contractor/investor:
+  // Step 2 - Craigslist real listings
+  fill.style.width = '40%'; btn.textContent = 'Getting market comps...';
+  let listings = [];
+  try {
+    const city = addr.split(',').slice(-2).join(',').trim();
+    const listResp = await fetch(SERVER + '/property/listings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify({ area: city, maxPrice: 500000 })
+    });
+    if (listResp.ok) {
+      const ld = await listResp.json();
+      listings = ld.listings || [];
+    }
+  } catch(e) {}
 
-Address: ${addr}
+  // Step 3 - AI analysis with REAL data
+  fill.style.width = '65%'; btn.textContent = 'AI analyzing real data...';
+  
+  const realDataContext = realData ? `
+REAL DATA FOUND FROM ZILLOW/PUBLIC RECORDS:
+- Zestimate: ${realData.zestimate ? '$'+realData.zestimate.toLocaleString() : 'Not found'}
+- Beds: ${realData.beds || 'Not found'}
+- Baths: ${realData.baths || 'Not found'}
+- Sqft: ${realData.sqft || 'Not found'}
+- Year Built: ${realData.yearBuilt || 'Not found'}
+- Zillow URL: ${realData.zillow_url || 'N/A'}
+${realData.description ? '- Description: ' + realData.description : ''}
+` : 'Note: Property scraper not running. Analyze based on your knowledge of this specific address and area.';
 
-Provide a comprehensive investment analysis covering:
+  const compsContext = listings.length > 0 ? `
+REAL COMPARABLE LISTINGS IN AREA (from Craigslist):
+${listings.slice(0,3).map(l => `- ${l.price} — ${l.title} (${l.date})`).join('\n')}
+` : '';
 
-1. PROPERTY OVERVIEW
-- Likely property type, estimated size, year built based on location
-- Current estimated market value
-- Neighborhood quality (A/B/C/D grade)
+  const prompt = `You are a real estate investment expert. Analyze this SPECIFIC property using real data.
 
-2. INVESTMENT OPPORTUNITY
-- After Repair Value (ARV) estimate
-- Estimated renovation cost range
-- Potential profit if flipped
-- Cash-on-cash return if rented
-- Deal rating: HOT / WARM / PASS and why
+ADDRESS: ${addr}
 
-3. RENOVATION SCOPE
-- What likely needs work based on age/area
-- Priority repairs
-- Estimated timeline
+${realDataContext}
+${compsContext}
 
-4. MARKET ANALYSIS
-- Is this a buyer's or seller's market?
-- Average days on market in area
-- Price trend (up/down/flat)
-- Best exit strategy (flip/rent/wholesale)
+Use the real data above. Do NOT make up numbers that contradict the real data.
+If Zestimate is provided, use it as the market value baseline.
+Research your knowledge of this specific neighborhood and zip code.
 
-5. ACTION PLAN
-- Immediate next steps
-- Key questions to ask the seller
-- Maximum offer price (70% rule)
-- Who to contact for due diligence
+Provide analysis:
 
-Be specific with numbers. Use real market knowledge for this area.`;
+1. PROPERTY FACTS (use real data above where available)
+   - Confirmed: beds, baths, sqft, year built, current value
+   - Neighborhood: specific neighborhood name, grade (A-F), key characteristics
+
+2. INVESTMENT NUMBERS
+   - Current market value: (use Zestimate if available)
+   - ARV after renovation: 
+   - Estimated rehab cost:
+   - Max offer (70% rule): (ARV x 0.70 - rehab costs)
+   - Potential profit:
+   - Monthly rent estimate:
+   - Cap rate:
+   - Deal rating: 🔥 HOT / ⚡ WARM / ❌ PASS
+
+3. NEIGHBORHOOD INTEL (be specific about this zip/area)
+   - Crime level: Low/Medium/High
+   - School ratings
+   - Major employers nearby
+   - Market trend: appreciating/flat/declining
+   - Avg days on market in this zip
+
+4. RENOVATION PRIORITY LIST
+   - What properties this age in this area typically need
+   - Estimated costs per item
+   - Total rehab estimate
+
+5. DEAL ACTION PLAN
+   - Is this worth pursuing? Why?
+   - Max you should pay
+   - 3 specific next steps
+   - Best exit strategy for THIS market
+
+Be direct. Give specific numbers. Do not hedge everything.`;
 
   try {
+    fill.style.width = '85%'; btn.textContent = 'Writing report...';
     const text = await callAI(prompt);
     fill.style.width = '100%';
-
     result.style.display = 'block';
-    result.innerHTML = formatResearch(text, addr);
+    
+    // Show real data badge if we got it
+    const realBadge = realData?.zestimate ? 
+      `<div style="background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.3);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--green)">
+        ✅ Real data: Zillow Zestimate $${realData.zestimate.toLocaleString()} · ${realData.beds||'?'}bd/${realData.baths||'?'}ba · ${realData.sqft||'?'} sqft · Built ${realData.yearBuilt||'?'}
+        <a href="${realData.zillow_url}" target="_blank" style="color:var(--accent);margin-left:.5rem">View on Zillow →</a>
+      </div>` :
+      `<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--mid)">
+        ℹ️ Analysis based on AI knowledge. For real-time data, make sure property_scraper.py is running.
+      </div>`;
+    
+    result.innerHTML = realBadge + formatResearch(text, addr);
   } catch(e) {
     result.style.display = 'block';
     result.innerHTML = `<div style="color:#e08080">Research failed: ${e.message}</div>`;
@@ -567,7 +645,7 @@ Be specific with numbers. Use real market knowledge for this area.`;
 
   btn.disabled = false;
   btn.textContent = 'Analyze →';
-  setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 1000);
+  setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 1500);
 }
 
 function formatResearch(text, addr) {
