@@ -230,6 +230,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white)
 const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 const OLLAMA_URL = localStorage.getItem('sc_ollama_url') || '';
+const SERVER_URL = (OLLAMA_URL || 'https://recapture-anime-wrench.ngrok-free.dev/ollama').replace('/ollama','');
 
 let activeSources = new Set(['zillow','craigslist','fsbo','google']);
 let allLeads = JSON.parse(localStorage.getItem('sc_leads') || '[]');
@@ -240,7 +241,6 @@ function toggleSource(src, btn) {
   else { activeSources.add(src); btn.classList.add('on'); }
 }
 
-// ── MAIN SCAN ─────────────────────────────────────────────────
 async function runScan() {
   if (scanning) return;
   scanning = true;
@@ -248,11 +248,10 @@ async function runScan() {
   const maxPrice = document.getElementById('maxPrice').value;
   const leadType = document.getElementById('leadType').value;
   const btn      = document.getElementById('scanBtn');
-  if (!area) { alert('Enter a city or zip code'); scanning=false; return; }
+  if (!area) { alert('Enter a city or zip code'); scanning = false; return; }
 
   btn.disabled = true;
   btn.textContent = '🔍 Scanning...';
-
   document.getElementById('listingsArea').innerHTML = `
     <div class="loading-state">
       <div class="spin"></div>
@@ -260,242 +259,172 @@ async function runScan() {
       <div class="progress-bar" style="max-width:300px;margin:.75rem auto 0"><div class="progress-fill" id="scanProgress"></div></div>
     </div>`;
 
-  try {
-    const leads = await fetchLeads(area, maxPrice, leadType);
-    allLeads = [...leads, ...allLeads].slice(0, 100);
-    localStorage.setItem('sc_leads', JSON.stringify(allLeads));
-    renderLeads(leads);
-    updateStats(leads);
-  } catch(e) {
-    document.getElementById('listingsArea').innerHTML = `<div class="empty-state"><p style="color:#e08080">Error: ${e.message}</p></div>`;
-  }
+  const leads = await fetchLeads(area, maxPrice, leadType);
+  allLeads = [...leads, ...allLeads].slice(0, 100);
+  localStorage.setItem('sc_leads', JSON.stringify(allLeads));
+  renderLeads(leads);
+  updateStats(leads);
 
   btn.disabled = false;
   btn.textContent = '🔍 Find Leads';
   scanning = false;
 }
 
-// ── FETCH LEADS ───────────────────────────────────────────────
-async function fetchLeads(area, maxPrice, leadType) {
-  const leads = [];
-  let progress = 0;
-  const setStatus = (msg, pct) => {
-    const el = document.getElementById('scanStatus');
-    const pr = document.getElementById('scanProgress');
-    if (el) el.textContent = msg;
-    if (pr) pr.style.width = pct + '%';
-  };
-
-  // ── 1. CRAIGSLIST RSS via server proxy (real data) ──
-  const SERVER = localStorage.getItem('sc_ollama_url')?.replace('/ollama','') || 'https://recapture-anime-wrench.ngrok-free.dev';
-  if (activeSources.has('craigslist')) {
-    setStatus('Scanning Craigslist...', 20);
-    try {
-      // Try server proxy first
-      let clListings = [];
-      try {
-        const clResp = await fetch(SERVER + '/property/listings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-          body: JSON.stringify({ area, maxPrice: parseInt(maxPrice) })
-        });
-        if (clResp.ok) {
-          const clData = await clResp.json();
-          clListings = clData.listings || [];
-          leads.push(...clListings);
-          setStatus(`Found ${clListings.length} Craigslist listings`, 30);
-        }
-      } catch(e) {}
-      
-      // Fallback to corsproxy if server not available
-      if (!clListings.length) {
-        try {
-          const city = getCraigslistCity(area);
-          const maxP = parseInt(maxPrice);
-          const url  = `https://corsproxy.io/?${encodeURIComponent(`https://${city}.craigslist.org/search/rea?format=atom&max_price=${maxP}&hasPic=1`)}`;
-          const resp = await fetch(url);
-          const text = await resp.text();
-          const parser = new DOMParser();
-          const xml    = parser.parseFromString(text, 'application/xml');
-          const items  = xml.querySelectorAll('entry');
-
-          items.forEach((item, i) => {
-            if (i >= 12) return;
-            const title    = item.querySelector('title')?.textContent || '';
-            const link     = item.querySelector('link')?.getAttribute('href') || '';
-            const content  = item.querySelector('content')?.textContent || '';
-            const updated  = item.querySelector('updated')?.textContent || '';
-            const priceMatch = (title + content).match(/\$[\d,]+/);
-            const price    = priceMatch ? priceMatch[0] : 'Price TBD';
-            const priceNum = priceMatch ? parseInt(priceMatch[0].replace(/[$,]/g,'')) : 0;
-
-            leads.push({
-              id:      'cl_' + i + '_' + Date.now(),
-              source:  'Craigslist',
-              title:   title.slice(0, 80),
-              address: extractAddress(title + ' ' + content) || area,
-              price:   price,
-              priceNum,
-              url:     link,
-              desc:    content.replace(/<[^>]+>/g,'').slice(0, 200),
-              date:    new Date(updated).toLocaleDateString(),
-              beds:    extractBeds(title + content),
-              baths:   extractBaths(title + content),
-              sqft:    extractSqft(title + content),
-              hot:     isHotLead(title + content, priceNum, maxP),
-              new:     isNewListing(updated),
-              img:     null,
-            });
-          });
-        } catch(e) { console.log('Craigslist fallback error:', e.message); }
-      }
-    } catch(e) { console.log('Craigslist error:', e.message); }
-  }
-
-  // ── 2. ZILLOW via Gemini AI (real data synthesis) ──
-  if (activeSources.has('zillow') || activeSources.has('fsbo')) {
-    setStatus('Analyzing market with AI...', 50);
-    try {
-      const prompt = `You are a real estate data analyst. Generate 6 realistic property listings for ${area} that would actually be found on Zillow or similar sites. These should be based on real market conditions in that area.
-
-Max price: $${parseInt(maxPrice).toLocaleString()}
-Lead type: ${leadType}
-
-Return ONLY a JSON array with exactly 6 listings. Each listing:
-{
-  "address": "full street address in ${area}",
-  "price": "$XXX,XXX",
-  "priceNum": number,
-  "beds": number,
-  "baths": number,
-  "sqft": number,
-  "yearBuilt": number,
-  "daysOnMarket": number,
-  "condition": "Good/Fair/Poor/Needs Work",
-  "type": "Single Family/Townhouse/Condo/Multi-Family",
-  "reason": "why this is an opportunity (price reduction, long DOM, motivated seller, etc)",
-  "estimatedARV": "$XXX,XXX",
-  "estimatedRehab": "$XX,XXX-$XX,XXX",
-  "neighborhood": "neighborhood name",
-  "hot": true/false
+function setStatus(msg, pct) {
+  const el = document.getElementById('scanStatus');
+  const pr = document.getElementById('scanProgress');
+  if (el) el.textContent = msg;
+  if (pr) pr.style.width = pct + '%';
 }
 
-Make addresses realistic for ${area}. Prices should reflect actual market values. Return ONLY the JSON array.`;
+async function fetchLeads(area, maxPrice, leadType) {
+  const leads = [];
 
-      const aiResp = await callAI(prompt);
-      if (aiResp) {
-        const clean  = aiResp.replace(/```json|```/g,'').trim();
-        const parsed = JSON.parse(clean);
-        parsed.forEach((p, i) => {
+  // 1. Try server proxy for real Craigslist
+  if (activeSources.has('craigslist')) {
+    setStatus('Scanning Craigslist...', 15);
+    const clData = await safePost(SERVER_URL + '/property/listings', { area, maxPrice: parseInt(maxPrice) });
+    if (clData && clData.listings && clData.listings.length) {
+      leads.push(...clData.listings);
+      setStatus('Found ' + clData.listings.length + ' Craigslist listings', 30);
+    } else {
+      // Fallback: corsproxy
+      const city  = getCraigslistCity(area);
+      const maxP  = parseInt(maxPrice);
+      const clUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://' + city + '.craigslist.org/search/rea?format=atom&max_price=' + maxP + '&hasPic=1');
+      const parsed = await safeFetchXML(clUrl);
+      if (parsed) {
+        parsed.querySelectorAll('entry').forEach(function(item, i) {
+          if (i >= 12) return;
+          var title   = item.querySelector('title') ? item.querySelector('title').textContent : '';
+          var link    = item.querySelector('link') ? item.querySelector('link').getAttribute('href') : '';
+          var cont    = item.querySelector('content') ? item.querySelector('content').textContent : '';
+          var updated = item.querySelector('updated') ? item.querySelector('updated').textContent : '';
+          var pMatch  = (title + cont).match(/\$[\d,]+/);
+          var price   = pMatch ? pMatch[0] : 'Call';
+          var pNum    = pMatch ? parseInt(pMatch[0].replace(/[$,]/g,'')) : 0;
           leads.push({
-            id:       'zl_' + i + '_' + Date.now(),
-            source:   i % 3 === 0 ? 'Zillow' : i % 3 === 1 ? 'FSBO' : 'MLS',
-            title:    `${p.beds}bd/${p.baths}ba ${p.type} — ${p.condition}`,
-            address:  p.address,
-            price:    p.price,
-            priceNum: p.priceNum,
-            url:      `https://www.zillow.com/homes/${encodeURIComponent(p.address)}_rb/`,
-            desc:     p.reason,
-            date:     'Today',
-            beds:     p.beds,
-            baths:    p.baths,
-            sqft:     p.sqft,
-            yearBuilt:p.yearBuilt,
-            dom:      p.daysOnMarket,
-            condition:p.condition,
-            arv:      p.estimatedARV,
-            rehab:    p.estimatedRehab,
-            neighborhood: p.neighborhood,
-            hot:      p.hot,
-            new:      p.daysOnMarket < 3,
-            img:      getPropertyImg(p.type, p.condition),
+            id: 'cl_' + i + '_' + Date.now(), source: 'Craigslist',
+            title: title.slice(0,80), address: extractAddress(title + ' ' + cont) || area,
+            price: price, priceNum: pNum, url: link,
+            desc: cont.replace(/<[^>]+>/g,'').slice(0,200),
+            date: updated ? new Date(updated).toLocaleDateString() : 'Today',
+            beds: extractBeds(title+cont), baths: extractBaths(title+cont),
+            sqft: extractSqft(title+cont),
+            hot: isHotLead(title+cont, pNum, maxP), new: isNewListing(updated), img: null
           });
         });
       }
-    } catch(e) { console.log('AI leads error:', e.message); }
+    }
   }
 
-  setStatus('AI scoring leads...', 80);
-  await new Promise(r => setTimeout(r, 500));
-  setStatus(`Found ${leads.length} opportunities!`, 100);
+  // 2. AI market listings
+  if (activeSources.has('zillow') || activeSources.has('fsbo')) {
+    setStatus('AI generating market listings...', 50);
+    const prompt = 'Generate 6 realistic property listings for ' + area + ' max $' + parseInt(maxPrice).toLocaleString() + ' type: ' + leadType + '. Return ONLY a JSON array: [{"address":"full address","price":"$XXX,XXX","priceNum":number,"beds":number,"baths":number,"sqft":number,"yearBuilt":number,"daysOnMarket":number,"condition":"Good/Fair/Poor","type":"Single Family/Townhouse/Condo","reason":"why opportunity","estimatedARV":"$XXX,XXX","estimatedRehab":"$XX,XXX","hot":true/false}]';
+    const aiText = await callAI(prompt);
+    if (aiText) {
+      try {
+        const clean = aiText.replace(/```json|```/g,'').trim();
+        const parsed = JSON.parse(clean);
+        parsed.forEach(function(p, i) {
+          leads.push({
+            id: 'zl_' + i + '_' + Date.now(),
+            source: i%3===0?'Zillow':i%3===1?'FSBO':'MLS',
+            title: p.beds+'bd/'+p.baths+'ba '+p.type+' — '+p.condition,
+            address: p.address, price: p.price, priceNum: p.priceNum,
+            url: 'https://www.zillow.com/homes/' + encodeURIComponent(p.address) + '_rb/',
+            desc: p.reason, date: 'Today',
+            beds: p.beds, baths: p.baths, sqft: p.sqft,
+            yearBuilt: p.yearBuilt, dom: p.daysOnMarket,
+            condition: p.condition, arv: p.estimatedARV, rehab: p.estimatedRehab,
+            hot: p.hot, new: p.daysOnMarket < 3,
+            img: getPropertyImg(p.type, p.condition)
+          });
+        });
+      } catch(e) { console.log('AI parse error:', e.message); }
+    }
+  }
 
-  // Sort: hot first, then by price
-  leads.sort((a,b) => (b.hot?1:0) - (a.hot?1:0) || a.priceNum - b.priceNum);
+  setStatus('Done! Found ' + leads.length + ' opportunities', 100);
+  leads.sort(function(a,b){ return (b.hot?1:0)-(a.hot?1:0) || a.priceNum-b.priceNum; });
   return leads;
 }
 
+async function safePost(url, body) {
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify(body)
+    });
+    if (r.ok) return await r.json();
+  } catch(e) {}
+  return null;
+}
+
+async function safeFetchXML(url) {
+  try {
+    const r = await fetch(url);
+    const t = await r.text();
+    return new DOMParser().parseFromString(t, 'application/xml');
+  } catch(e) { return null; }
+}
+
 function getPropertyImg(type, condition) {
-  const imgs = {
+  var imgs = {
     'Single Family': 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=70',
-    'Townhouse':     'https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=400&q=70',
-    'Condo':         'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=70',
-    'Multi-Family':  'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=70',
+    'Townhouse': 'https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=400&q=70',
+    'Condo': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=70',
+    'Multi-Family': 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=70'
   };
   return imgs[type] || imgs['Single Family'];
 }
 
-// ── RENDER ─────────────────────────────────────────────────
 function renderLeads(leads) {
   const area = document.getElementById('listingsArea');
   if (!leads.length) {
-    area.innerHTML = '<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.75rem">🏚️</div><p>No listings found. Try a different area or expand your search.</p></div>';
+    area.innerHTML = '<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.75rem">🏚️</div><p>No listings found. Try a different area.</p></div>';
     return;
   }
-
-  area.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-      <div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">${leads.length}</strong> opportunities found</div>
-      <div style="display:flex;gap:.35rem">
-        <button onclick="filterView('all',this)" class="src-btn on" id="fv-all">All</button>
-        <button onclick="filterView('hot',this)" class="src-btn" id="fv-hot">🔴 Hot</button>
-        <button onclick="filterView('new',this)" class="src-btn" id="fv-new">🟢 New</button>
-      </div>
-    </div>
-    ${leads.map(l => renderCard(l)).join('')}`;
+  var filterBar = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">' + leads.length + '</strong> opportunities found</div><div style="display:flex;gap:.35rem"><button onclick="filterView('all',this)" class="src-btn on" id="fv-all">All</button><button onclick="filterView('hot',this)" class="src-btn" id="fv-hot">🔴 Hot</button><button onclick="filterView('new',this)" class="src-btn" id="fv-new">🟢 New</button></div></div>';
+  area.innerHTML = filterBar + leads.map(function(l){ return renderCard(l); }).join('');
 }
 
 function renderCard(l) {
-  const hotClass  = l.hot  ? 'hot'  : l.new ? '' : '';
-  const hotBadge  = l.hot  ? '<span class="badge badge-hot">🔥 Hot Lead</span>' : '';
-  const newBadge  = l.new  ? '<span class="badge badge-new">New</span>' : '';
-  const srcBadge  = `<span class="badge badge-src">${l.source}</span>`;
-  const domText   = l.dom  ? `${l.dom} days on market` : l.date;
-  const arvText   = l.arv  ? `<span style="color:var(--green)">ARV: ${l.arv}</span> · Rehab: ${l.rehab}` : '';
-
-  return `
-  <div class="listing-card ${hotClass}" onclick="selectLead('${l.id}')">
-    <div class="lc-img" style="position:relative">
-      ${l.img ? `<img src="${l.img}" alt="${l.address}" loading="lazy"/>` : '<div style="display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem">🏠</div>'}
-      <div class="lc-badges" style="position:absolute;top:.5rem;left:.5rem;z-index:1;display:flex;gap:.3rem;flex-wrap:wrap">
-        ${hotBadge}${newBadge}${srcBadge}
-      </div>
-    </div>
-    <div class="lc-body">
-      <div class="lc-price">${l.price}</div>
-      <div class="lc-addr">${l.address}</div>
-      <div class="lc-meta">${l.beds ? l.beds+'bd · ' : ''}${l.baths ? l.baths+'ba · ' : ''}${l.sqft ? l.sqft.toLocaleString()+' sqft · ' : ''}${domText}</div>
-      ${arvText ? `<div style="font-size:.78rem;margin-bottom:.5rem">${arvText}</div>` : ''}
-      ${l.desc ? `<div class="lc-ai">💡 ${l.desc.slice(0,120)}</div>` : ''}
-      <div class="lc-actions">
-        <button class="lc-btn" onclick="event.stopPropagation();analyzeThis('${l.id}')">🧠 AI Analyze</button>
-        <button class="lc-btn" onclick="event.stopPropagation();contactLead('${l.id}')">📞 Contact</button>
-        <button class="lc-btn lc-btn-primary" onclick="event.stopPropagation();window.open('${l.url}','_blank')">View →</button>
-      </div>
-    </div>
-  </div>`;
+  var hotClass = l.hot ? 'hot' : '';
+  var hotBadge = l.hot ? '<span class="badge badge-hot">🔥 Hot</span>' : '';
+  var newBadge = l.new ? '<span class="badge badge-new">New</span>' : '';
+  var srcBadge = '<span class="badge badge-src">' + l.source + '</span>';
+  var arvText  = l.arv ? '<div style="font-size:.78rem;margin-bottom:.5rem"><span style="color:var(--green)">ARV: ' + l.arv + '</span> · Rehab: ' + l.rehab + '</div>' : '';
+  return '<div class="listing-card ' + hotClass + '" onclick="selectLead('' + l.id + '')">' +
+    '<div class="lc-img" style="position:relative">' +
+    (l.img ? '<img src="' + l.img + '" alt="' + l.address + '" loading="lazy"/>' : '<div style="display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem">🏠</div>') +
+    '<div class="lc-badges" style="position:absolute;top:.5rem;left:.5rem;z-index:1;display:flex;gap:.3rem;flex-wrap:wrap">' + hotBadge + newBadge + srcBadge + '</div></div>' +
+    '<div class="lc-body">' +
+    '<div class="lc-price">' + l.price + '</div>' +
+    '<div class="lc-addr">' + l.address + '</div>' +
+    '<div class="lc-meta">' + (l.beds?l.beds+'bd · ':'') + (l.baths?l.baths+'ba · ':'') + (l.sqft?l.sqft.toLocaleString()+' sqft · ':'') + (l.dom?l.dom+' days':l.date) + '</div>' +
+    arvText +
+    (l.desc ? '<div class="lc-ai">💡 ' + l.desc.slice(0,120) + '</div>' : '') +
+    '<div class="lc-actions">' +
+    '<button class="lc-btn" onclick="event.stopPropagation();analyzeThis('' + l.id + '')">🧠 Analyze</button>' +
+    '<button class="lc-btn" onclick="event.stopPropagation();contactLead('' + l.id + '')">📞 Contact</button>' +
+    '<button class="lc-btn lc-btn-primary" onclick="event.stopPropagation();window.open('' + l.url + '','_blank')">View →</button>' +
+    '</div></div></div>';
 }
 
-let currentFilter = 'all';
+var currentFilter = 'all';
 function filterView(filter, btn) {
   currentFilter = filter;
-  document.querySelectorAll('#fv-all,#fv-hot,#fv-new').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('#fv-all,#fv-hot,#fv-new').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
-  const filtered = filter === 'all' ? allLeads : filter === 'hot' ? allLeads.filter(l=>l.hot) : allLeads.filter(l=>l.new);
+  var filtered = filter==='all' ? allLeads : filter==='hot' ? allLeads.filter(function(l){return l.hot;}) : allLeads.filter(function(l){return l.new;});
   renderLeads(filtered);
 }
 
 function selectLead(id) {
-  const lead = allLeads.find(l=>l.id===id);
+  var lead = allLeads.find(function(l){return l.id===id;});
   if (!lead) return;
   document.getElementById('researchAddr').value = lead.address;
   document.getElementById('researchBtn').scrollIntoView({behavior:'smooth'});
@@ -503,279 +432,133 @@ function selectLead(id) {
 }
 
 function updateStats(leads) {
-  document.getElementById('stToday').textContent    = leads.length;
-  document.getElementById('stHot').textContent      = leads.filter(l=>l.hot).length;
-  document.getElementById('stWarm').textContent     = leads.filter(l=>!l.hot&&l.new).length;
-  document.getElementById('stTotal').textContent    = allLeads.length;
+  document.getElementById('stToday').textContent  = leads.length;
+  document.getElementById('stHot').textContent    = leads.filter(function(l){return l.hot;}).length;
+  document.getElementById('stWarm').textContent   = leads.filter(function(l){return !l.hot&&l.new;}).length;
+  document.getElementById('stTotal').textContent  = allLeads.length;
 }
 
-// ── DEEP RESEARCH ──────────────────────────────────────────
 async function runDeepResearch() {
-  const addr = document.getElementById('researchAddr').value.trim();
+  var addr = document.getElementById('researchAddr').value.trim();
   if (!addr) { alert('Enter a property address to research'); return; }
-  
-  const btn      = document.getElementById('researchBtn');
-  const result   = document.getElementById('researchResult');
-  const progress = document.getElementById('researchProgress');
-  const fill     = document.getElementById('researchFill');
-  const SERVER   = localStorage.getItem('sc_ollama_url')?.replace('/ollama','') || 'https://recapture-anime-wrench.ngrok-free.dev';
+
+  var btn      = document.getElementById('researchBtn');
+  var result   = document.getElementById('researchResult');
+  var progress = document.getElementById('researchProgress');
+  var fill     = document.getElementById('researchFill');
 
   btn.disabled = true; btn.textContent = 'Researching...';
   progress.style.display = 'block';
   result.style.display   = 'none';
   fill.style.width = '5%';
 
-  // Step 1 - Scrape real property data
-  let realData = null;
-  try {
-    fill.style.width = '20%'; btn.textContent = 'Looking up Zillow...';
-    const scrapeResp = await fetch(SERVER + '/property/research', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-      body: JSON.stringify({ address: addr })
-    });
-    if (scrapeResp.ok) {
-      realData = await scrapeResp.json();
-      console.log('Real property data:', realData);
-    }
-  } catch(e) {
-    console.log('Scraper not available:', e.message);
-  }
+  // Step 1: Try real scraper
+  var realData = null;
+  fill.style.width = '20%'; btn.textContent = 'Looking up Zillow...';
+  realData = await safePost(SERVER_URL + '/property/research', { address: addr });
+  console.log('Real data:', realData);
 
-  // Step 2 - Craigslist real listings
-  fill.style.width = '40%'; btn.textContent = 'Getting market comps...';
-  let listings = [];
-  try {
-    const city = addr.split(',').slice(-2).join(',').trim();
-    const listResp = await fetch(SERVER + '/property/listings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-      body: JSON.stringify({ area: city, maxPrice: 500000 })
-    });
-    if (listResp.ok) {
-      const ld = await listResp.json();
-      listings = ld.listings || [];
-    }
-  } catch(e) {}
+  // Step 2: Get comps
+  fill.style.width = '45%'; btn.textContent = 'Getting comps...';
+  var listings = [];
+  var city = addr.split(',').slice(-2).join(',').trim();
+  var listData = await safePost(SERVER_URL + '/property/listings', { area: city, maxPrice: 500000 });
+  if (listData && listData.listings) listings = listData.listings;
 
-  // Step 3 - AI analysis with REAL data
-  fill.style.width = '65%'; btn.textContent = 'AI analyzing real data...';
-  
-  const realDataContext = realData ? `
-REAL DATA FOUND FROM ZILLOW/PUBLIC RECORDS:
-- Zestimate: ${realData.zestimate ? '$'+realData.zestimate.toLocaleString() : 'Not found'}
-- Beds: ${realData.beds || 'Not found'}
-- Baths: ${realData.baths || 'Not found'}
-- Sqft: ${realData.sqft || 'Not found'}
-- Year Built: ${realData.yearBuilt || 'Not found'}
-- Zillow URL: ${realData.zillow_url || 'N/A'}
-${realData.description ? '- Description: ' + realData.description : ''}
-` : 'Note: Property scraper not running. Analyze based on your knowledge of this specific address and area.';
+  // Step 3: AI analysis
+  fill.style.width = '70%'; btn.textContent = 'AI analyzing...';
 
-  const compsContext = listings.length > 0 ? `
-REAL COMPARABLE LISTINGS IN AREA (from Craigslist):
-${listings.slice(0,3).map(l => `- ${l.price} — ${l.title} (${l.date})`).join('\n')}
-` : '';
+  var realCtx = realData && realData.zestimate ?
+    'REAL DATA FROM ZILLOW: Zestimate $' + realData.zestimate.toLocaleString() +
+    ', Beds: ' + (realData.beds||'?') + ', Baths: ' + (realData.baths||'?') +
+    ', Sqft: ' + (realData.sqft||'?') + ', Year Built: ' + (realData.yearBuilt||'?') :
+    'Scraper not running. Use your knowledge of this specific address and area.';
 
-  const prompt = `You are a real estate investment expert. Analyze this SPECIFIC property using real data.
+  var compsCtx = listings.length ?
+    'REAL COMPS IN AREA:
+' + listings.slice(0,3).map(function(l){return '- '+l.price+' — '+l.title;}).join('
+') : '';
 
-ADDRESS: ${addr}
+  var prompt = 'Real estate investment analysis for: ' + addr + '
 
-${realDataContext}
-${compsContext}
+' + realCtx + '
+' + compsCtx + '
 
-Use the real data above. Do NOT make up numbers that contradict the real data.
-If Zestimate is provided, use it as the market value baseline.
-Research your knowledge of this specific neighborhood and zip code.
-
-Provide analysis:
-
-1. PROPERTY FACTS (use real data above where available)
-   - Confirmed: beds, baths, sqft, year built, current value
-   - Neighborhood: specific neighborhood name, grade (A-F), key characteristics
-
+Provide:
+1. PROPERTY FACTS (use real data above, do not contradict it)
+   - Value, beds, baths, sqft, year built, neighborhood grade A-F
 2. INVESTMENT NUMBERS
-   - Current market value: (use Zestimate if available)
-   - ARV after renovation: 
-   - Estimated rehab cost:
-   - Max offer (70% rule): (ARV x 0.70 - rehab costs)
-   - Potential profit:
-   - Monthly rent estimate:
-   - Cap rate:
-   - Deal rating: 🔥 HOT / ⚡ WARM / ❌ PASS
+   - Current value, ARV, rehab cost, max offer (70% rule), profit, monthly rent, deal rating HOT/WARM/PASS
+3. NEIGHBORHOOD INTEL for this specific zip
+   - Crime level, schools, market trend, avg days on market
+4. RENOVATION LIST
+   - What this property type/age typically needs, costs per item
+5. ACTION PLAN
+   - Should they buy? Max offer? 3 next steps?
 
-3. NEIGHBORHOOD INTEL (be specific about this zip/area)
-   - Crime level: Low/Medium/High
-   - School ratings
-   - Major employers nearby
-   - Market trend: appreciating/flat/declining
-   - Avg days on market in this zip
+Be direct with specific numbers. No vague estimates.';
 
-4. RENOVATION PRIORITY LIST
-   - What properties this age in this area typically need
-   - Estimated costs per item
-   - Total rehab estimate
+  fill.style.width = '85%'; btn.textContent = 'Writing report...';
+  var text = await callAI(prompt);
+  fill.style.width = '100%';
 
-5. DEAL ACTION PLAN
-   - Is this worth pursuing? Why?
-   - Max you should pay
-   - 3 specific next steps
-   - Best exit strategy for THIS market
+  var realBadge = (realData && realData.zestimate) ?
+    '<div style="background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.3);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--green)">✅ Real Zillow data: $' + realData.zestimate.toLocaleString() + ' · ' + (realData.beds||'?') + 'bd/' + (realData.baths||'?') + 'ba · ' + (realData.sqft||'?') + ' sqft · Built ' + (realData.yearBuilt||'?') + '<a href="' + (realData.zillow_url||'#') + '" target="_blank" style="color:var(--accent);margin-left:.5rem">View on Zillow →</a></div>' :
+    '<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--mid)">ℹ️ AI analysis based on market knowledge. Run property_scraper.py for real-time data.</div>';
 
-Be direct. Give specific numbers. Do not hedge everything.`;
+  result.style.display = 'block';
+  result.innerHTML = realBadge + '<div style="font-size:.82rem;color:var(--light);line-height:1.85;white-space:pre-wrap">' + (text||'Analysis failed.') + '</div><div style="margin-top:.85rem;display:flex;gap:.4rem"><button onclick="copyResearch()" style="background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:5px;font-size:.74rem;font-weight:600;padding:.35rem .85rem;cursor:pointer">📋 Copy</button><button onclick="saveResearch()" style="background:var(--accent);color:#000;border:none;border-radius:5px;font-size:.74rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">💾 Save</button></div>';
 
-  try {
-    fill.style.width = '85%'; btn.textContent = 'Writing report...';
-    const text = await callAI(prompt);
-    fill.style.width = '100%';
-    result.style.display = 'block';
-    
-    // Show real data badge if we got it
-    const realBadge = realData?.zestimate ? 
-      `<div style="background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.3);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--green)">
-        ✅ Real data: Zillow Zestimate $${realData.zestimate.toLocaleString()} · ${realData.beds||'?'}bd/${realData.baths||'?'}ba · ${realData.sqft||'?'} sqft · Built ${realData.yearBuilt||'?'}
-        <a href="${realData.zillow_url}" target="_blank" style="color:var(--accent);margin-left:.5rem">View on Zillow →</a>
-      </div>` :
-      `<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--mid)">
-        ℹ️ Analysis based on AI knowledge. For real-time data, make sure property_scraper.py is running.
-      </div>`;
-    
-    result.innerHTML = realBadge + formatResearch(text, addr);
-  } catch(e) {
-    result.style.display = 'block';
-    result.innerHTML = `<div style="color:#e08080">Research failed: ${e.message}</div>`;
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Analyze →';
-  setTimeout(() => { progress.style.display = 'none'; fill.style.width = '0%'; }, 1500);
-}
-
-function formatResearch(text, addr) {
-  const sections = text.split(/\n(?=\d+\.|#+)/);
-  let html = `<div style="margin-bottom:.75rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)">
-    <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent)">Property Analysis</div>
-    <div style="font-size:.92rem;font-weight:600;margin-top:.2rem">${addr}</div>
-    <div style="font-size:.72rem;color:var(--mid)">${new Date().toLocaleString()}</div>
-  </div>`;
-  
-  html += `<div style="font-size:.82rem;color:var(--light);line-height:1.85;white-space:pre-wrap">${text}</div>`;
-  html += `<div style="margin-top:.85rem;display:flex;gap:.4rem;flex-wrap:wrap">
-    <button onclick="copyResearch()" style="background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:5px;font-size:.74rem;font-weight:600;padding:.35rem .85rem;cursor:pointer">📋 Copy Report</button>
-    <button onclick="saveResearch('${addr}')" style="background:var(--accent);color:#000;border:none;border-radius:5px;font-size:.74rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">💾 Save</button>
-  </div>`;
-  
-  return html;
+  btn.disabled = false; btn.textContent = 'Analyze →';
+  setTimeout(function(){ progress.style.display='none'; fill.style.width='0%'; }, 1500);
 }
 
 async function analyzeThis(id) {
-  const lead = allLeads.find(l=>l.id===id);
+  var lead = allLeads.find(function(l){return l.id===id;});
   if (!lead) return;
   document.getElementById('researchAddr').value = lead.address;
   await runDeepResearch();
 }
 
 function contactLead(id) {
-  const lead = allLeads.find(l=>l.id===id);
+  var lead = allLeads.find(function(l){return l.id===id;});
   if (!lead) return;
-  const msg = `Hi, I'm interested in the property at ${lead.address} listed at ${lead.price}. Is it still available? I'm a cash buyer and can close quickly.`;
-  navigator.clipboard.writeText(msg).then(() => alert('Contact message copied to clipboard!\n\nPaste it to send to the seller.'));
+  var msg = 'Hi, I am interested in the property at ' + lead.address + ' listed at ' + lead.price + '. Is it still available? I am a cash buyer and can close quickly.';
+  navigator.clipboard.writeText(msg).then(function(){ alert('Contact message copied! Paste it to send to the seller.'); });
 }
 
-// ── AI CALL ───────────────────────────────────────────────
 async function callAI(prompt) {
-  // Try Ollama first (local, free)
   if (OLLAMA_URL) {
-    try {
-      const r = await fetch(OLLAMA_URL + '/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
-        body: JSON.stringify({ model: 'llama3.2', prompt, stream: false })
-      });
-      const d = await r.json();
-      if (d.response) return d.response;
-    } catch(e) {}
+    var r = await safePost(OLLAMA_URL + '/api/generate', { model: 'llama3.2', prompt: prompt, stream: false });
+    if (r && r.response) return r.response;
   }
-  // Fall back to Gemini
-  const r = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1500 } })
-  });
-  const d = await r.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  try {
+    var resp = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1500 } })
+    });
+    var d = await resp.json();
+    return (d.candidates||[{}])[0].content.parts[0].text || '';
+  } catch(e) { return null; }
 }
 
-// ── HELPERS ───────────────────────────────────────────────
 function getCraigslistCity(area) {
-  const cityMap = {
-    'wilmington': 'delaware', 'delaware': 'delaware', 'dover': 'delaware',
-    'philadelphia': 'philadelphia', 'philly': 'philadelphia',
-    'new york': 'newyork', 'nyc': 'newyork', 'brooklyn': 'newyork',
-    'baltimore': 'baltimore', 'maryland': 'baltimore',
-    'dc': 'washingtondc', 'washington': 'washingtondc',
-    'chicago': 'chicago', 'houston': 'houston', 'dallas': 'dallas',
-    'atlanta': 'atlanta', 'miami': 'miami', 'tampa': 'tampa',
-    'orlando': 'orlando', 'jacksonville': 'jacksonville',
-    'charlotte': 'charlotte', 'raleigh': 'raleigh',
-    'los angeles': 'losangeles', 'la': 'losangeles',
-    'san francisco': 'sfbay', 'sf': 'sfbay', 'bay area': 'sfbay',
-    'seattle': 'seattle', 'portland': 'portland', 'denver': 'denver',
-    'phoenix': 'phoenix', 'las vegas': 'lasvegas',
-    'boston': 'boston', 'new jersey': 'newjersey', 'nj': 'newjersey',
-  };
-  const lower = area.toLowerCase();
-  for (const [key, val] of Object.entries(cityMap)) {
-    if (lower.includes(key)) return val;
-  }
+  var cityMap = { 'wilmington':'delaware','delaware':'delaware','philadelphia':'philadelphia','new york':'newyork','nyc':'newyork','baltimore':'baltimore','dc':'washingtondc','washington':'washingtondc','chicago':'chicago','houston':'houston','dallas':'dallas','atlanta':'atlanta','miami':'miami','los angeles':'losangeles','seattle':'seattle','denver':'denver','phoenix':'phoenix','boston':'boston' };
+  var lower = area.toLowerCase();
+  for (var k in cityMap) { if (lower.includes(k)) return cityMap[k]; }
   return 'delaware';
 }
+function extractAddress(text) { var m=text.match(/\d+\s+[\w\s]+(?:St|Ave|Rd|Dr|Blvd|Ln|Way|Ct|Pl)[.,\s]/i); return m?m[0].trim():null; }
+function extractBeds(text) { var m=text.match(/(\d+)\s*(?:bd|bed|bedroom)/i); return m?parseInt(m[1]):null; }
+function extractBaths(text) { var m=text.match(/(\d+(?:\.\d)?)\s*(?:ba|bath)/i); return m?parseFloat(m[1]):null; }
+function extractSqft(text) { var m=text.match(/(\d[\d,]+)\s*(?:sq\.?\s*ft|sqft)/i); return m?parseInt(m[1].replace(',','')):null; }
+function isHotLead(text, price, maxPrice) { var kw=['motivated','price reduced','must sell','as-is','cash only','fixer','needs work','estate sale','foreclosure']; return kw.some(function(k){return text.toLowerCase().includes(k);}) || (price>0&&price<maxPrice*0.75); }
+function isNewListing(dateStr) { if(!dateStr) return false; return (Date.now()-new Date(dateStr).getTime())<3*86400000; }
+function copyResearch() { navigator.clipboard.writeText(document.getElementById('researchResult').innerText||'').then(function(){alert('Copied!');}); }
+function saveResearch() { var saved=JSON.parse(localStorage.getItem('sc_research')||'[]'); saved.unshift({addr:document.getElementById('researchAddr').value,date:new Date().toISOString(),report:document.getElementById('researchResult').innerText}); localStorage.setItem('sc_research',JSON.stringify(saved.slice(0,20))); alert('Saved!'); }
+function addAlert() { alert('Alert set for '+document.getElementById('searchArea').value+'!'); }
 
-function extractAddress(text) {
-  const match = text.match(/\d+\s+[\w\s]+(?:St|Ave|Rd|Dr|Blvd|Ln|Way|Ct|Pl|Circle|Terr)[.,\s]/i);
-  return match ? match[0].trim() : null;
-}
-function extractBeds(text) {
-  const m = text.match(/(\d+)\s*(?:bd|bed|bedroom)/i);
-  return m ? parseInt(m[1]) : null;
-}
-function extractBaths(text) {
-  const m = text.match(/(\d+(?:\.\d)?)\s*(?:ba|bath)/i);
-  return m ? parseFloat(m[1]) : null;
-}
-function extractSqft(text) {
-  const m = text.match(/(\d[\d,]+)\s*(?:sq\.?\s*ft|sqft)/i);
-  return m ? parseInt(m[1].replace(',','')) : null;
-}
-function isHotLead(text, price, maxPrice) {
-  const keywords = ['motivated','price reduced','must sell','as-is','cash only','fixer','needs work','estate sale','foreclosure','bank owned','distressed'];
-  const hasKeyword = keywords.some(k => text.toLowerCase().includes(k));
-  const goodPrice  = price > 0 && price < maxPrice * 0.8;
-  return hasKeyword || goodPrice;
-}
-function isNewListing(dateStr) {
-  if (!dateStr) return false;
-  const d = new Date(dateStr);
-  return (Date.now() - d.getTime()) < 3 * 86400000;
-}
-
-function copyResearch() {
-  const text = document.getElementById('researchResult')?.innerText || '';
-  navigator.clipboard.writeText(text).then(() => alert('Research report copied!'));
-}
-function saveResearch(addr) {
-  const saved = JSON.parse(localStorage.getItem('sc_research') || '[]');
-  saved.unshift({ addr, date: new Date().toISOString(), report: document.getElementById('researchResult')?.innerText });
-  localStorage.setItem('sc_research', JSON.stringify(saved.slice(0,20)));
-  alert('Research saved!');
-}
-function addAlert() {
-  const area = document.getElementById('searchArea').value.trim();
-  const maxP = document.getElementById('maxPrice').value;
-  alert(`Alert set for ${area} under $${parseInt(maxP).toLocaleString()}.\n\nWhen you click Find Leads, new listings will be highlighted.`);
-}
-
-// Load previous leads on start
 if (allLeads.length) { renderLeads(allLeads); updateStats(allLeads); }
 </script>
 </body>
