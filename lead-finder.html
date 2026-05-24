@@ -307,45 +307,48 @@ async function fetchLeads(area, maxPrice, leadType) {
         }
       } catch(e) {}
       
-      // Fallback to corsproxy
+      // Fallback to corsproxy if server not available
       if (!clListings.length) {
-      const city = getCraigslistCity(area);
-      const maxP = parseInt(maxPrice);
-      const url  = `https://corsproxy.io/?${encodeURIComponent(`https://${city}.craigslist.org/search/rea?format=atom&max_price=${maxP}&hasPic=1`)}`;
-      const resp = await fetch(url);
-      const text = await resp.text();
-      const parser = new DOMParser();
-      const xml    = parser.parseFromString(text, 'application/xml');
-      const items  = xml.querySelectorAll('entry');
+        try {
+          const city = getCraigslistCity(area);
+          const maxP = parseInt(maxPrice);
+          const url  = `https://corsproxy.io/?${encodeURIComponent(`https://${city}.craigslist.org/search/rea?format=atom&max_price=${maxP}&hasPic=1`)}`;
+          const resp = await fetch(url);
+          const text = await resp.text();
+          const parser = new DOMParser();
+          const xml    = parser.parseFromString(text, 'application/xml');
+          const items  = xml.querySelectorAll('entry');
 
-      items.forEach((item, i) => {
-        if (i >= 12) return;
-        const title    = item.querySelector('title')?.textContent || '';
-        const link     = item.querySelector('link')?.getAttribute('href') || '';
-        const content  = item.querySelector('content')?.textContent || '';
-        const updated  = item.querySelector('updated')?.textContent || '';
-        const priceMatch = (title + content).match(/\$[\d,]+/);
-        const price    = priceMatch ? priceMatch[0] : 'Price TBD';
-        const priceNum = priceMatch ? parseInt(priceMatch[0].replace(/[$,]/g,'')) : 0;
+          items.forEach((item, i) => {
+            if (i >= 12) return;
+            const title    = item.querySelector('title')?.textContent || '';
+            const link     = item.querySelector('link')?.getAttribute('href') || '';
+            const content  = item.querySelector('content')?.textContent || '';
+            const updated  = item.querySelector('updated')?.textContent || '';
+            const priceMatch = (title + content).match(/\$[\d,]+/);
+            const price    = priceMatch ? priceMatch[0] : 'Price TBD';
+            const priceNum = priceMatch ? parseInt(priceMatch[0].replace(/[$,]/g,'')) : 0;
 
-        leads.push({
-          id:      'cl_' + i + '_' + Date.now(),
-          source:  'Craigslist',
-          title:   title.slice(0, 80),
-          address: extractAddress(title + ' ' + content) || area,
-          price:   price,
-          priceNum,
-          url:     link,
-          desc:    content.replace(/<[^>]+>/g,'').slice(0, 200),
-          date:    new Date(updated).toLocaleDateString(),
-          beds:    extractBeds(title + content),
-          baths:   extractBaths(title + content),
-          sqft:    extractSqft(title + content),
-          hot:     isHotLead(title + content, priceNum, maxP),
-          new:     isNewListing(updated),
-          img:     null,
-        });
-      });
+            leads.push({
+              id:      'cl_' + i + '_' + Date.now(),
+              source:  'Craigslist',
+              title:   title.slice(0, 80),
+              address: extractAddress(title + ' ' + content) || area,
+              price:   price,
+              priceNum,
+              url:     link,
+              desc:    content.replace(/<[^>]+>/g,'').slice(0, 200),
+              date:    new Date(updated).toLocaleDateString(),
+              beds:    extractBeds(title + content),
+              baths:   extractBaths(title + content),
+              sqft:    extractSqft(title + content),
+              hot:     isHotLead(title + content, priceNum, maxP),
+              new:     isNewListing(updated),
+              img:     null,
+            });
+          });
+        } catch(e) { console.log('Craigslist fallback error:', e.message); }
+      }
     } catch(e) { console.log('Craigslist error:', e.message); }
   }
 
