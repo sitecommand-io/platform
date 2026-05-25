@@ -468,11 +468,29 @@ async function runDeepResearch() {
   // Step 3: AI analysis
   fill.style.width = '70%'; btn.textContent = 'AI analyzing...';
 
-  var realCtx = realData && realData.zestimate ?
-    'REAL DATA FROM ZILLOW: Zestimate $' + realData.zestimate.toLocaleString() +
-    ', Beds: ' + (realData.beds||'?') + ', Baths: ' + (realData.baths||'?') +
-    ', Sqft: ' + (realData.sqft||'?') + ', Year Built: ' + (realData.yearBuilt||'?') :
-    'Scraper not running. Use your knowledge of this specific address and area.';
+  // Build context from whatever real data we have
+  var realCtx = '';
+  if (realData) {
+    realCtx += 'VERIFIED REAL DATA FROM GOVERNMENT SOURCES:\n';
+    if (realData.matched_address) realCtx += 'Confirmed address: ' + realData.matched_address + '\n';
+    if (realData.lat)             realCtx += 'GPS: ' + realData.lat + ', ' + realData.lon + '\n';
+    if (realData.zip)             realCtx += 'Zip code: ' + realData.zip + '\n';
+    if (realData.city)            realCtx += 'City: ' + realData.city + ', ' + realData.state + '\n';
+    if (realData.tract_id)        realCtx += 'Census tract: ' + realData.tract_id + ' (county ' + realData.county_fips + ')\n';
+    if (realData.median_home_value) realCtx += 'REAL median home value in this tract: $' + realData.median_home_value.toLocaleString() + '\n';
+    if (realData.median_income)     realCtx += 'REAL median household income in this tract: $' + realData.median_income.toLocaleString() + '\n';
+    if (realData.median_rent)       realCtx += 'REAL median rent in this tract: $' + realData.median_rent + '/month\n';
+    if (realData.median_year_built) realCtx += 'REAL median year built in this area: ' + realData.median_year_built + '\n';
+    if (realData.owner_pct)         realCtx += 'Owner occupied: ' + realData.owner_pct + '% / Renter: ' + realData.renter_pct + '%\n';
+    if (realData.population)        realCtx += 'Tract population: ' + realData.population + '\n';
+    if (realData.zestimate)         realCtx += 'Zillow Zestimate: $' + realData.zestimate.toLocaleString() + '\n';
+    if (realData.zillow_url)        realCtx += 'Zillow URL: ' + realData.zillow_url + '\n';
+    if (!realData.median_home_value && !realData.zestimate) {
+      realCtx += 'Note: Use your training knowledge about zip ' + (realData.zip||'') + ' in ' + (realData.city||addr) + ' for realistic values.\n';
+    }
+  } else {
+    realCtx = 'Use your knowledge of this specific address and neighborhood for realistic analysis.';
+  }
 
   var compsCtx = listings.length ?
     'REAL COMPS IN AREA:
