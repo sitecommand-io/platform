@@ -387,8 +387,11 @@ function renderLeads(leads) {
     area.innerHTML = '<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.75rem">🏚️</div><p>No listings found. Try a different area.</p></div>';
     return;
   }
-  var filterBar = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">' + leads.length + '</strong> opportunities found</div><div style="display:flex;gap:.35rem"><button onclick="filterView('all',this)" class="src-btn on" id="fv-all">All</button><button onclick="filterView('hot',this)" class="src-btn" id="fv-hot">🔴 Hot</button><button onclick="filterView('new',this)" class="src-btn" id="fv-new">🟢 New</button></div></div>';
-  area.innerHTML = filterBar + leads.map(function(l){ return renderCard(l); }).join('');
+  area.innerHTML = '<div id="lfBar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">' + leads.length + '</strong> found</div><div style="display:flex;gap:.35rem"><button id="fv-all" class="src-btn on">All</button><button id="fv-hot" class="src-btn">Hot</button><button id="fv-new" class="src-btn">New</button></div></div>' + leads.map(function(l){ return renderCard(l); }).join('');
+  if(document.getElementById('fv-all')) document.getElementById('fv-all').onclick = function(){ filterView('all',this); };
+  if(document.getElementById('fv-hot')) document.getElementById('fv-hot').onclick = function(){ filterView('hot',this); };
+  if(document.getElementById('fv-new')) document.getElementById('fv-new').onclick = function(){ filterView('new',this); };
+
 }
 
 function renderCard(l) {
