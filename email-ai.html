@@ -116,13 +116,57 @@ input,select,textarea,button{font-family:inherit}
   #desktopNav{display:none !important}
   #autoRefreshIndicator{display:none}
 }
+
+/* ── UNIVERSAL NAV ── */
+.sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
+.sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
+.sc-nav{display:flex;gap:.2rem;margin-left:auto}
+.sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:#c8a96e;background:rgba(200,169,110,.08)}
+.sc-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;z-index:200;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.45rem .2rem;text-decoration:none;color:#6b6b6b;font-size:.52rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;transition:color .15s}
+.sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
+.sc-bn-icon{font-size:1.25rem;line-height:1}
+@media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
+@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
+
 </style>
 </head>
 <body>
+<header class="sc-header">
+  <div class="sc-logo"><span>Site</span>Command</div>
+  <span class="sc-badge" id="sc-page-badge"></span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
+    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
+    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
+    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
+    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
+    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+  </nav>
+</header>
+<nav class="sc-bottom-nav">
+  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
+  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
+  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
+  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
+  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
+  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+</nav>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop()||'platform.html';
+  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
+  var el=document.getElementById('sc-page-badge');
+  if(el&&badges[page])el.textContent=badges[page];
+  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
+  var key=map[page];
+  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
+})();
+</script>
 
-<div class="header">
-  <div class="logo"><span>Site</span>Command</div>
-  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📧 Email AI</span>
+<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📧 Email AI</span>
   <!-- Desktop nav -->
   <div style="display:flex;gap:.25rem;margin-left:.75rem" id="desktopNav">
     <a href="platform.html" style="font-size:.78rem;color:var(--mid);padding:.28rem .75rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--mid)'">🏠 Dashboard</a>
@@ -319,23 +363,7 @@ input,select,textarea,button{font-family:inherit}
 </div>
 
 <!-- BOTTOM NAV (mobile) -->
-<nav class="bottom-nav" id="bottomNav">
-  <a href="platform.html" class="bn-item">
-    <span class="bn-icon">🏠</span>Dashboard
-  </a>
-  <button class="bn-item" onclick="showMobileSection('list')">
-    <span class="bn-icon">📧</span>Inbox
-  </button>
-  <button class="bn-item" onclick="showMobileSection('important')">
-    <span class="bn-icon">🔴</span>Important
-  </button>
-  <button class="bn-item" onclick="showMobileSection('leads')">
-    <span class="bn-icon">🟢</span>Leads
-  </button>
-  <button class="bn-item" onclick="showMobileSection('settings')">
-    <span class="bn-icon">⚙️</span>Settings
-  </button>
-</nav>
+
 
 <!-- MOBILE EMAIL DETAIL OVERLAY -->
 <div id="mobileDetail">
