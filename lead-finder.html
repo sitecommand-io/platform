@@ -387,7 +387,7 @@ function renderLeads(leads) {
     area.innerHTML = '<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.75rem">🏚️</div><p>No listings found. Try a different area.</p></div>';
     return;
   }
-  area.innerHTML = ['<div style="display:flex;align-items:center;justify-content:space-between;','margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">','<div style="font-size:.84rem;color:var(--light)">','<strong style="color:var(--accent)">' + leads.length + '</strong> found</div>','<div style="display:flex;gap:.35rem">','<button id="fv-all" class="src-btn on">All</button>','<button id="fv-hot" class="src-btn">🔴 Hot</button>','<button id="fv-new" class="src-btn">🟢 New</button>','</div></div>'].join('') + leads.map(function(l){ return renderCard(l); }).join('');
+  area.innerHTML = '<div id="lfBar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">' + leads.length + '</strong> found</div><div style="display:flex;gap:.35rem"><button id="fv-all" class="src-btn on">All</button><button id="fv-hot" class="src-btn">Hot</button><button id="fv-new" class="src-btn">New</button></div></div>' + leads.map(function(l){ return renderCard(l); }).join('');
   if(document.getElementById('fv-all')) document.getElementById('fv-all').onclick = function(){ filterView('all',this); };
   if(document.getElementById('fv-hot')) document.getElementById('fv-hot').onclick = function(){ filterView('hot',this); };
   if(document.getElementById('fv-new')) document.getElementById('fv-new').onclick = function(){ filterView('new',this); };
@@ -396,25 +396,39 @@ function renderLeads(leads) {
 
 function renderCard(l) {
   var hotClass = l.hot ? 'hot' : '';
-  var hotBadge = l.hot ? '<span class="badge badge-hot">🔥 Hot</span>' : '';
+  var hotBadge = l.hot ? '<span class="badge badge-hot">Hot</span>' : '';
   var newBadge = l.new ? '<span class="badge badge-new">New</span>' : '';
   var srcBadge = '<span class="badge badge-src">' + l.source + '</span>';
   var arvText  = l.arv ? '<div style="font-size:.78rem;margin-bottom:.5rem"><span style="color:var(--green)">ARV: ' + l.arv + '</span> · Rehab: ' + l.rehab + '</div>' : '';
-  return '<div class="listing-card ' + hotClass + '" onclick="selectLead('' + l.id + '')">' +
+  var domText  = l.dom ? l.dom + ' days' : (l.date || '');
+  var desc     = l.desc ? '<div class="lc-ai">💡 ' + l.desc.slice(0,120) + '</div>' : '';
+  var imgHtml  = l.img ? '<img src="' + l.img + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"/>' : '<div style="display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem">🏠</div>';
+
+  var card = document.createElement('div');
+  card.className = 'listing-card ' + hotClass;
+  card.setAttribute('data-id', l.id);
+  card.innerHTML = (
     '<div class="lc-img" style="position:relative">' +
-    (l.img ? '<img src="' + l.img + '" alt="' + l.address + '" loading="lazy"/>' : '<div style="display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem">🏠</div>') +
-    '<div class="lc-badges" style="position:absolute;top:.5rem;left:.5rem;z-index:1;display:flex;gap:.3rem;flex-wrap:wrap">' + hotBadge + newBadge + srcBadge + '</div></div>' +
+    imgHtml +
+    '<div class="lc-badges" style="position:absolute;top:.5rem;left:.5rem;z-index:1;display:flex;gap:.3rem;flex-wrap:wrap">' +
+    hotBadge + newBadge + srcBadge +
+    '</div></div>' +
     '<div class="lc-body">' +
     '<div class="lc-price">' + l.price + '</div>' +
     '<div class="lc-addr">' + l.address + '</div>' +
-    '<div class="lc-meta">' + (l.beds?l.beds+'bd · ':'') + (l.baths?l.baths+'ba · ':'') + (l.sqft?l.sqft.toLocaleString()+' sqft · ':'') + (l.dom?l.dom+' days':l.date) + '</div>' +
-    arvText +
-    (l.desc ? '<div class="lc-ai">💡 ' + l.desc.slice(0,120) + '</div>' : '') +
+    '<div class="lc-meta">' + (l.beds ? l.beds+'bd · ' : '') + (l.baths ? l.baths+'ba · ' : '') + (l.sqft ? l.sqft.toLocaleString()+' sqft · ' : '') + domText + '</div>' +
+    arvText + desc +
     '<div class="lc-actions">' +
-    '<button class="lc-btn" onclick="event.stopPropagation();analyzeThis('' + l.id + '')">🧠 Analyze</button>' +
-    '<button class="lc-btn" onclick="event.stopPropagation();contactLead('' + l.id + '')">📞 Contact</button>' +
-    '<button class="lc-btn lc-btn-primary" onclick="event.stopPropagation();window.open('' + l.url + '','_blank')">View →</button>' +
-    '</div></div></div>';
+    '<button class="lc-btn lc-analyze">🧠 Analyze</button>' +
+    '<button class="lc-btn lc-contact">📞 Contact</button>' +
+    '<button class="lc-btn lc-btn-primary lc-view">View →</button>' +
+    '</div></div>'
+  );
+  card.onclick = function(){ selectLead(l.id); };
+  card.querySelector('.lc-analyze').onclick = function(e){ e.stopPropagation(); analyzeThis(l.id); };
+  card.querySelector('.lc-contact').onclick = function(e){ e.stopPropagation(); contactLead(l.id); };
+  card.querySelector('.lc-view').onclick    = function(e){ e.stopPropagation(); window.open(l.url,'_blank'); };
+  return card.outerHTML;
 }
 
 var currentFilter = 'all';
@@ -496,28 +510,9 @@ async function runDeepResearch() {
   }
 
   var compsCtx = listings.length ?
-    'REAL COMPS IN AREA:
-' + listings.slice(0,3).map(function(l){return '- '+l.price+' — '+l.title;}).join('
-') : '';
+    'REAL COMPS IN AREA:\n' + listings.slice(0,3).map(function(l){return '- '+l.price+' - '+l.title;}).join('\n') : '';
 
-  var prompt = 'Real estate investment analysis for: ' + addr + '
-
-' + realCtx + '
-' + compsCtx + '
-
-Provide:
-1. PROPERTY FACTS (use real data above, do not contradict it)
-   - Value, beds, baths, sqft, year built, neighborhood grade A-F
-2. INVESTMENT NUMBERS
-   - Current value, ARV, rehab cost, max offer (70% rule), profit, monthly rent, deal rating HOT/WARM/PASS
-3. NEIGHBORHOOD INTEL for this specific zip
-   - Crime level, schools, market trend, avg days on market
-4. RENOVATION LIST
-   - What this property type/age typically needs, costs per item
-5. ACTION PLAN
-   - Should they buy? Max offer? 3 next steps?
-
-Be direct with specific numbers. No vague estimates.';
+  var prompt = 'Real estate investment analysis for: ' + addr + '\n\n' + realCtx + '\n' + compsCtx + '\n\nProvide:\n1. PROPERTY FACTS (use real data above, do not contradict it)\n   - Value, beds, baths, sqft, year built, neighborhood grade A-F\n2. INVESTMENT NUMBERS\n   - Current value, ARV, rehab cost, max offer (70% rule), profit, monthly rent, deal rating HOT/WARM/PASS\n3. NEIGHBORHOOD INTEL for this specific zip\n   - Crime level, schools, market trend, avg days on market\n4. RENOVATION LIST\n   - What this property type/age typically needs, costs per item\n5. ACTION PLAN\n   - Should they buy? Max offer? 3 next steps?\n\nBe direct with specific numbers. No vague estimates.';
 
   fill.style.width = '85%'; btn.textContent = 'Writing report...';
   var text = await callAI(prompt);
