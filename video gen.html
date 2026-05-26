@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Video Generator — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f}
+body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+.header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+.logo{font-family:"Bebas Neue",sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:.25rem;margin-left:.5rem}
+.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none}
+.nav-links a:hover{color:var(--accent)}
+.back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}
+.body{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+.page-title{font-family:"Bebas Neue",sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.25rem}
+.page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem}
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem}
+.card{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem}
+.card-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
+.card-title::before{content:"";display:block;width:3px;height:12px;background:var(--accent);border-radius:2px}
+
+/* Upload zone */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(200,169,110,.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-icon{font-size:2.5rem;margin-bottom:.75rem;pointer-events:none}
+.upload-zone-text{font-size:.88rem;color:var(--mid);pointer-events:none}
+.upload-zone-sub{font-size:.74rem;color:var(--mid);margin-top:.25rem;pointer-events:none}
+
+/* Photo grid */
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1rem}
+.photo-item{aspect-ratio:1;border-radius:8px;overflow:hidden;position:relative;cursor:grab}
+.photo-item img{width:100%;height:100%;object-fit:cover}
+.photo-item .del-btn{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center}
+.photo-item .order-badge{position:absolute;bottom:3px;left:3px;background:rgba(200,169,110,.9);color:#000;font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:99px}
+.photo-count{font-size:.78rem;color:var(--mid);margin-top:.5rem}
+
+/* Settings */
+.fg{margin-bottom:.85rem}
+.fg label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.35rem}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.86rem;padding:.62rem .9rem;font-family:inherit;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:70px}
+
+/* Style buttons */
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem}
+.style-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;cursor:pointer;text-align:left;transition:all .15s}
+.style-btn:hover,.style-btn.on{border-color:var(--accent);background:rgba(200,169,110,.08)}
+.style-btn-icon{font-size:1.2rem;margin-bottom:.2rem}
+.style-btn-name{font-size:.8rem;font-weight:600;color:var(--white)}
+.style-btn-desc{font-size:.68rem;color:var(--mid);margin-top:.1rem}
+
+/* Generate button */
+.gen-btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:9px;font-size:1rem;font-weight:700;padding:.9rem;cursor:pointer;transition:opacity .2s;margin-top:.5rem}
+.gen-btn:hover{opacity:.85}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Progress */
+.progress-wrap{display:none;margin-top:1rem}
+.progress-bar{background:var(--border);border-radius:99px;height:6px;overflow:hidden;margin:.5rem 0}
+.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
+.progress-status{font-size:.82rem;color:var(--light);text-align:center}
+
+/* Canvas (hidden) */
+#videoCanvas{display:none}
+
+/* Preview */
+.preview-wrap{display:none;margin-top:1rem}
+.preview-wrap video{width:100%;border-radius:8px;background:#000}
+.download-btn{width:100%;background:var(--green);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.75rem;cursor:pointer;margin-top:.75rem;transition:opacity .2s}
+.download-btn:hover{opacity:.85}
+
+/* Tips */
+.tip-box{background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:.85rem 1rem;font-size:.8rem;color:var(--light);line-height:1.75;margin-bottom:1rem}
+.tip-box strong{color:var(--accent)}
+
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* ── UNIVERSAL NAV ── */
+.sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
+.sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
+.sc-nav{display:flex;gap:.2rem;margin-left:auto}
+.sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:#c8a96e;background:rgba(200,169,110,.08)}
+.sc-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;z-index:200;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.45rem .2rem;text-decoration:none;color:#6b6b6b;font-size:.52rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;transition:color .15s}
+.sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
+.sc-bn-icon{font-size:1.25rem;line-height:1}
+@media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
+@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
+
+</style>
+</head>
+<body>
+<header class="sc-header">
+  <div class="sc-logo"><span>Site</span>Command</div>
+  <span class="sc-badge" id="sc-page-badge"></span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
+    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
+    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
+    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
+    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
+    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+  </nav>
+</header>
+<nav class="sc-bottom-nav">
+  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
+  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
+  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
+  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
+  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
+  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+</nav>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop()||'platform.html';
+  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
+  var el=document.getElementById('sc-page-badge');
+  if(el&&badges[page])el.textContent=badges[page];
+  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
+  var key=map[page];
+  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
+})();
+</script>
+
+<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🎬 Video Generator</span>
+  </div>
+
+<div class="body">
+  <div class="page-title">🎬 AI Video Generator</div>
+  <div class="page-sub">Upload photos of a house or project — AI creates a professional marketing video. 100% free, runs in your browser.</div>
+
+  <div class="main-grid">
+    <!-- LEFT: Upload + Preview -->
+    <div>
+      <div class="card">
+        <div class="card-title">Upload Photos</div>
+        <div class="upload-zone" id="uploadZone"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="handleDrop(event)">
+          <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)"/>
+          <div class="upload-zone-icon">📸</div>
+          <div class="upload-zone-text">Drop photos here or click to upload</div>
+          <div class="upload-zone-sub">JPG, PNG · Up to 20 photos · Best: before/after, exterior, interior</div>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+        <div class="photo-count" id="photoCount"></div>
+      </div>
+
+      <!-- Progress -->
+      <div class="card" id="progressCard" style="display:none">
+        <div class="card-title">Generating Video</div>
+        <div class="progress-wrap" id="progressWrap" style="display:block">
+          <div class="progress-status" id="progressStatus">Starting...</div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div class="card" id="outputCard" style="display:none">
+        <div class="card-title">Your Video</div>
+        <div class="preview-wrap" id="previewWrap" style="display:block">
+          <video id="videoOutput" controls playsinline></video>
+          <button class="download-btn" onclick="downloadVideo()">⬇️ Download Video</button>
+          <div style="display:flex;gap:.5rem;margin-top:.5rem">
+            <button onclick="shareToSocial()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.82rem;font-weight:600;padding:.55rem;cursor:pointer">📱 Post to Social</button>
+            <button onclick="resetAll()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.82rem;font-weight:600;padding:.55rem;cursor:pointer">🔄 Make Another</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Settings -->
+    <div>
+      <div class="tip-box">
+        <strong>💡 How it works:</strong><br>
+        Upload photos → choose a style → AI generates transitions and text overlays → download MP4 video ready to post on Facebook, Instagram, and Google Business. Runs 100% in your browser — no uploads, no servers, completely free.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Video Style</div>
+        <div class="style-grid">
+          <button class="style-btn on" onclick="setStyle('slideshow',this)" id="style-slideshow">
+            <div class="style-btn-icon">🎞️</div>
+            <div class="style-btn-name">Slideshow</div>
+            <div class="style-btn-desc">Clean transitions, professional</div>
+          </button>
+          <button class="style-btn" onclick="setStyle('zoom',this)" id="style-zoom">
+            <div class="style-btn-icon">🔍</div>
+            <div class="style-btn-name">Ken Burns</div>
+            <div class="style-btn-desc">Slow zoom effect, cinematic</div>
+          </button>
+          <button class="style-btn" onclick="setStyle('before_after',this)" id="style-before_after">
+            <div class="style-btn-icon">↔️</div>
+            <div class="style-btn-name">Before/After</div>
+            <div class="style-btn-desc">Split reveal effect</div>
+          </button>
+          <button class="style-btn" onclick="setStyle('timelapse',this)" id="style-timelapse">
+            <div class="style-btn-icon">⚡</div>
+            <div class="style-btn-name">Fast Cuts</div>
+            <div class="style-btn-desc">Quick energy, social media</div>
+          </button>
+        </div>
+
+        <div class="fg">
+          <label>Video Duration</label>
+          <select id="videoDuration">
+            <option value="15">15 seconds (Instagram/TikTok)</option>
+            <option value="30" selected>30 seconds (Facebook/Google)</option>
+            <option value="60">60 seconds (YouTube/LinkedIn)</option>
+            <option value="90">90 seconds (Full showcase)</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Title Text (shown on video)</label>
+          <input id="videoTitle" placeholder="Kitchen Renovation Complete!" value="Professional Renovation Complete!"/>
+        </div>
+
+        <div class="fg">
+          <label>Subtitle / Tagline</label>
+          <input id="videoSubtitle" placeholder="Licensed & Insured · Call Today" value="Licensed & Insured · Free Estimates"/>
+        </div>
+
+        <div class="fg">
+          <label>Your Phone Number</label>
+          <input id="videoPhone" placeholder="(302) 000-0000" value=""/>
+        </div>
+
+        <div class="fg">
+          <label>Text Color Theme</label>
+          <select id="textTheme">
+            <option value="gold">Gold on Dark (Professional)</option>
+            <option value="white">White on Dark</option>
+            <option value="dark">Dark on Light</option>
+            <option value="green">Green Accent</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Transition Speed</label>
+          <select id="transSpeed">
+            <option value="slow">Slow (3s per photo)</option>
+            <option value="medium" selected>Medium (2s per photo)</option>
+            <option value="fast">Fast (1s per photo)</option>
+          </select>
+        </div>
+
+        <button class="gen-btn" id="genBtn" onclick="generateVideo()">🎬 Generate Video</button>
+        <div style="font-size:.72rem;color:var(--mid);text-align:center;margin-top:.5rem">Free · Runs in browser · No upload needed</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Best Practices</div>
+        <div style="font-size:.8rem;color:var(--light);line-height:1.85">
+          📸 <strong>8-12 photos</strong> work best for 30s video<br>
+          🏠 Start with <strong>exterior</strong>, end with <strong>best feature</strong><br>
+          ↔️ Mix <strong>wide shots + details</strong> for variety<br>
+          ☀️ <strong>Good lighting</strong> = professional result<br>
+          📐 <strong>Landscape photos</strong> (horizontal) fill frame best
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="videoCanvas"></canvas>
+
+<script>
+var photos    = [];
+var videoStyle= "slideshow";
+var videoBlob = null;
+var mediaRecorder = null;
+
+// Load saved phone from platform
+var savedPhone = localStorage.getItem("sc_phone") || localStorage.getItem("asc_twilio_from") || "";
+if (savedPhone) document.getElementById("videoPhone").value = savedPhone;
+
+function setStyle(style, btn) {
+  videoStyle = style;
+  document.querySelectorAll(".style-btn").forEach(function(b){ b.classList.remove("on"); });
+  btn.classList.add("on");
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById("uploadZone").classList.remove("drag");
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  Array.from(files).forEach(function(file) {
+    if (!file.type.startsWith("image/")) return;
+    if (photos.length >= 20) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      photos.push({ src: e.target.result, name: file.name });
+      renderPhotoGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderPhotoGrid() {
+  var grid = document.getElementById("photoGrid");
+  grid.innerHTML = photos.map(function(p, i) {
+    return "<div class=\"photo-item\" draggable=\"true\" ondragstart=\"dragStart(event," + i + ")\" ondrop=\"dragDrop(event," + i + ")\" ondragover=\"event.preventDefault()\">" +
+      "<img src=\"" + p.src + "\" alt=\"Photo " + (i+1) + "\"/>" +
+      "<button class=\"del-btn\" onclick=\"removePhoto(" + i + ")\">✕</button>" +
+      "<span class=\"order-badge\">" + (i+1) + "</span>" +
+      "</div>";
+  }).join("");
+  document.getElementById("photoCount").textContent = photos.length + " photos loaded" + (photos.length < 3 ? " — add at least 3 for best results" : " — ready to generate!");
+}
+
+function removePhoto(i) {
+  photos.splice(i, 1);
+  renderPhotoGrid();
+}
+
+var dragIdx = null;
+function dragStart(e, i) { dragIdx = i; }
+function dragDrop(e, i) {
+  if (dragIdx === null || dragIdx === i) return;
+  var moved = photos.splice(dragIdx, 1)[0];
+  photos.splice(i, 0, moved);
+  dragIdx = null;
+  renderPhotoGrid();
+}
+
+// ── VIDEO GENERATION ──────────────────────────────────────────
+async function generateVideo() {
+  if (photos.length < 2) { alert("Upload at least 2 photos to generate a video."); return; }
+
+  var btn      = document.getElementById("genBtn");
+  var progCard = document.getElementById("progressCard");
+  var outCard  = document.getElementById("outputCard");
+  btn.disabled = true; btn.textContent = "Generating...";
+  progCard.style.display = "block";
+  outCard.style.display  = "none";
+
+  var duration  = parseInt(document.getElementById("videoDuration").value);
+  var title     = document.getElementById("videoTitle").value;
+  var subtitle  = document.getElementById("videoSubtitle").value;
+  var phone     = document.getElementById("videoPhone").value;
+  var theme     = document.getElementById("textTheme").value;
+  var speed     = document.getElementById("transSpeed").value;
+  var speedMs   = speed === "slow" ? 3000 : speed === "fast" ? 1000 : 2000;
+
+  var themes = {
+    gold:  { accent: "#c8a96e", text: "#ffffff", bg: "rgba(0,0,0,0.6)" },
+    white: { accent: "#ffffff", text: "#ffffff", bg: "rgba(0,0,0,0.5)" },
+    dark:  { accent: "#1a1a1a", text: "#1a1a1a", bg: "rgba(255,255,255,0.7)" },
+    green: { accent: "#6ec87a", text: "#ffffff", bg: "rgba(0,0,0,0.6)" },
+  };
+  var colors = themes[theme] || themes.gold;
+
+  // Setup canvas — 1080x1080 for social media (square)
+  var canvas = document.getElementById("videoCanvas");
+  canvas.width  = 1080;
+  canvas.height = 1080;
+  var ctx    = canvas.getContext("2d");
+
+  setProgress("Loading photos...", 10);
+
+  // Pre-load all images
+  var imgs = await Promise.all(photos.map(function(p) {
+    return new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = function(){ resolve(img); };
+      img.src = p.src;
+    });
+  }));
+
+  setProgress("Setting up video recorder...", 20);
+
+  // Setup MediaRecorder
+  var stream = canvas.captureStream(30);
+  var mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" :
+                 MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "video/mp4";
+  
+  var chunks = [];
+  mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 4000000 });
+  mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = function() {
+    videoBlob = new Blob(chunks, { type: mimeType });
+    var url   = URL.createObjectURL(videoBlob);
+    document.getElementById("videoOutput").src = url;
+    document.getElementById("outputCard").style.display = "block";
+    setProgress("Video ready!", 100);
+    btn.disabled = false; btn.textContent = "🎬 Generate Video";
+  };
+  
+  mediaRecorder.start(100);
+
+  // Calculate time per photo
+  var totalPhotos = imgs.length;
+  var msPerPhoto  = Math.max(speedMs, (duration * 1000) / totalPhotos);
+  var fps         = 30;
+  var framesPerPhoto = Math.floor(msPerPhoto / 1000 * fps);
+  var transFrames    = Math.floor(fps * 0.5); // 0.5s transition
+
+  setProgress("Rendering frames...", 30);
+
+  // Render each photo
+  for (var photoIdx = 0; photoIdx < totalPhotos; photoIdx++) {
+    var img      = imgs[photoIdx];
+    var nextImg  = imgs[(photoIdx + 1) % totalPhotos];
+    var isFirst  = photoIdx === 0;
+    var isLast   = photoIdx === totalPhotos - 1;
+    var pct      = 30 + Math.round((photoIdx / totalPhotos) * 60);
+    setProgress("Rendering photo " + (photoIdx+1) + " of " + totalPhotos + "...", pct);
+
+    for (var frame = 0; frame < framesPerPhoto; frame++) {
+      var progress = frame / framesPerPhoto; // 0 to 1
+      ctx.clearRect(0, 0, 1080, 1080);
+
+      // Draw current photo with effect
+      if (videoStyle === "zoom") {
+        // Ken Burns: slow zoom in
+        var scale = 1 + progress * 0.08;
+        var offset = (scale - 1) * 540;
+        ctx.save();
+        ctx.translate(540, 540);
+        ctx.scale(scale, scale);
+        ctx.translate(-540, -540);
+        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+        ctx.restore();
+      } else if (videoStyle === "before_after" && photoIdx % 2 === 1) {
+        // Wipe reveal
+        drawPhoto(ctx, imgs[photoIdx-1], 0, 0, 1080, 1080);
+        var wipeW = Math.floor(progress * 1080);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, 0, wipeW, 1080);
+        ctx.clip();
+        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+        ctx.restore();
+        // Wipe line
+        if (wipeW > 0 && wipeW < 1080) {
+          ctx.fillStyle = colors.accent;
+          ctx.fillRect(wipeW - 3, 0, 6, 1080);
+        }
+      } else if (videoStyle === "timelapse") {
+        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+      } else {
+        // Slideshow with cross-fade at end
+        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+        if (frame > framesPerPhoto - transFrames && !isLast) {
+          var fadeAlpha = (frame - (framesPerPhoto - transFrames)) / transFrames;
+          ctx.globalAlpha = fadeAlpha;
+          drawPhoto(ctx, nextImg, 0, 0, 1080, 1080);
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      // Dark overlay for text readability
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
+      ctx.fillRect(0, 0, 1080, 1080);
+
+      // Title on first photo
+      if (isFirst && title && progress < 0.85) {
+        drawTextOverlay(ctx, title, subtitle, phone, colors, progress);
+      }
+
+      // Branding on last photo
+      if (isLast && progress > 0.15) {
+        drawEndCard(ctx, title, subtitle, phone, colors, progress);
+      }
+
+      // Photo number indicator (dots)
+      drawDots(ctx, photoIdx, totalPhotos);
+
+      await sleep(1000/fps);
+    }
+  }
+
+  setProgress("Finalizing...", 92);
+  mediaRecorder.stop();
+}
+
+function drawPhoto(ctx, img, x, y, w, h) {
+  // Cover fit
+  var scale = Math.max(w / img.width, h / img.height);
+  var sw = img.width * scale;
+  var sh = img.height * scale;
+  var sx = x + (w - sw) / 2;
+  var sy = y + (h - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh);
+}
+
+function drawTextOverlay(ctx, title, subtitle, phone, colors, progress) {
+  var alpha = Math.min(1, progress * 4);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // Bottom bar
+  var barH = 220;
+  var grad = ctx.createLinearGradient(0, 1080-barH-50, 0, 1080);
+  grad.addColorStop(0, "rgba(0,0,0,0)");
+  grad.addColorStop(1, "rgba(0,0,0,0.85)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 1080-barH-50, 1080, barH+50);
+
+  // Title
+  ctx.fillStyle = colors.accent;
+  ctx.font = "bold 58px DM Sans, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(title.slice(0,35), 540, 870);
+
+  // Subtitle
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "36px DM Sans, sans-serif";
+  ctx.fillText(subtitle.slice(0,45), 540, 930);
+
+  // Phone
+  if (phone) {
+    ctx.fillStyle = colors.accent;
+    ctx.font = "bold 42px DM Sans, sans-serif";
+    ctx.fillText(phone, 540, 990);
+  }
+
+  ctx.restore();
+}
+
+function drawEndCard(ctx, title, subtitle, phone, colors, progress) {
+  var alpha = Math.min(1, (progress - 0.15) * 2.5);
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // Full overlay
+  ctx.fillStyle = "rgba(0,0,0,0.65)";
+  ctx.fillRect(0, 0, 1080, 1080);
+
+  // Center box
+  ctx.fillStyle = colors.bg;
+  roundRect(ctx, 140, 320, 800, 440, 20);
+  ctx.fill();
+
+  // Accent line
+  ctx.fillStyle = colors.accent;
+  ctx.fillRect(490, 360, 100, 5);
+
+  // Title
+  ctx.fillStyle = colors.accent;
+  ctx.font = "bold 62px DM Sans, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(title.slice(0,25), 540, 480);
+
+  // Subtitle
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "38px DM Sans, sans-serif";
+  ctx.fillText(subtitle.slice(0,40), 540, 545);
+
+  // Phone
+  if (phone) {
+    ctx.fillStyle = colors.accent;
+    ctx.font = "bold 52px DM Sans, sans-serif";
+    ctx.fillText(phone, 540, 630);
+  }
+
+  // CTA
+  ctx.fillStyle = colors.accent;
+  roundRect(ctx, 290, 680, 500, 60, 30);
+  ctx.fill();
+  ctx.fillStyle = "#000";
+  ctx.font = "bold 30px DM Sans, sans-serif";
+  ctx.fillText("GET A FREE ESTIMATE", 540, 720);
+
+  ctx.restore();
+}
+
+function drawDots(ctx, current, total) {
+  if (total <= 1) return;
+  var dotSize  = 8;
+  var dotGap   = 18;
+  var totalW   = total * dotGap;
+  var startX   = 540 - totalW/2;
+  for (var i = 0; i < total; i++) {
+    ctx.beginPath();
+    ctx.arc(startX + i*dotGap, 40, i===current ? dotSize : dotSize/2, 0, Math.PI*2);
+    ctx.fillStyle = i===current ? "#c8a96e" : "rgba(255,255,255,0.5)";
+    ctx.fill();
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function sleep(ms) { return new Promise(function(r){ setTimeout(r,ms); }); }
+
+function setProgress(msg, pct) {
+  var el = document.getElementById("progressStatus");
+  var fl = document.getElementById("progressFill");
+  if (el) el.textContent = msg;
+  if (fl) fl.style.width = pct + "%";
+}
+
+function downloadVideo() {
+  if (!videoBlob) return;
+  var ext  = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+  var url  = URL.createObjectURL(videoBlob);
+  var a    = document.createElement("a");
+  a.href   = url;
+  a.download = "sitecommand-video." + ext;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function shareToSocial() {
+  alert("Video downloaded! Upload it to:\n\n📘 Facebook: Create Post → Photo/Video\n📸 Instagram: New Post → Video\n🔍 Google Business: Add Update → Photo/Video\n💼 LinkedIn: Start a post → Add a video");
+  downloadVideo();
+}
+
+function resetAll() {
+  photos = [];
+  videoBlob = null;
+  document.getElementById("photoGrid").innerHTML = "";
+  document.getElementById("photoCount").textContent = "";
+  document.getElementById("progressCard").style.display = "none";
+  document.getElementById("outputCard").style.display = "none";
+  document.getElementById("genBtn").disabled = false;
+  document.getElementById("genBtn").textContent = "🎬 Generate Video";
+  setProgress("", 0);
+}
+</script>
+</body>
+</html>
