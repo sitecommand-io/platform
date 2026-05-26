@@ -7,130 +7,129 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
-body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f;--orange:#e8944a}
+body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
 .header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+.logo{font-family:"Bebas Neue",sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
 .nav-links{display:flex;gap:.25rem;margin-left:.5rem}
-.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s}
-.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none}
+.nav-links a:hover{color:var(--accent)}
 .back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}
 .body{max-width:1300px;margin:0 auto;padding:2rem 1.5rem}
-.page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.25rem}
+.page-title{font-family:"Bebas Neue",sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.25rem}
 .page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem}
-
-/* SEARCH BAR */
 .search-bar{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem}
 .search-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:.75rem;align-items:end}
 .fg{display:flex;flex-direction:column;gap:.3rem}
 .fg label{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
-.fg input,.fg select{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.88rem;padding:.62rem .9rem;font-family:inherit;transition:border-color .2s}
+.fg input,.fg select{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.88rem;padding:.62rem .9rem;font-family:inherit}
 .fg input:focus,.fg select:focus{outline:none;border-color:var(--accent)}
-.fg select option{background:var(--dark)}
-.scan-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.68rem 1.75rem;cursor:pointer;white-space:nowrap;transition:opacity .2s;height:42px}
-.scan-btn:hover{opacity:.85}
+.scan-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.68rem 1.75rem;cursor:pointer;height:42px}
 .scan-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* SOURCES */
 .sources-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
-.src-btn{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:.32rem .85rem;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;color:var(--light)}
+.src-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:7px;padding:.32rem .85rem;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--light)}
 .src-btn.on{border-color:var(--accent);background:rgba(200,169,110,.08);color:var(--accent)}
 .src-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-right:.25rem}
-
-/* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1.5rem}
 .stat{background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent);line-height:1}
+.stat-val{font-family:"Bebas Neue",sans-serif;font-size:1.8rem;color:var(--accent);line-height:1}
 .stat-lbl{font-size:.65rem;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;margin-top:.15rem}
-
-/* MAIN GRID */
-.main-grid{display:grid;grid-template-columns:1fr 420px;gap:1.5rem;align-items:start}
-
-/* LISTING CARD */
-.listing-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.75rem;transition:border-color .2s;cursor:pointer}
+.main-grid{display:grid;grid-template-columns:1fr 400px;gap:1.5rem;align-items:start}
+.listing-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.75rem;cursor:pointer;transition:border-color .2s}
 .listing-card:hover{border-color:var(--accent)}
-.listing-card.hot{border-color:rgba(209,79,79,.4);background:rgba(209,79,79,.03)}
-.listing-card.warm{border-color:rgba(232,148,74,.3)}
-.lc-img{width:100%;height:160px;object-fit:cover;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--mid);font-size:2rem;position:relative}
+.listing-card.hot{border-color:rgba(209,79,79,.4)}
+.lc-img{width:100%;height:160px;object-fit:cover;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative}
 .lc-img img{width:100%;height:100%;object-fit:cover}
-.lc-badges{position:absolute;top:.5rem;left:.5rem;display:flex;gap:.35rem;flex-wrap:wrap}
+.lc-badges{position:absolute;top:.5rem;left:.5rem;display:flex;gap:.3rem;flex-wrap:wrap}
 .badge{font-size:.62rem;font-weight:700;text-transform:uppercase;padding:.18rem .55rem;border-radius:99px}
 .badge-hot{background:rgba(209,79,79,.85);color:#fff}
-.badge-warm{background:rgba(232,148,74,.85);color:#fff}
 .badge-new{background:rgba(110,200,122,.85);color:#000}
 .badge-src{background:rgba(0,0,0,.75);color:#fff}
 .lc-body{padding:.85rem 1rem}
-.lc-price{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--accent);letter-spacing:.02em;line-height:1}
+.lc-price{font-family:"Bebas Neue",sans-serif;font-size:1.5rem;color:var(--accent);letter-spacing:.02em;line-height:1}
 .lc-addr{font-size:.84rem;font-weight:600;margin:.2rem 0;color:var(--white)}
 .lc-meta{font-size:.76rem;color:var(--mid);margin-bottom:.6rem}
-.lc-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.65rem}
-.lc-tag{font-size:.66rem;font-weight:600;padding:.15rem .5rem;border-radius:99px;border:1px solid}
 .lc-ai{background:rgba(200,169,110,.07);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .65rem;font-size:.78rem;color:var(--light);line-height:1.6;margin-bottom:.6rem}
 .lc-actions{display:flex;gap:.4rem}
-.lc-btn{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:6px;font-size:.74rem;font-weight:600;padding:.38rem .6rem;cursor:pointer;transition:all .15s;text-align:center}
+.lc-btn{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:6px;font-size:.74rem;font-weight:600;padding:.38rem .6rem;cursor:pointer;text-align:center}
 .lc-btn:hover{border-color:var(--accent);color:var(--accent)}
 .lc-btn-primary{background:var(--accent);color:#000;border-color:var(--accent)}
 .lc-btn-primary:hover{opacity:.85;color:#000}
-
-/* DEEP RESEARCH PANEL */
-.research-panel{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:sticky;top:70px}
-.rp-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:.35rem}
+.research-panel{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:sticky;top:70px;margin-bottom:1rem}
+.rp-title{font-family:"Bebas Neue",sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:.35rem}
 .rp-sub{font-size:.78rem;color:var(--mid);margin-bottom:1rem;line-height:1.6}
 .addr-input-row{display:flex;gap:.5rem;margin-bottom:.85rem}
-.addr-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.86rem;padding:.6rem .85rem;font-family:inherit;transition:border-color .2s}
+.addr-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.86rem;padding:.6rem .85rem;font-family:inherit}
 .addr-input:focus{outline:none;border-color:var(--accent)}
 .research-btn{background:var(--accent);color:#000;border:none;border-radius:7px;font-size:.82rem;font-weight:700;padding:.6rem 1.1rem;cursor:pointer;white-space:nowrap}
 .research-btn:disabled{opacity:.4;cursor:not-allowed}
-.research-result{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:.82rem;color:var(--light);line-height:1.8;min-height:80px;white-space:pre-wrap;max-height:500px;overflow-y:auto}
-.research-section{margin-bottom:.75rem}
-.rs-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.3rem}
-.rs-content{font-size:.82rem;color:var(--light);line-height:1.75}
-
-/* ALERT SETUP */
-.alert-card{background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:1.1rem;margin-bottom:.75rem}
-.alert-row{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
-.alert-info{font-size:.82rem;color:var(--light)}
-.alert-badge{font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.15rem .5rem;border-radius:99px;background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
-
-/* LOADING */
+.progress-bar{background:var(--border);border-radius:99px;height:4px;margin:.5rem 0;overflow:hidden}
+.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
 .loading-state{text-align:center;padding:3rem 1rem;color:var(--mid)}
 .spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;margin:.75rem auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-state{text-align:center;padding:3rem 1rem;color:var(--mid)}
-.progress-bar{background:var(--border);border-radius:99px;height:4px;margin:.5rem 0;overflow:hidden}
-.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.search-row{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:repeat(3,1fr)}}
 
-@media(max-width:900px){.search-row{grid-template-columns:1fr 1fr}.main-grid{grid-template-columns:1fr}.stats-row{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:480px){.search-row{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+/* ── UNIVERSAL NAV ── */
+.sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
+.sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
+.sc-nav{display:flex;gap:.2rem;margin-left:auto}
+.sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:#c8a96e;background:rgba(200,169,110,.08)}
+.sc-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;z-index:200;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.45rem .2rem;text-decoration:none;color:#6b6b6b;font-size:.52rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;transition:color .15s}
+.sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
+.sc-bn-icon{font-size:1.25rem;line-height:1}
+@media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
+@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
+
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div class="logo"><span>Site</span>Command</div>
-  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🔍 Lead Finder</span>
-  <div class="nav-links">
-    <a href="platform.html">🏠 Dashboard</a>
-    <a href="email-ai.html">📧 Email</a>
-    <a href="social-media.html">📱 Social</a>
-    <a href="permits.html">🏛️ Permits</a>
+<header class="sc-header">
+  <div class="sc-logo"><span>Site</span>Command</div>
+  <span class="sc-badge" id="sc-page-badge"></span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
+    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
+    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
+    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
+    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
+    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+  </nav>
+</header>
+<nav class="sc-bottom-nav">
+  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
+  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
+  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
+  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
+  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
+  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+</nav>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop()||'platform.html';
+  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
+  var el=document.getElementById('sc-page-badge');
+  if(el&&badges[page])el.textContent=badges[page];
+  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
+  var key=map[page];
+  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
+})();
+</script>
+<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🔍 Lead Finder</span>
   </div>
-  <a href="platform.html" class="back">← Back</a>
-</div>
 
 <div class="body">
   <div class="page-title">🔍 Lead Finder Agent</div>
   <div class="page-sub">Find motivated sellers, distressed properties, and renovation opportunities. AI analyzes every listing and alerts you to the best deals.</div>
 
-  <!-- SEARCH -->
   <div class="search-bar">
     <div class="search-row">
-      <div class="fg">
-        <label>City, Zip, or Address</label>
-        <input id="searchArea" placeholder="Wilmington, DE or 19801" value="Wilmington, DE"/>
-      </div>
-      <div class="fg">
-        <label>Max Price</label>
+      <div class="fg"><label>City, Zip, or Address</label><input id="searchArea" placeholder="Wilmington, DE or 19801" value="Wilmington, DE"/></div>
+      <div class="fg"><label>Max Price</label>
         <select id="maxPrice">
           <option value="100000">Under $100k</option>
           <option value="200000">Under $200k</option>
@@ -140,19 +139,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white)
           <option value="9999999">Any price</option>
         </select>
       </div>
-      <div class="fg">
-        <label>Lead Type</label>
+      <div class="fg"><label>Lead Type</label>
         <select id="leadType">
           <option value="all">All Opportunities</option>
           <option value="fixer">Fixer Uppers</option>
           <option value="motivated">Motivated Sellers</option>
           <option value="foreclosure">Foreclosures</option>
           <option value="new">New Listings</option>
-          <option value="rental">Rental Properties</option>
         </select>
       </div>
-      <div class="fg">
-        <label>Radius</label>
+      <div class="fg"><label>Radius</label>
         <select id="radius">
           <option value="5">5 miles</option>
           <option value="10" selected>10 miles</option>
@@ -164,41 +160,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white)
     </div>
     <div class="sources-row">
       <span class="src-label">Sources:</span>
-      <button class="src-btn on" id="src-zillow" onclick="toggleSource('zillow',this)">🏠 Zillow</button>
-      <button class="src-btn on" id="src-craigslist" onclick="toggleSource('craigslist',this)">📋 Craigslist</button>
-      <button class="src-btn on" id="src-fsbo" onclick="toggleSource('fsbo',this)">🪧 FSBO</button>
-      <button class="src-btn on" id="src-google" onclick="toggleSource('google',this)">🔍 Google</button>
-      <button class="src-btn" id="src-foreclosure" onclick="toggleSource('foreclosure',this)">🏦 Foreclosures</button>
+      <button class="src-btn on" id="src-zillow" onclick="toggleSrc(this)">🏠 Zillow</button>
+      <button class="src-btn on" id="src-craigslist" onclick="toggleSrc(this)">📋 Craigslist</button>
+      <button class="src-btn on" id="src-fsbo" onclick="toggleSrc(this)">🪧 FSBO</button>
     </div>
   </div>
 
-  <!-- STATS -->
   <div class="stats-row">
     <div class="stat"><div class="stat-val" id="stToday">0</div><div class="stat-lbl">Found Today</div></div>
     <div class="stat"><div class="stat-val" style="color:var(--red)" id="stHot">0</div><div class="stat-lbl">Hot Leads</div></div>
     <div class="stat"><div class="stat-val" style="color:var(--orange)" id="stWarm">0</div><div class="stat-lbl">Warm Leads</div></div>
     <div class="stat"><div class="stat-val" style="color:var(--green)" id="stContacted">0</div><div class="stat-lbl">Contacted</div></div>
-    <div class="stat"><div class="stat-val" id="stTotal">0</div><div class="stat-lbl">Total All Time</div></div>
+    <div class="stat"><div class="stat-val" id="stTotal">0</div><div class="stat-lbl">All Time</div></div>
   </div>
 
   <div class="main-grid">
-    <!-- LISTINGS -->
     <div>
       <div id="listingsArea">
         <div class="empty-state">
           <div style="font-size:3rem;margin-bottom:.75rem">🔍</div>
           <p style="font-size:.9rem;margin-bottom:.35rem">Enter a location and click Find Leads</p>
-          <p style="font-size:.8rem;color:var(--mid)">AI scans Zillow, Craigslist, and more for the best opportunities</p>
+          <p style="font-size:.8rem;color:var(--mid)">AI scans Craigslist and market data for the best opportunities</p>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL -->
     <div>
-      <!-- DEEP RESEARCH -->
-      <div class="research-panel" style="margin-bottom:1rem">
+      <div class="research-panel">
         <div class="rp-title">🧠 Deep Property Research</div>
-        <div class="rp-sub">Enter any address and AI will research the property, owner, market value, renovation potential, and investment opportunity.</div>
+        <div class="rp-sub">Enter any address. AI looks up real data and gives you a full investment analysis.</div>
         <div class="addr-input-row">
           <input class="addr-input" id="researchAddr" placeholder="123 Main St, Wilmington, DE"/>
           <button class="research-btn" id="researchBtn" onclick="runDeepResearch()">Analyze →</button>
@@ -207,155 +197,68 @@ body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white)
         <div id="researchResult" style="display:none"></div>
       </div>
 
-      <!-- ALERTS -->
       <div class="research-panel">
         <div class="rp-title">🔔 Smart Alerts</div>
         <div class="rp-sub">Get notified when new opportunities match your criteria.</div>
-        <div class="alert-card">
-          <div class="alert-row">
-            <div class="alert-info">
-              <div style="font-weight:600;font-size:.84rem">Wilmington, DE under $300k</div>
-              <div style="font-size:.74rem;color:var(--mid)">Fixer uppers · 10 mile radius</div>
-            </div>
-            <span class="alert-badge">Active</span>
-          </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem;margin-bottom:.5rem">
+          <div style="font-weight:600;font-size:.84rem" id="alertArea">Wilmington, DE under $300k</div>
+          <div style="font-size:.74rem;color:var(--mid)">Fixer uppers · Active</div>
         </div>
-        <button onclick="addAlert()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.55rem;cursor:pointer;transition:all .15s">+ Add Alert</button>
+        <button onclick="addAlert()" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.55rem;cursor:pointer">+ Add Alert</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const OLLAMA_URL = localStorage.getItem('sc_ollama_url') || '';
-const SERVER_URL = (OLLAMA_URL || 'https://recapture-anime-wrench.ngrok-free.dev/ollama').replace('/ollama','');
+var GEMINI_KEY = localStorage.getItem("sc_gemini_key") || "AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8";
+var GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+var OLLAMA_URL = localStorage.getItem("sc_ollama_url") || "";
+var SERVER_URL = OLLAMA_URL ? OLLAMA_URL.replace("/ollama","") : "https://recapture-anime-wrench.ngrok-free.dev";
+var allLeads   = JSON.parse(localStorage.getItem("sc_leads") || "[]");
+var scanning   = false;
 
-let activeSources = new Set(['zillow','craigslist','fsbo','google']);
-let allLeads = JSON.parse(localStorage.getItem('sc_leads') || '[]');
-let scanning = false;
-
-function toggleSource(src, btn) {
-  if (activeSources.has(src)) { activeSources.delete(src); btn.classList.remove('on'); }
-  else { activeSources.add(src); btn.classList.add('on'); }
-}
-
-async function runScan() {
-  if (scanning) return;
-  scanning = true;
-  const area     = document.getElementById('searchArea').value.trim();
-  const maxPrice = document.getElementById('maxPrice').value;
-  const leadType = document.getElementById('leadType').value;
-  const btn      = document.getElementById('scanBtn');
-  if (!area) { alert('Enter a city or zip code'); scanning = false; return; }
-
-  btn.disabled = true;
-  btn.textContent = '🔍 Scanning...';
-  document.getElementById('listingsArea').innerHTML = `
-    <div class="loading-state">
-      <div class="spin"></div>
-      <div style="margin-top:.5rem;font-size:.84rem" id="scanStatus">Searching ${area}...</div>
-      <div class="progress-bar" style="max-width:300px;margin:.75rem auto 0"><div class="progress-fill" id="scanProgress"></div></div>
-    </div>`;
-
-  const leads = await fetchLeads(area, maxPrice, leadType);
-  allLeads = [...leads, ...allLeads].slice(0, 100);
-  localStorage.setItem('sc_leads', JSON.stringify(allLeads));
-  renderLeads(leads);
-  updateStats(leads);
-
-  btn.disabled = false;
-  btn.textContent = '🔍 Find Leads';
-  scanning = false;
+function toggleSrc(btn) {
+  btn.classList.toggle("on");
 }
 
 function setStatus(msg, pct) {
-  const el = document.getElementById('scanStatus');
-  const pr = document.getElementById('scanProgress');
+  var el = document.getElementById("scanStatus");
+  var pr = document.getElementById("scanProgress");
   if (el) el.textContent = msg;
-  if (pr) pr.style.width = pct + '%';
+  if (pr) pr.style.width = pct + "%";
 }
 
-async function fetchLeads(area, maxPrice, leadType) {
-  const leads = [];
+function updateStats(leads) {
+  document.getElementById("stToday").textContent   = leads.length;
+  document.getElementById("stHot").textContent     = leads.filter(function(l){ return l.hot; }).length;
+  document.getElementById("stWarm").textContent    = leads.filter(function(l){ return !l.hot && l.new; }).length;
+  document.getElementById("stTotal").textContent   = allLeads.length;
+}
 
-  // 1. Try server proxy for real Craigslist
-  if (activeSources.has('craigslist')) {
-    setStatus('Scanning Craigslist...', 15);
-    const clData = await safePost(SERVER_URL + '/property/listings', { area, maxPrice: parseInt(maxPrice) });
-    if (clData && clData.listings && clData.listings.length) {
-      leads.push(...clData.listings);
-      setStatus('Found ' + clData.listings.length + ' Craigslist listings', 30);
-    } else {
-      // Fallback: corsproxy
-      const city  = getCraigslistCity(area);
-      const maxP  = parseInt(maxPrice);
-      const clUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://' + city + '.craigslist.org/search/rea?format=atom&max_price=' + maxP + '&hasPic=1');
-      const parsed = await safeFetchXML(clUrl);
-      if (parsed) {
-        parsed.querySelectorAll('entry').forEach(function(item, i) {
-          if (i >= 12) return;
-          var title   = item.querySelector('title') ? item.querySelector('title').textContent : '';
-          var link    = item.querySelector('link') ? item.querySelector('link').getAttribute('href') : '';
-          var cont    = item.querySelector('content') ? item.querySelector('content').textContent : '';
-          var updated = item.querySelector('updated') ? item.querySelector('updated').textContent : '';
-          var pMatch  = (title + cont).match(/\$[\d,]+/);
-          var price   = pMatch ? pMatch[0] : 'Call';
-          var pNum    = pMatch ? parseInt(pMatch[0].replace(/[$,]/g,'')) : 0;
-          leads.push({
-            id: 'cl_' + i + '_' + Date.now(), source: 'Craigslist',
-            title: title.slice(0,80), address: extractAddress(title + ' ' + cont) || area,
-            price: price, priceNum: pNum, url: link,
-            desc: cont.replace(/<[^>]+>/g,'').slice(0,200),
-            date: updated ? new Date(updated).toLocaleDateString() : 'Today',
-            beds: extractBeds(title+cont), baths: extractBaths(title+cont),
-            sqft: extractSqft(title+cont),
-            hot: isHotLead(title+cont, pNum, maxP), new: isNewListing(updated), img: null
-          });
-        });
-      }
-    }
-  }
+function getCLCity(area) {
+  var m = {"wilmington":"delaware","delaware":"delaware","philadelphia":"philadelphia",
+            "philly":"philadelphia","new york":"newyork","nyc":"newyork",
+            "baltimore":"baltimore","dc":"washingtondc","chicago":"chicago",
+            "houston":"houston","dallas":"dallas","atlanta":"atlanta",
+            "miami":"miami","seattle":"seattle","denver":"denver","boston":"boston"};
+  var a = area.toLowerCase();
+  for (var k in m) { if (a.indexOf(k) >= 0) return m[k]; }
+  return "delaware";
+}
 
-  // 2. AI market listings
-  if (activeSources.has('zillow') || activeSources.has('fsbo')) {
-    setStatus('AI generating market listings...', 50);
-    const prompt = 'Generate 6 realistic property listings for ' + area + ' max $' + parseInt(maxPrice).toLocaleString() + ' type: ' + leadType + '. Return ONLY a JSON array: [{"address":"full address","price":"$XXX,XXX","priceNum":number,"beds":number,"baths":number,"sqft":number,"yearBuilt":number,"daysOnMarket":number,"condition":"Good/Fair/Poor","type":"Single Family/Townhouse/Condo","reason":"why opportunity","estimatedARV":"$XXX,XXX","estimatedRehab":"$XX,XXX","hot":true/false}]';
-    const aiText = await callAI(prompt);
-    if (aiText) {
-      try {
-        const clean = aiText.replace(/```json|```/g,'').trim();
-        const parsed = JSON.parse(clean);
-        parsed.forEach(function(p, i) {
-          leads.push({
-            id: 'zl_' + i + '_' + Date.now(),
-            source: i%3===0?'Zillow':i%3===1?'FSBO':'MLS',
-            title: p.beds+'bd/'+p.baths+'ba '+p.type+' — '+p.condition,
-            address: p.address, price: p.price, priceNum: p.priceNum,
-            url: 'https://www.zillow.com/homes/' + encodeURIComponent(p.address) + '_rb/',
-            desc: p.reason, date: 'Today',
-            beds: p.beds, baths: p.baths, sqft: p.sqft,
-            yearBuilt: p.yearBuilt, dom: p.daysOnMarket,
-            condition: p.condition, arv: p.estimatedARV, rehab: p.estimatedRehab,
-            hot: p.hot, new: p.daysOnMarket < 3,
-            img: getPropertyImg(p.type, p.condition)
-          });
-        });
-      } catch(e) { console.log('AI parse error:', e.message); }
-    }
-  }
-
-  setStatus('Done! Found ' + leads.length + ' opportunities', 100);
-  leads.sort(function(a,b){ return (b.hot?1:0)-(a.hot?1:0) || a.priceNum-b.priceNum; });
-  return leads;
+function hotKeywords(text) {
+  var kw = ["motivated","reduced","must sell","as-is","cash only","fixer","needs work","estate","foreclosure","distressed","bank owned"];
+  var t  = text.toLowerCase();
+  for (var i=0; i<kw.length; i++) { if (t.indexOf(kw[i]) >= 0) return true; }
+  return false;
 }
 
 async function safePost(url, body) {
   try {
-    const r = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+    var r = await fetch(url, {
+      method: "POST",
+      headers: {"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
       body: JSON.stringify(body)
     });
     if (r.ok) return await r.json();
@@ -363,217 +266,295 @@ async function safePost(url, body) {
   return null;
 }
 
-async function safeFetchXML(url) {
+async function callAI(prompt) {
+  if (OLLAMA_URL) {
+    var r = await safePost(OLLAMA_URL + "/api/generate", {model: localStorage.getItem("sc_ollama_model")||"sitecommand", prompt:prompt, stream:false});
+    if (r && r.response) return r.response;
+  }
   try {
-    const r = await fetch(url);
-    const t = await r.text();
-    return new DOMParser().parseFromString(t, 'application/xml');
+    var r2 = await fetch(GEMINI_URL + "?key=" + GEMINI_KEY, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{temperature:0.3,maxOutputTokens:1500}})
+    });
+    var d = await r2.json();
+    return d.candidates[0].content.parts[0].text || "";
   } catch(e) { return null; }
 }
 
-function getPropertyImg(type, condition) {
-  var imgs = {
-    'Single Family': 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=70',
-    'Townhouse': 'https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=400&q=70',
-    'Condo': 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=70',
-    'Multi-Family': 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=70'
-  };
-  return imgs[type] || imgs['Single Family'];
+async function runScan() {
+  if (scanning) return;
+  scanning = true;
+  var area     = document.getElementById("searchArea").value.trim();
+  var maxPrice = parseInt(document.getElementById("maxPrice").value);
+  var leadType = document.getElementById("leadType").value;
+  var btn      = document.getElementById("scanBtn");
+  if (!area) { alert("Enter a city or zip code"); scanning=false; return; }
+
+  btn.disabled = true; btn.textContent = "🔍 Scanning...";
+  document.getElementById("listingsArea").innerHTML =
+    "<div class=\"loading-state\"><div class=\"spin\"></div>" +
+    "<div style=\"margin-top:.5rem;font-size:.84rem\" id=\"scanStatus\">Searching " + area + "...</div>" +
+    "<div class=\"progress-bar\" style=\"max-width:300px;margin:.75rem auto 0\"><div class=\"progress-fill\" id=\"scanProgress\"></div></div></div>";
+
+  var leads = [];
+
+  // 1. Try server proxy for real Craigslist
+  setStatus("Scanning Craigslist...", 15);
+  var clData = await safePost(SERVER_URL + "/property/listings", {area:area, maxPrice:maxPrice});
+  if (clData && clData.listings && clData.listings.length) {
+    leads = leads.concat(clData.listings);
+    setStatus("Found " + clData.listings.length + " Craigslist listings", 35);
+  } else {
+    // Fallback: direct Craigslist via corsproxy
+    try {
+      var city   = getCLCity(area);
+      var clUrl  = "https://corsproxy.io/?" + encodeURIComponent("https://" + city + ".craigslist.org/search/rea?format=atom&max_price=" + maxPrice + "&hasPic=1");
+      var clResp = await fetch(clUrl);
+      var clText = await clResp.text();
+      var parser = new DOMParser();
+      var xml    = parser.parseFromString(clText, "application/xml");
+      var items  = xml.querySelectorAll("entry");
+      items.forEach(function(item, i) {
+        if (i >= 15) return;
+        var title   = item.querySelector("title") ? item.querySelector("title").textContent : "";
+        var link    = item.querySelector("link") ? item.querySelector("link").getAttribute("href") : "";
+        var updated = item.querySelector("updated") ? item.querySelector("updated").textContent : "";
+        var pm      = (title).match(/\$[\d,]+/);
+        var pn      = pm ? parseInt(pm[0].replace(/[$,]/g,"")) : 0;
+        leads.push({
+          id:"cl"+i+Date.now(), source:"Craigslist", title:title.slice(0,80), address:area,
+          price:pm?pm[0]:"Call", priceNum:pn, url:link, desc:title,
+          date:updated?updated.slice(0,10):"Today",
+          hot:hotKeywords(title)||(pn>0&&pn<maxPrice*0.72), new:true, img:null
+        });
+      });
+      setStatus("Found " + leads.length + " Craigslist listings", 35);
+    } catch(e) { console.log("CL fallback:", e.message); }
+  }
+
+  // 2. AI market listings
+  setStatus("AI generating market analysis...", 55);
+  var aiPrompt = "Generate 5 realistic property listings for " + area + " max $" + maxPrice.toLocaleString() + " type: " + leadType + ". Return ONLY a JSON array no markdown: [{\"address\":\"full address in " + area + "\",\"price\":\"$XXX,XXX\",\"priceNum\":number,\"beds\":number,\"baths\":number,\"sqft\":number,\"yearBuilt\":number,\"daysOnMarket\":number,\"condition\":\"Good or Fair or Poor\",\"type\":\"Single Family or Townhouse or Condo\",\"reason\":\"why this is an opportunity\",\"estimatedARV\":\"$XXX,XXX\",\"estimatedRehab\":\"$XX,XXX\",\"hot\":true}]";
+  var aiText = await callAI(aiPrompt);
+  if (aiText) {
+    try {
+      var clean  = aiText.replace(/```json|```/g,"").trim();
+      var parsed = JSON.parse(clean);
+      parsed.forEach(function(p, i) {
+        leads.push({
+          id:"ai"+i+Date.now(),
+          source: i%2===0?"Zillow":"FSBO",
+          title: p.beds+"bd/"+p.baths+"ba "+p.type+" — "+p.condition,
+          address:p.address, price:p.price, priceNum:p.priceNum,
+          url:"https://www.zillow.com/homes/"+encodeURIComponent(p.address)+"_rb/",
+          desc:p.reason, date:"Today",
+          beds:p.beds, baths:p.baths, sqft:p.sqft,
+          yearBuilt:p.yearBuilt, dom:p.daysOnMarket,
+          condition:p.condition, arv:p.estimatedARV, rehab:p.estimatedRehab,
+          hot:p.hot, new:p.daysOnMarket<3,
+          img:"https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&q=70"
+        });
+      });
+    } catch(e) { console.log("AI parse:", e.message); }
+  }
+
+  setStatus("Done! Found " + leads.length + " opportunities", 100);
+  leads.sort(function(a,b){ return (b.hot?1:0)-(a.hot?1:0)||a.priceNum-b.priceNum; });
+  allLeads = leads.concat(allLeads).slice(0,100);
+  localStorage.setItem("sc_leads", JSON.stringify(allLeads));
+  renderLeads(leads);
+  updateStats(leads);
+  btn.disabled = false; btn.textContent = "🔍 Find Leads";
+  scanning = false;
 }
 
 function renderLeads(leads) {
-  const area = document.getElementById('listingsArea');
-  if (!leads.length) {
-    area.innerHTML = '<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:.75rem">🏚️</div><p>No listings found. Try a different area.</p></div>';
+  var area = document.getElementById("listingsArea");
+  if (!leads || !leads.length) {
+    area.innerHTML = "<div class=\"empty-state\"><div style=\"font-size:2.5rem;margin-bottom:.75rem\">🏚️</div><p>No listings found. Try a different area.</p></div>";
     return;
   }
-  area.innerHTML = '<div id="lfBar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><div style="font-size:.84rem;color:var(--light)"><strong style="color:var(--accent)">' + leads.length + '</strong> found</div><div style="display:flex;gap:.35rem"><button id="fv-all" class="src-btn on">All</button><button id="fv-hot" class="src-btn">Hot</button><button id="fv-new" class="src-btn">New</button></div></div>' + leads.map(function(l){ return renderCard(l); }).join('');
-  if(document.getElementById('fv-all')) document.getElementById('fv-all').onclick = function(){ filterView('all',this); };
-  if(document.getElementById('fv-hot')) document.getElementById('fv-hot').onclick = function(){ filterView('hot',this); };
-  if(document.getElementById('fv-new')) document.getElementById('fv-new').onclick = function(){ filterView('new',this); };
-
+  var html = "<div style=\"display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem\">" +
+    "<div style=\"font-size:.84rem;color:var(--light)\"><strong style=\"color:var(--accent)\">" + leads.length + "</strong> opportunities found</div>" +
+    "<div style=\"display:flex;gap:.35rem\">" +
+    "<button id=\"fv-all\" class=\"src-btn on\">All</button>" +
+    "<button id=\"fv-hot\" class=\"src-btn\">🔴 Hot</button>" +
+    "<button id=\"fv-new\" class=\"src-btn\">🟢 New</button>" +
+    "</div></div>";
+  leads.forEach(function(l) { html += makeCard(l); });
+  area.innerHTML = html;
+  document.getElementById("fv-all").onclick = function(){ showFilter("all",this); };
+  document.getElementById("fv-hot").onclick = function(){ showFilter("hot",this); };
+  document.getElementById("fv-new").onclick = function(){ showFilter("new",this); };
+  area.querySelectorAll(".listing-card").forEach(function(card) {
+    var id = card.getAttribute("data-id");
+    card.querySelector(".lc-analyze").onclick = function(e){ e.stopPropagation(); analyzeThis(id); };
+    card.querySelector(".lc-contact").onclick = function(e){ e.stopPropagation(); contactLead(id); };
+    card.querySelector(".lc-view").onclick    = function(e){ e.stopPropagation(); var l=getLead(id); if(l) window.open(l.url,"_blank"); };
+    card.onclick = function(){ selectLead(id); };
+  });
 }
 
-function renderCard(l) {
-  var hotClass = l.hot ? 'hot' : '';
-  var hotBadge = l.hot ? '<span class="badge badge-hot">Hot</span>' : '';
-  var newBadge = l.new ? '<span class="badge badge-new">New</span>' : '';
-  var srcBadge = '<span class="badge badge-src">' + l.source + '</span>';
-  var arvText  = l.arv ? '<div style="font-size:.78rem;margin-bottom:.5rem"><span style="color:var(--green)">ARV: ' + l.arv + '</span> · Rehab: ' + l.rehab + '</div>' : '';
-  var domText  = l.dom ? l.dom + ' days' : (l.date || '');
-  var desc     = l.desc ? '<div class="lc-ai">💡 ' + l.desc.slice(0,120) + '</div>' : '';
-  var imgHtml  = l.img ? '<img src="' + l.img + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"/>' : '<div style="display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem">🏠</div>';
-
-  var card = document.createElement('div');
-  card.className = 'listing-card ' + hotClass;
-  card.setAttribute('data-id', l.id);
-  card.innerHTML = (
-    '<div class="lc-img" style="position:relative">' +
-    imgHtml +
-    '<div class="lc-badges" style="position:absolute;top:.5rem;left:.5rem;z-index:1;display:flex;gap:.3rem;flex-wrap:wrap">' +
-    hotBadge + newBadge + srcBadge +
-    '</div></div>' +
-    '<div class="lc-body">' +
-    '<div class="lc-price">' + l.price + '</div>' +
-    '<div class="lc-addr">' + l.address + '</div>' +
-    '<div class="lc-meta">' + (l.beds ? l.beds+'bd · ' : '') + (l.baths ? l.baths+'ba · ' : '') + (l.sqft ? l.sqft.toLocaleString()+' sqft · ' : '') + domText + '</div>' +
-    arvText + desc +
-    '<div class="lc-actions">' +
-    '<button class="lc-btn lc-analyze">🧠 Analyze</button>' +
-    '<button class="lc-btn lc-contact">📞 Contact</button>' +
-    '<button class="lc-btn lc-btn-primary lc-view">View →</button>' +
-    '</div></div>'
-  );
-  card.onclick = function(){ selectLead(l.id); };
-  card.querySelector('.lc-analyze').onclick = function(e){ e.stopPropagation(); analyzeThis(l.id); };
-  card.querySelector('.lc-contact').onclick = function(e){ e.stopPropagation(); contactLead(l.id); };
-  card.querySelector('.lc-view').onclick    = function(e){ e.stopPropagation(); window.open(l.url,'_blank'); };
-  return card.outerHTML;
+function makeCard(l) {
+  var hb = l.hot  ? "<span class=\"badge badge-hot\">Hot</span>" : "";
+  var nb = l.new  ? "<span class=\"badge badge-new\">New</span>" : "";
+  var sb = "<span class=\"badge badge-src\">" + (l.source||"MLS") + "</span>";
+  var ar = l.arv  ? "<div style=\"font-size:.78rem;margin-bottom:.5rem\"><span style=\"color:var(--green)\">ARV: " + l.arv + "</span> &middot; Rehab: " + l.rehab + "</div>" : "";
+  var dc = l.desc ? "<div class=\"lc-ai\">&#x1F4A1; " + (l.desc||"").slice(0,120) + "</div>" : "";
+  var dm = l.dom  ? l.dom + " days" : (l.date || "");
+  var img = l.img ? "<img src=\"" + l.img + "\" alt=\"\" style=\"width:100%;height:100%;object-fit:cover\"/>" :
+    "<div style=\"display:flex;align-items:center;justify-content:center;height:160px;background:var(--surface);font-size:3rem\">&#x1F3E0;</div>";
+  return "<div class=\"listing-card " + (l.hot?"hot":"") + "\" data-id=\"" + l.id + "\">" +
+    "<div class=\"lc-img\" style=\"position:relative\">" + img +
+    "<div class=\"lc-badges\">" + hb + nb + sb + "</div></div>" +
+    "<div class=\"lc-body\">" +
+    "<div class=\"lc-price\">" + l.price + "</div>" +
+    "<div class=\"lc-addr\">" + l.address + "</div>" +
+    "<div class=\"lc-meta\">" + (l.beds?l.beds+"bd &middot; ":"") + (l.baths?l.baths+"ba &middot; ":"") + (l.sqft?l.sqft.toLocaleString()+" sqft &middot; ":"") + dm + "</div>" +
+    ar + dc +
+    "<div class=\"lc-actions\">" +
+    "<button class=\"lc-btn lc-analyze\">&#x1F9E0; Analyze</button>" +
+    "<button class=\"lc-btn lc-contact\">&#x1F4DE; Contact</button>" +
+    "<button class=\"lc-btn lc-btn-primary lc-view\">View &rarr;</button>" +
+    "</div></div></div>";
 }
 
-var currentFilter = 'all';
-function filterView(filter, btn) {
-  currentFilter = filter;
-  document.querySelectorAll('#fv-all,#fv-hot,#fv-new').forEach(function(b){ b.classList.remove('on'); });
-  btn.classList.add('on');
-  var filtered = filter==='all' ? allLeads : filter==='hot' ? allLeads.filter(function(l){return l.hot;}) : allLeads.filter(function(l){return l.new;});
+function getLead(id) { return allLeads.find(function(l){ return l.id===id; }); }
+
+function showFilter(f, btn) {
+  document.querySelectorAll("#fv-all,#fv-hot,#fv-new").forEach(function(b){ b.classList.remove("on"); });
+  btn.classList.add("on");
+  var filtered = f==="all" ? allLeads : f==="hot" ? allLeads.filter(function(l){return l.hot;}) : allLeads.filter(function(l){return l.new;});
   renderLeads(filtered);
 }
 
 function selectLead(id) {
-  var lead = allLeads.find(function(l){return l.id===id;});
-  if (!lead) return;
-  document.getElementById('researchAddr').value = lead.address;
-  document.getElementById('researchBtn').scrollIntoView({behavior:'smooth'});
+  var l = getLead(id);
+  if (!l) return;
+  document.getElementById("researchAddr").value = l.address;
+  document.getElementById("researchBtn").scrollIntoView({behavior:"smooth"});
   runDeepResearch();
 }
 
-function updateStats(leads) {
-  document.getElementById('stToday').textContent  = leads.length;
-  document.getElementById('stHot').textContent    = leads.filter(function(l){return l.hot;}).length;
-  document.getElementById('stWarm').textContent   = leads.filter(function(l){return !l.hot&&l.new;}).length;
-  document.getElementById('stTotal').textContent  = allLeads.length;
-}
-
-async function runDeepResearch() {
-  var addr = document.getElementById('researchAddr').value.trim();
-  if (!addr) { alert('Enter a property address to research'); return; }
-
-  var btn      = document.getElementById('researchBtn');
-  var result   = document.getElementById('researchResult');
-  var progress = document.getElementById('researchProgress');
-  var fill     = document.getElementById('researchFill');
-
-  btn.disabled = true; btn.textContent = 'Researching...';
-  progress.style.display = 'block';
-  result.style.display   = 'none';
-  fill.style.width = '5%';
-
-  // Step 1: Try real scraper
-  var realData = null;
-  fill.style.width = '20%'; btn.textContent = 'Looking up Zillow...';
-  realData = await safePost(SERVER_URL + '/property/research', { address: addr });
-  console.log('Real data:', realData);
-
-  // Step 2: Get comps
-  fill.style.width = '45%'; btn.textContent = 'Getting comps...';
-  var listings = [];
-  var city = addr.split(',').slice(-2).join(',').trim();
-  var listData = await safePost(SERVER_URL + '/property/listings', { area: city, maxPrice: 500000 });
-  if (listData && listData.listings) listings = listData.listings;
-
-  // Step 3: AI analysis
-  fill.style.width = '70%'; btn.textContent = 'AI analyzing...';
-
-  // Build context from whatever real data we have
-  var realCtx = '';
-  if (realData) {
-    realCtx += 'VERIFIED REAL DATA FROM GOVERNMENT SOURCES:\n';
-    if (realData.matched_address) realCtx += 'Confirmed address: ' + realData.matched_address + '\n';
-    if (realData.lat)             realCtx += 'GPS: ' + realData.lat + ', ' + realData.lon + '\n';
-    if (realData.zip)             realCtx += 'Zip code: ' + realData.zip + '\n';
-    if (realData.city)            realCtx += 'City: ' + realData.city + ', ' + realData.state + '\n';
-    if (realData.tract_id)        realCtx += 'Census tract: ' + realData.tract_id + ' (county ' + realData.county_fips + ')\n';
-    if (realData.median_home_value) realCtx += 'REAL median home value in this tract: $' + realData.median_home_value.toLocaleString() + '\n';
-    if (realData.median_income)     realCtx += 'REAL median household income in this tract: $' + realData.median_income.toLocaleString() + '\n';
-    if (realData.median_rent)       realCtx += 'REAL median rent in this tract: $' + realData.median_rent + '/month\n';
-    if (realData.median_year_built) realCtx += 'REAL median year built in this area: ' + realData.median_year_built + '\n';
-    if (realData.owner_pct)         realCtx += 'Owner occupied: ' + realData.owner_pct + '% / Renter: ' + realData.renter_pct + '%\n';
-    if (realData.population)        realCtx += 'Tract population: ' + realData.population + '\n';
-    if (realData.zestimate)         realCtx += 'Zillow Zestimate: $' + realData.zestimate.toLocaleString() + '\n';
-    if (realData.zillow_url)        realCtx += 'Zillow URL: ' + realData.zillow_url + '\n';
-    if (!realData.median_home_value && !realData.zestimate) {
-      realCtx += 'Note: Use your training knowledge about zip ' + (realData.zip||'') + ' in ' + (realData.city||addr) + ' for realistic values.\n';
-    }
-  } else {
-    realCtx = 'Use your knowledge of this specific address and neighborhood for realistic analysis.';
-  }
-
-  var compsCtx = listings.length ?
-    'REAL COMPS IN AREA:\n' + listings.slice(0,3).map(function(l){return '- '+l.price+' - '+l.title;}).join('\n') : '';
-
-  var prompt = 'Real estate investment analysis for: ' + addr + '\n\n' + realCtx + '\n' + compsCtx + '\n\nProvide:\n1. PROPERTY FACTS (use real data above, do not contradict it)\n   - Value, beds, baths, sqft, year built, neighborhood grade A-F\n2. INVESTMENT NUMBERS\n   - Current value, ARV, rehab cost, max offer (70% rule), profit, monthly rent, deal rating HOT/WARM/PASS\n3. NEIGHBORHOOD INTEL for this specific zip\n   - Crime level, schools, market trend, avg days on market\n4. RENOVATION LIST\n   - What this property type/age typically needs, costs per item\n5. ACTION PLAN\n   - Should they buy? Max offer? 3 next steps?\n\nBe direct with specific numbers. No vague estimates.';
-
-  fill.style.width = '85%'; btn.textContent = 'Writing report...';
-  var text = await callAI(prompt);
-  fill.style.width = '100%';
-
-  var realBadge = (realData && realData.zestimate) ?
-    '<div style="background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.3);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--green)">✅ Real Zillow data: $' + realData.zestimate.toLocaleString() + ' · ' + (realData.beds||'?') + 'bd/' + (realData.baths||'?') + 'ba · ' + (realData.sqft||'?') + ' sqft · Built ' + (realData.yearBuilt||'?') + '<a href="' + (realData.zillow_url||'#') + '" target="_blank" style="color:var(--accent);margin-left:.5rem">View on Zillow →</a></div>' :
-    '<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--mid)">ℹ️ AI analysis based on market knowledge. Run property_scraper.py for real-time data.</div>';
-
-  result.style.display = 'block';
-  result.innerHTML = realBadge + '<div style="font-size:.82rem;color:var(--light);line-height:1.85;white-space:pre-wrap">' + (text||'Analysis failed.') + '</div><div style="margin-top:.85rem;display:flex;gap:.4rem"><button onclick="copyResearch()" style="background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:5px;font-size:.74rem;font-weight:600;padding:.35rem .85rem;cursor:pointer">📋 Copy</button><button onclick="saveResearch()" style="background:var(--accent);color:#000;border:none;border-radius:5px;font-size:.74rem;font-weight:700;padding:.35rem .85rem;cursor:pointer">💾 Save</button></div>';
-
-  btn.disabled = false; btn.textContent = 'Analyze →';
-  setTimeout(function(){ progress.style.display='none'; fill.style.width='0%'; }, 1500);
-}
-
-async function analyzeThis(id) {
-  var lead = allLeads.find(function(l){return l.id===id;});
-  if (!lead) return;
-  document.getElementById('researchAddr').value = lead.address;
-  await runDeepResearch();
+function analyzeThis(id) {
+  var l = getLead(id);
+  if (!l) return;
+  document.getElementById("researchAddr").value = l.address;
+  runDeepResearch();
 }
 
 function contactLead(id) {
-  var lead = allLeads.find(function(l){return l.id===id;});
-  if (!lead) return;
-  var msg = 'Hi, I am interested in the property at ' + lead.address + ' listed at ' + lead.price + '. Is it still available? I am a cash buyer and can close quickly.';
-  navigator.clipboard.writeText(msg).then(function(){ alert('Contact message copied! Paste it to send to the seller.'); });
+  var l = getLead(id);
+  if (!l) return;
+  var msg = "Hi, I am interested in the property at " + l.address + " listed at " + l.price + ". Is it still available? I am a cash buyer and can close quickly.";
+  navigator.clipboard.writeText(msg).then(function(){ alert("Contact message copied! Paste it to send to the seller."); });
 }
 
-async function callAI(prompt) {
-  if (OLLAMA_URL) {
-    var r = await safePost(OLLAMA_URL + '/api/generate', { model: 'llama3.2', prompt: prompt, stream: false });
-    if (r && r.response) return r.response;
+async function runDeepResearch() {
+  var addr = document.getElementById("researchAddr").value.trim();
+  if (!addr) { alert("Enter a property address to research"); return; }
+
+  var btn      = document.getElementById("researchBtn");
+  var result   = document.getElementById("researchResult");
+  var progress = document.getElementById("researchProgress");
+  var fill     = document.getElementById("researchFill");
+
+  btn.disabled = true; btn.textContent = "Researching...";
+  progress.style.display = "block";
+  result.style.display   = "none";
+  fill.style.width = "5%";
+
+  // Step 1: Get real geocoded data from scraper
+  fill.style.width = "25%"; btn.textContent = "Geocoding...";
+  var realData = await safePost(SERVER_URL + "/property/research", {address:addr});
+
+  // Step 2: Get comps
+  fill.style.width = "50%"; btn.textContent = "Getting comps...";
+  var city     = addr.split(",").slice(-2).join(",").trim();
+  var listData = await safePost(SERVER_URL + "/property/listings", {area:city, maxPrice:500000});
+  var comps    = listData && listData.listings ? listData.listings.slice(0,3) : [];
+
+  // Step 3: Build context with real data
+  fill.style.width = "70%"; btn.textContent = "AI analyzing...";
+
+  var ctx = "REAL VERIFIED DATA:\n";
+  if (realData) {
+    if (realData.matched_address) ctx += "Address confirmed: " + realData.matched_address + "\n";
+    if (realData.city)            ctx += "City: " + realData.city + ", " + realData.state + "\n";
+    if (realData.zip)             ctx += "Zip: " + realData.zip + "\n";
+    if (realData.median_home_value) ctx += "Census median home value in tract: $" + realData.median_home_value.toLocaleString() + "\n";
+    if (realData.median_income)     ctx += "Census median household income: $" + realData.median_income.toLocaleString() + "\n";
+    if (realData.median_rent)       ctx += "Census median rent: $" + realData.median_rent + "/month\n";
+    if (realData.median_year_built) ctx += "Census median year built in area: " + realData.median_year_built + "\n";
+    if (realData.owner_pct)         ctx += "Owner occupied: " + realData.owner_pct + "% / Renter: " + realData.renter_pct + "%\n";
+    if (realData.zestimate)         ctx += "Zillow Zestimate: $" + realData.zestimate.toLocaleString() + "\n";
   }
-  try {
-    var resp = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1500 } })
-    });
-    var d = await resp.json();
-    return (d.candidates||[{}])[0].content.parts[0].text || '';
-  } catch(e) { return null; }
+  if (comps.length) {
+    ctx += "\nREAL COMPS IN AREA:\n";
+    comps.forEach(function(c){ ctx += "- " + c.price + " " + c.title + "\n"; });
+  }
+
+  var prompt = "You are a real estate investment expert. Analyze this property for a contractor/investor.\n\n" +
+    "ADDRESS: " + addr + "\n\n" + ctx + "\n" +
+    "Use real data above. Do not contradict verified numbers. Use your knowledge of this specific neighborhood for everything else.\n\n" +
+    "1. PROPERTY FACTS\n" +
+    "   - Property type, beds, baths, sqft, year built, neighborhood grade A-F\n" +
+    "   - Current market value (use census/Zestimate if available)\n\n" +
+    "2. INVESTMENT NUMBERS\n" +
+    "   - Current value: $\n" +
+    "   - ARV after renovation: $\n" +
+    "   - Estimated rehab: $\n" +
+    "   - Max offer (70% rule): $\n" +
+    "   - Potential profit: $\n" +
+    "   - Monthly rent: $ (compare to census median if available)\n" +
+    "   - Deal rating: HOT / WARM / PASS\n\n" +
+    "3. NEIGHBORHOOD INTEL\n" +
+    "   - Crime level, schools, market trend, avg days on market\n\n" +
+    "4. RENOVATION PRIORITIES\n" +
+    "   - What this property type/age needs, estimated costs\n\n" +
+    "5. ACTION PLAN\n" +
+    "   - Buy or pass? Max offer? 3 next steps\n\n" +
+    "Be direct with specific dollar amounts. No vague ranges.";
+
+  fill.style.width = "85%"; btn.textContent = "Writing report...";
+  var text = await callAI(prompt);
+  fill.style.width = "100%";
+
+  var badge = "";
+  if (realData && realData.median_home_value) {
+    badge = "<div style=\"background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.3);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--green)\">" +
+      "&#x2705; Real Census data: Area median home $" + realData.median_home_value.toLocaleString() +
+      (realData.median_rent ? " &middot; Median rent $" + realData.median_rent : "") +
+      (realData.median_income ? " &middot; Median income $" + realData.median_income.toLocaleString() : "") +
+      " <a href=\"" + (realData.zillow_url||"#") + "\" target=\"_blank\" style=\"color:var(--accent);margin-left:.5rem\">Zillow &rarr;</a></div>";
+  } else if (realData && realData.matched_address) {
+    badge = "<div style=\"background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:6px;padding:.5rem .75rem;margin-bottom:.75rem;font-size:.78rem;color:var(--mid)\">" +
+      "&#x2705; Address verified: " + realData.matched_address + "</div>";
+  }
+
+  result.style.display = "block";
+  result.innerHTML = badge +
+    "<div style=\"font-size:.82rem;color:var(--light);line-height:1.85;white-space:pre-wrap\">" + (text||"Analysis failed. Check your AI connection.") + "</div>" +
+    "<div style=\"margin-top:.85rem;display:flex;gap:.4rem\">" +
+    "<button onclick=\"copyReport()\" style=\"background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:5px;font-size:.74rem;font-weight:600;padding:.35rem .85rem;cursor:pointer\">&#x1F4CB; Copy</button>" +
+    "<button onclick=\"saveReport()\" style=\"background:var(--accent);color:#000;border:none;border-radius:5px;font-size:.74rem;font-weight:700;padding:.35rem .85rem;cursor:pointer\">&#x1F4BE; Save</button></div>";
+
+  btn.disabled = false; btn.textContent = "Analyze →";
+  setTimeout(function(){ progress.style.display="none"; fill.style.width="0%"; }, 1500);
 }
 
-function getCraigslistCity(area) {
-  var cityMap = { 'wilmington':'delaware','delaware':'delaware','philadelphia':'philadelphia','new york':'newyork','nyc':'newyork','baltimore':'baltimore','dc':'washingtondc','washington':'washingtondc','chicago':'chicago','houston':'houston','dallas':'dallas','atlanta':'atlanta','miami':'miami','los angeles':'losangeles','seattle':'seattle','denver':'denver','phoenix':'phoenix','boston':'boston' };
-  var lower = area.toLowerCase();
-  for (var k in cityMap) { if (lower.includes(k)) return cityMap[k]; }
-  return 'delaware';
+function copyReport() {
+  navigator.clipboard.writeText(document.getElementById("researchResult").innerText||"").then(function(){ alert("Copied!"); });
 }
-function extractAddress(text) { var m=text.match(/\d+\s+[\w\s]+(?:St|Ave|Rd|Dr|Blvd|Ln|Way|Ct|Pl)[.,\s]/i); return m?m[0].trim():null; }
-function extractBeds(text) { var m=text.match(/(\d+)\s*(?:bd|bed|bedroom)/i); return m?parseInt(m[1]):null; }
-function extractBaths(text) { var m=text.match(/(\d+(?:\.\d)?)\s*(?:ba|bath)/i); return m?parseFloat(m[1]):null; }
-function extractSqft(text) { var m=text.match(/(\d[\d,]+)\s*(?:sq\.?\s*ft|sqft)/i); return m?parseInt(m[1].replace(',','')):null; }
-function isHotLead(text, price, maxPrice) { var kw=['motivated','price reduced','must sell','as-is','cash only','fixer','needs work','estate sale','foreclosure']; return kw.some(function(k){return text.toLowerCase().includes(k);}) || (price>0&&price<maxPrice*0.75); }
-function isNewListing(dateStr) { if(!dateStr) return false; return (Date.now()-new Date(dateStr).getTime())<3*86400000; }
-function copyResearch() { navigator.clipboard.writeText(document.getElementById('researchResult').innerText||'').then(function(){alert('Copied!');}); }
-function saveResearch() { var saved=JSON.parse(localStorage.getItem('sc_research')||'[]'); saved.unshift({addr:document.getElementById('researchAddr').value,date:new Date().toISOString(),report:document.getElementById('researchResult').innerText}); localStorage.setItem('sc_research',JSON.stringify(saved.slice(0,20))); alert('Saved!'); }
-function addAlert() { alert('Alert set for '+document.getElementById('searchArea').value+'!'); }
+function saveReport() {
+  var saved = JSON.parse(localStorage.getItem("sc_research")||"[]");
+  saved.unshift({addr:document.getElementById("researchAddr").value, date:new Date().toISOString(), report:document.getElementById("researchResult").innerText});
+  localStorage.setItem("sc_research", JSON.stringify(saved.slice(0,20)));
+  alert("Saved!");
+}
+function addAlert() {
+  alert("Alert set for " + document.getElementById("searchArea").value + " under $" + parseInt(document.getElementById("maxPrice").value).toLocaleString() + "!");
+}
 
 if (allLeads.length) { renderLeads(allLeads); updateStats(allLeads); }
 </script>
