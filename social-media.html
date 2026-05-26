@@ -154,21 +154,58 @@ input,select,textarea,button{font-family:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){.main-grid{grid-template-columns:1fr}.platforms-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.platforms-grid{grid-template-columns:1fr 1fr}.ig-results{grid-template-columns:1fr 1fr}}
+
+/* ── UNIVERSAL NAV ── */
+.sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
+.sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
+.sc-nav{display:flex;gap:.2rem;margin-left:auto}
+.sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:#c8a96e;background:rgba(200,169,110,.08)}
+.sc-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;z-index:200;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.45rem .2rem;text-decoration:none;color:#6b6b6b;font-size:.52rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;transition:color .15s}
+.sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
+.sc-bn-icon{font-size:1.25rem;line-height:1}
+@media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
+@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
+
 </style>
 </head>
 <body>
+<header class="sc-header">
+  <div class="sc-logo"><span>Site</span>Command</div>
+  <span class="sc-badge" id="sc-page-badge"></span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
+    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
+    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
+    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
+    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
+    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+  </nav>
+</header>
+<nav class="sc-bottom-nav">
+  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
+  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
+  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
+  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
+  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
+  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+</nav>
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop()||'platform.html';
+  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
+  var el=document.getElementById('sc-page-badge');
+  if(el&&badges[page])el.textContent=badges[page];
+  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
+  var key=map[page];
+  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
+})();
+</script>
 
-<div class="header">
-  <div class="logo"><span>Site</span>Command</div>
-  <span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media</span>
-  <div class="nav-links">
-    <a href="platform.html">🏠 Dashboard</a>
-    <a href="email-ai.html">📧 Email</a>
-    <a href="lead-finder.html">🔍 Leads</a>
-    <a href="permits.html">🏛️ Permits</a>
+<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media</span>
   </div>
-  <a href="platform.html" class="back">← Back</a>
-</div>
 
 <div class="body">
 
@@ -597,10 +634,12 @@ async function connectGoogle() {
         } catch(e) { accounts = []; }
 
         // Get locations for first account
-        const account  = accounts[0];
-        let locationName = account.accountName || 'Google Business';
-        let locationId   = account.name;
-
+        let locationName = 'Google Business';
+        let locationId   = '';
+        if (accounts.length) {
+          const account = accounts[0];
+          locationName  = account.accountName || 'Google Business';
+          locationId    = account.name || '';
           try {
             const locRes  = await fetch(
               'https://mybusinessbusinessinformation.googleapis.com/v1/' + account.name + '/locations?readMask=name,title',
@@ -832,7 +871,7 @@ async function genCaption(style) {
   try {
     let text = '';
     if (ollamaUrl) {
-      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true','Accept':'application/json'}, body:JSON.stringify({model:'llama3.2',prompt,stream:false}) });
+      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true','Accept':'application/json'}, body:JSON.stringify({model: localStorage.getItem('sc_ollama_model')||'sitecommand',prompt,stream:false}) });
       const d = await r.json();
       text = d.response || '';
     } else {
@@ -1099,7 +1138,7 @@ async function genIdeas() {
   const prompt=`Give 4 social media post ideas for "${coName}", a contractor in ${loc}. Format: [Type] idea text under 20 words. Types: Project/Tip/Offer/Seasonal. One per line. Never use placeholder text.`;
   try {
     let text='';
-    if(ollamaUrl){const r=await fetch(ollamaUrl+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({model:'llama3.2',prompt,stream:false})});const d=await r.json();text=d.response||'';}
+    if(ollamaUrl){const r=await fetch(ollamaUrl+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({model: localStorage.getItem('sc_ollama_model')||'sitecommand',prompt,stream:false})});const d=await r.json();text=d.response||'';}
     else{const r=await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.8,maxOutputTokens:300}})});const d=await r.json();text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';}
     const colors={Project:'rgba(200,169,110,.15)|var(--accent)|rgba(200,169,110,.3)',Tip:'rgba(110,200,122,.15)|var(--green)|rgba(110,200,122,.3)',Offer:'rgba(232,148,74,.15)|var(--orange)|rgba(232,148,74,.3)',Seasonal:'rgba(91,155,213,.15)|var(--blue)|rgba(91,155,213,.3)'};
     document.getElementById('ideaList').innerHTML=text.split('\n').filter(l=>l.trim()).slice(0,4).map(line=>{const m=line.match(/\[(\w+)\]/);const type=m?m[1]:'Idea';const[bg,c,b]=(colors[type]||colors.Tip).split('|');return`<div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:${bg};color:${c};border:1px solid ${b}">${type}</span>${line.replace(/\[\w+\]\s*/,'')}</div>`;}).join('')+'<button onclick="genIdeas()" id="ideasBtn" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem">✨ Generate More Ideas</button>';
