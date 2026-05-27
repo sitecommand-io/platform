@@ -2,87 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
 <title>Video Generator — SiteCommand</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a;--red:#d14f4f}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--green:#6ec87a}
 body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
-.header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
-.logo{font-family:"Bebas Neue",sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
-.nav-links{display:flex;gap:.25rem;margin-left:.5rem}
-.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none}
-.nav-links a:hover{color:var(--accent)}
-.back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}
-.body{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
-.page-title{font-family:"Bebas Neue",sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.25rem}
-.page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem}
-.main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem}
-.card{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1rem}
-.card-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.4rem}
-.card-title::before{content:"";display:block;width:3px;height:12px;background:var(--accent);border-radius:2px}
-
-/* Upload zone */
-.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(200,169,110,.04)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-zone-icon{font-size:2.5rem;margin-bottom:.75rem;pointer-events:none}
-.upload-zone-text{font-size:.88rem;color:var(--mid);pointer-events:none}
-.upload-zone-sub{font-size:.74rem;color:var(--mid);margin-top:.25rem;pointer-events:none}
-
-/* Photo grid */
-.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:1rem}
-.photo-item{aspect-ratio:1;border-radius:8px;overflow:hidden;position:relative;cursor:grab}
-.photo-item img{width:100%;height:100%;object-fit:cover}
-.photo-item .del-btn{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center}
-.photo-item .order-badge{position:absolute;bottom:3px;left:3px;background:rgba(200,169,110,.9);color:#000;font-size:.62rem;font-weight:700;padding:.1rem .4rem;border-radius:99px}
-.photo-count{font-size:.78rem;color:var(--mid);margin-top:.5rem}
-
-/* Settings */
-.fg{margin-bottom:.85rem}
-.fg label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.35rem}
-.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.86rem;padding:.62rem .9rem;font-family:inherit;transition:border-color .2s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
-.fg textarea{resize:vertical;min-height:70px}
-
-/* Style buttons */
-.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem}
-.style-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.65rem .85rem;cursor:pointer;text-align:left;transition:all .15s}
-.style-btn:hover,.style-btn.on{border-color:var(--accent);background:rgba(200,169,110,.08)}
-.style-btn-icon{font-size:1.2rem;margin-bottom:.2rem}
-.style-btn-name{font-size:.8rem;font-weight:600;color:var(--white)}
-.style-btn-desc{font-size:.68rem;color:var(--mid);margin-top:.1rem}
-
-/* Generate button */
-.gen-btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:9px;font-size:1rem;font-weight:700;padding:.9rem;cursor:pointer;transition:opacity .2s;margin-top:.5rem}
-.gen-btn:hover{opacity:.85}
-.gen-btn:disabled{opacity:.4;cursor:not-allowed}
-
-/* Progress */
-.progress-wrap{display:none;margin-top:1rem}
-.progress-bar{background:var(--border);border-radius:99px;height:6px;overflow:hidden;margin:.5rem 0}
-.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
-.progress-status{font-size:.82rem;color:var(--light);text-align:center}
-
-/* Canvas (hidden) */
-#videoCanvas{display:none}
-
-/* Preview */
-.preview-wrap{display:none;margin-top:1rem}
-.preview-wrap video{width:100%;border-radius:8px;background:#000}
-.download-btn{width:100%;background:var(--green);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.75rem;cursor:pointer;margin-top:.75rem;transition:opacity .2s}
-.download-btn:hover{opacity:.85}
-
-/* Tips */
-.tip-box{background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:.85rem 1rem;font-size:.8rem;color:var(--light);line-height:1.75;margin-bottom:1rem}
-.tip-box strong{color:var(--accent)}
-
-@media(max-width:900px){.main-grid{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(3,1fr)}}
-
 /* ── UNIVERSAL NAV ── */
 .sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
 .sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
 .sc-nav{display:flex;gap:.2rem;margin-left:auto}
 .sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
@@ -92,203 +21,277 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
 .sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
 .sc-bn-icon{font-size:1.25rem;line-height:1}
 @media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
-@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
-
+/* ── PAGE ── */
+.body{max-width:1100px;margin:0 auto;padding:1.5rem}
+.page-title{font-family:"Bebas Neue",sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.2rem}
+.page-sub{font-size:.85rem;color:var(--mid);margin-bottom:1.5rem}
+.main-grid{display:grid;grid-template-columns:1fr 360px;gap:1.25rem}
+.card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.85rem}
+.card-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.9rem;display:flex;align-items:center;gap:.4rem}
+/* Upload */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:1.75rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:rgba(200,169,110,.04)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-top:.85rem}
+.photo-item{aspect-ratio:1;border-radius:7px;overflow:hidden;position:relative;cursor:grab;border:2px solid transparent;transition:border-color .15s}
+.photo-item:hover{border-color:var(--accent)}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-item .del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.8);border:none;color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:.55rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.photo-item:hover .del{opacity:1}
+.photo-item .num{position:absolute;bottom:2px;left:3px;background:rgba(200,169,110,.9);color:#000;font-size:.55rem;font-weight:700;padding:.1rem .35rem;border-radius:99px}
+/* Controls */
+.fg{margin-bottom:.75rem}
+.fg label{display:block;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.3rem}
+.fg input,.fg select{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.84rem;padding:.58rem .85rem;font-family:inherit}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--accent)}
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem}
+.style-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.55rem .75rem;cursor:pointer;text-align:left;transition:all .15s}
+.style-btn:hover,.style-btn.on{border-color:var(--accent);background:rgba(200,169,110,.08)}
+.style-btn-name{font-size:.8rem;font-weight:600;color:var(--white)}
+.style-btn-desc{font-size:.66rem;color:var(--mid);margin-top:.1rem}
+/* Music */
+.music-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.75rem}
+.music-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.5rem .75rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.5rem}
+.music-btn:hover,.music-btn.on{border-color:var(--accent);background:rgba(200,169,110,.08)}
+.music-btn-icon{font-size:1.1rem}
+.music-btn-name{font-size:.78rem;font-weight:600;color:var(--white)}
+.music-btn-desc{font-size:.64rem;color:var(--mid)}
+/* Buttons */
+.gen-btn{width:100%;background:var(--accent);color:#000;border:none;border-radius:9px;font-size:1rem;font-weight:700;padding:.85rem;cursor:pointer;transition:opacity .2s;margin-top:.25rem}
+.gen-btn:hover{opacity:.85}
+.gen-btn:disabled{opacity:.4;cursor:not-allowed}
+.progress-bar{background:var(--border);border-radius:99px;height:5px;overflow:hidden;margin:.5rem 0}
+.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .4s;width:0%}
+.dl-btn{width:100%;background:var(--green);color:#000;border:none;border-radius:8px;font-size:.92rem;font-weight:700;padding:.72rem;cursor:pointer;margin-top:.6rem}
+.dl-btn:hover{opacity:.85}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:480px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
+
 <header class="sc-header">
   <div class="sc-logo"><span>Site</span>Command</div>
-  <span class="sc-badge" id="sc-page-badge"></span>
+  <span class="sc-badge">🎬 Video Generator</span>
   <nav class="sc-nav">
-    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
-    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
-    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
-    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
-    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
-    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+    <a href="platform.html">🏠 Dashboard</a>
+    <a href="email-ai.html">📧 Email</a>
+    <a href="lead-finder.html">🔍 Leads</a>
+    <a href="social-media.html">📱 Social</a>
+    <a href="permits.html">🏛️ Permits</a>
+    <a href="video-gen.html" class="active">🎬 Video</a>
   </nav>
 </header>
 <nav class="sc-bottom-nav">
-  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
-  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
-  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
-  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
-  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
-  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+  <a href="platform.html" class="sc-bn-item"><span class="sc-bn-icon">🏠</span>Home</a>
+  <a href="email-ai.html" class="sc-bn-item"><span class="sc-bn-icon">📧</span>Email</a>
+  <a href="lead-finder.html" class="sc-bn-item"><span class="sc-bn-icon">🔍</span>Leads</a>
+  <a href="social-media.html" class="sc-bn-item"><span class="sc-bn-icon">📱</span>Social</a>
+  <a href="permits.html" class="sc-bn-item"><span class="sc-bn-icon">🏛️</span>Permits</a>
+  <a href="video-gen.html" class="sc-bn-item active"><span class="sc-bn-icon">🎬</span>Video</a>
 </nav>
-<script>
-(function(){
-  var page=window.location.pathname.split('/').pop()||'platform.html';
-  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
-  var el=document.getElementById('sc-page-badge');
-  if(el&&badges[page])el.textContent=badges[page];
-  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
-  var key=map[page];
-  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
-})();
-</script>
-
-<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">🎬 Video Generator</span>
-  </div>
 
 <div class="body">
-  <div class="page-title">🎬 AI Video Generator</div>
-  <div class="page-sub">Upload photos of a house or project — AI creates a professional marketing video. 100% free, runs in your browser.</div>
+  <div class="page-title">🎬 Video Generator</div>
+  <div class="page-sub">Upload high-quality photos → choose music → AI creates a professional marketing video. 100% free, runs in your browser.</div>
 
   <div class="main-grid">
-    <!-- LEFT: Upload + Preview -->
     <div>
+      <!-- Upload -->
       <div class="card">
-        <div class="card-title">Upload Photos</div>
+        <div class="card-title">📸 Upload Photos</div>
         <div class="upload-zone" id="uploadZone"
           ondragover="event.preventDefault();this.classList.add('drag')"
           ondragleave="this.classList.remove('drag')"
           ondrop="handleDrop(event)">
           <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)"/>
-          <div class="upload-zone-icon">📸</div>
-          <div class="upload-zone-text">Drop photos here or click to upload</div>
-          <div class="upload-zone-sub">JPG, PNG · Up to 20 photos · Best: before/after, exterior, interior</div>
+          <div style="font-size:2rem;margin-bottom:.5rem">📸</div>
+          <div style="font-size:.88rem;color:var(--light)">Drop photos here or click to upload</div>
+          <div style="font-size:.74rem;color:var(--mid);margin-top:.25rem">JPG, PNG · Up to 20 photos · Higher res = better video</div>
         </div>
         <div class="photo-grid" id="photoGrid"></div>
-        <div class="photo-count" id="photoCount"></div>
+        <div style="font-size:.76rem;color:var(--mid);margin-top:.5rem" id="photoCount"></div>
       </div>
 
-      <!-- Progress -->
+      <!-- Progress + Output -->
       <div class="card" id="progressCard" style="display:none">
-        <div class="card-title">Generating Video</div>
-        <div class="progress-wrap" id="progressWrap" style="display:block">
-          <div class="progress-status" id="progressStatus">Starting...</div>
-          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        </div>
+        <div class="card-title">⚙️ Generating</div>
+        <div style="font-size:.84rem;color:var(--light);margin-bottom:.4rem" id="progressStatus">Starting...</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div style="font-size:.74rem;color:var(--mid);margin-top:.3rem" id="progressDetail"></div>
       </div>
 
-      <!-- Output -->
       <div class="card" id="outputCard" style="display:none">
-        <div class="card-title">Your Video</div>
-        <div class="preview-wrap" id="previewWrap" style="display:block">
-          <video id="videoOutput" controls playsinline></video>
-          <button class="download-btn" onclick="downloadVideo()">⬇️ Download Video</button>
-          <div style="display:flex;gap:.5rem;margin-top:.5rem">
-            <button onclick="shareToSocial()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.82rem;font-weight:600;padding:.55rem;cursor:pointer">📱 Post to Social</button>
-            <button onclick="resetAll()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.82rem;font-weight:600;padding:.55rem;cursor:pointer">🔄 Make Another</button>
-          </div>
+        <div class="card-title">✅ Your Video</div>
+        <video id="videoOutput" controls playsinline style="width:100%;border-radius:8px;background:#000;max-height:500px"></video>
+        <button class="dl-btn" onclick="downloadVideo()">⬇️ Download Video (MP4)</button>
+        <div style="display:flex;gap:.5rem;margin-top:.5rem">
+          <button onclick="shareInstructions()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">📱 Post to Social</button>
+          <button onclick="resetAll()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">🔄 New Video</button>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: Settings -->
+    <!-- Settings -->
     <div>
-      <div class="tip-box">
-        <strong>💡 How it works:</strong><br>
-        Upload photos → choose a style → AI generates transitions and text overlays → download MP4 video ready to post on Facebook, Instagram, and Google Business. Runs 100% in your browser — no uploads, no servers, completely free.
-      </div>
-
       <div class="card">
-        <div class="card-title">Video Style</div>
+        <div class="card-title">🎞️ Video Style</div>
         <div class="style-grid">
-          <button class="style-btn on" onclick="setStyle('slideshow',this)" id="style-slideshow">
-            <div class="style-btn-icon">🎞️</div>
-            <div class="style-btn-name">Slideshow</div>
-            <div class="style-btn-desc">Clean transitions, professional</div>
+          <button class="style-btn on" onclick="setStyle('slideshow',this)">
+            <div class="style-btn-name">🎞️ Slideshow</div>
+            <div class="style-btn-desc">Clean crossfade</div>
           </button>
-          <button class="style-btn" onclick="setStyle('zoom',this)" id="style-zoom">
-            <div class="style-btn-icon">🔍</div>
-            <div class="style-btn-name">Ken Burns</div>
-            <div class="style-btn-desc">Slow zoom effect, cinematic</div>
+          <button class="style-btn" onclick="setStyle('zoom',this)">
+            <div class="style-btn-name">🔍 Ken Burns</div>
+            <div class="style-btn-desc">Cinematic zoom</div>
           </button>
-          <button class="style-btn" onclick="setStyle('before_after',this)" id="style-before_after">
-            <div class="style-btn-icon">↔️</div>
-            <div class="style-btn-name">Before/After</div>
-            <div class="style-btn-desc">Split reveal effect</div>
+          <button class="style-btn" onclick="setStyle('before_after',this)">
+            <div class="style-btn-name">↔️ Before/After</div>
+            <div class="style-btn-desc">Wipe reveal</div>
           </button>
-          <button class="style-btn" onclick="setStyle('timelapse',this)" id="style-timelapse">
-            <div class="style-btn-icon">⚡</div>
-            <div class="style-btn-name">Fast Cuts</div>
-            <div class="style-btn-desc">Quick energy, social media</div>
+          <button class="style-btn" onclick="setStyle('fast',this)">
+            <div class="style-btn-name">⚡ Fast Cuts</div>
+            <div class="style-btn-desc">High energy</div>
           </button>
         </div>
 
         <div class="fg">
-          <label>Video Duration</label>
+          <label>Duration</label>
           <select id="videoDuration">
-            <option value="15">15 seconds (Instagram/TikTok)</option>
-            <option value="30" selected>30 seconds (Facebook/Google)</option>
-            <option value="60">60 seconds (YouTube/LinkedIn)</option>
-            <option value="90">90 seconds (Full showcase)</option>
+            <option value="15">15s — Instagram Reel / TikTok</option>
+            <option value="30" selected>30s — Facebook / Google</option>
+            <option value="60">60s — YouTube / LinkedIn</option>
+            <option value="90">90s — Full Showcase</option>
           </select>
         </div>
 
         <div class="fg">
-          <label>Title Text (shown on video)</label>
+          <label>Video Quality</label>
+          <select id="videoQuality">
+            <option value="1080">1080×1080 (Square — best for social)</option>
+            <option value="1920">1920×1080 (Widescreen — YouTube)</option>
+            <option value="1080v">1080×1920 (Vertical — TikTok/Reels)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎵 Background Music</div>
+        <div class="music-grid">
+          <button class="music-btn on" onclick="setMusic('none',this)">
+            <span class="music-btn-icon">🔇</span>
+            <div><div class="music-btn-name">No Music</div><div class="music-btn-desc">Silent</div></div>
+          </button>
+          <button class="music-btn" onclick="setMusic('upbeat',this)">
+            <span class="music-btn-icon">🎸</span>
+            <div><div class="music-btn-name">Upbeat</div><div class="music-btn-desc">Energetic</div></div>
+          </button>
+          <button class="music-btn" onclick="setMusic('corporate',this)">
+            <span class="music-btn-icon">💼</span>
+            <div><div class="music-btn-name">Corporate</div><div class="music-btn-desc">Professional</div></div>
+          </button>
+          <button class="music-btn" onclick="setMusic('inspiring',this)">
+            <span class="music-btn-icon">🌟</span>
+            <div><div class="music-btn-name">Inspiring</div><div class="music-btn-desc">Motivational</div></div>
+          </button>
+          <button class="music-btn" onclick="setMusic('acoustic',this)">
+            <span class="music-btn-icon">🎵</span>
+            <div><div class="music-btn-name">Acoustic</div><div class="music-btn-desc">Warm & friendly</div></div>
+          </button>
+          <button class="music-btn" onclick="setMusic('upload',this)" id="music-upload">
+            <span class="music-btn-icon">📁</span>
+            <div><div class="music-btn-name">Upload</div><div class="music-btn-desc">Your own MP3</div></div>
+          </button>
+        </div>
+        <input type="file" id="musicFile" accept="audio/*" style="display:none" onchange="handleMusicUpload(this)"/>
+        <div id="musicNote" style="font-size:.72rem;color:var(--mid);margin-top:.35rem;display:none"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✏️ Text Overlay</div>
+        <div class="fg">
+          <label>Title (on video)</label>
           <input id="videoTitle" placeholder="Kitchen Renovation Complete!" value="Professional Renovation Complete!"/>
         </div>
-
         <div class="fg">
-          <label>Subtitle / Tagline</label>
-          <input id="videoSubtitle" placeholder="Licensed & Insured · Call Today" value="Licensed & Insured · Free Estimates"/>
+          <label>Subtitle</label>
+          <input id="videoSubtitle" placeholder="Licensed & Insured · Free Estimates" value="Licensed & Insured · Free Estimates"/>
         </div>
-
         <div class="fg">
-          <label>Your Phone Number</label>
-          <input id="videoPhone" placeholder="(302) 000-0000" value=""/>
+          <label>Phone Number</label>
+          <input id="videoPhone" placeholder="(302) 555-0000"/>
         </div>
-
         <div class="fg">
-          <label>Text Color Theme</label>
+          <label>Color Theme</label>
           <select id="textTheme">
-            <option value="gold">Gold on Dark (Professional)</option>
-            <option value="white">White on Dark</option>
-            <option value="dark">Dark on Light</option>
-            <option value="green">Green Accent</option>
+            <option value="gold">Gold (Professional)</option>
+            <option value="white">White</option>
+            <option value="green">Green</option>
+            <option value="none">No Text Overlay</option>
           </select>
         </div>
-
-        <div class="fg">
-          <label>Transition Speed</label>
-          <select id="transSpeed">
-            <option value="slow">Slow (3s per photo)</option>
-            <option value="medium" selected>Medium (2s per photo)</option>
-            <option value="fast">Fast (1s per photo)</option>
-          </select>
-        </div>
-
-        <button class="gen-btn" id="genBtn" onclick="generateVideo()">🎬 Generate Video</button>
-        <div style="font-size:.72rem;color:var(--mid);text-align:center;margin-top:.5rem">Free · Runs in browser · No upload needed</div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Best Practices</div>
-        <div style="font-size:.8rem;color:var(--light);line-height:1.85">
-          📸 <strong>8-12 photos</strong> work best for 30s video<br>
-          🏠 Start with <strong>exterior</strong>, end with <strong>best feature</strong><br>
-          ↔️ Mix <strong>wide shots + details</strong> for variety<br>
-          ☀️ <strong>Good lighting</strong> = professional result<br>
-          📐 <strong>Landscape photos</strong> (horizontal) fill frame best
-        </div>
-      </div>
+      <button class="gen-btn" id="genBtn" onclick="generateVideo()">🎬 Generate Video</button>
+      <div style="font-size:.7rem;color:var(--mid);text-align:center;margin-top:.4rem">Free · No upload · Runs in browser · Full quality preserved</div>
     </div>
   </div>
 </div>
 
-<canvas id="videoCanvas"></canvas>
+<!-- Hidden canvas for rendering -->
+<canvas id="videoCanvas" style="display:none"></canvas>
+<!-- Hidden audio for music mixing -->
+<audio id="musicAudio" style="display:none" loop></audio>
 
 <script>
-var photos    = [];
-var videoStyle= "slideshow";
-var videoBlob = null;
-var mediaRecorder = null;
+var photos      = [];
+var videoStyle  = "slideshow";
+var musicType   = "none";
+var musicBlob   = null;
+var videoBlob   = null;
+var recorder    = null;
+var audioCtx    = null;
+var audioSource = null;
+var audioDest   = null;
 
-// Load saved phone from platform
-var savedPhone = localStorage.getItem("sc_phone") || localStorage.getItem("asc_twilio_from") || "";
-if (savedPhone) document.getElementById("videoPhone").value = savedPhone;
+// Load saved phone
+var sp = localStorage.getItem("sc_phone") || "";
+if (sp) document.getElementById("videoPhone").value = sp;
 
-function setStyle(style, btn) {
-  videoStyle = style;
+// ── STYLE / MUSIC SELECTION ──
+function setStyle(s, btn) {
+  videoStyle = s;
   document.querySelectorAll(".style-btn").forEach(function(b){ b.classList.remove("on"); });
   btn.classList.add("on");
 }
 
+function setMusic(m, btn) {
+  musicType = m;
+  document.querySelectorAll(".music-btn").forEach(function(b){ b.classList.remove("on"); });
+  btn.classList.add("on");
+  var note = document.getElementById("musicNote");
+  if (m === "upload") {
+    document.getElementById("musicFile").click();
+  } else if (m === "none") {
+    note.style.display = "none";
+    musicBlob = null;
+  } else {
+    note.textContent = "Music generated using Web Audio API — royalty free";
+    note.style.display = "block";
+    musicBlob = null;
+  }
+}
+
+function handleMusicUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  musicBlob = file;
+  var note = document.getElementById("musicNote");
+  note.textContent = "✅ Music: " + file.name;
+  note.style.display = "block";
+}
+
+// ── PHOTO HANDLING ──
 function handleDrop(e) {
   e.preventDefault();
   document.getElementById("uploadZone").classList.remove("drag");
@@ -296,33 +299,31 @@ function handleDrop(e) {
 }
 
 function handleFiles(files) {
-  Array.from(files).forEach(function(file) {
-    if (!file.type.startsWith("image/")) return;
-    if (photos.length >= 20) return;
+  var arr = Array.from(files).filter(function(f){ return f.type.startsWith("image/"); });
+  var remaining = 20 - photos.length;
+  arr.slice(0, remaining).forEach(function(file) {
     var reader = new FileReader();
     reader.onload = function(e) {
       photos.push({ src: e.target.result, name: file.name });
-      renderPhotoGrid();
+      renderGrid();
     };
     reader.readAsDataURL(file);
   });
 }
 
-function renderPhotoGrid() {
+function renderGrid() {
   var grid = document.getElementById("photoGrid");
   grid.innerHTML = photos.map(function(p, i) {
     return "<div class=\"photo-item\" draggable=\"true\" ondragstart=\"dragStart(event," + i + ")\" ondrop=\"dragDrop(event," + i + ")\" ondragover=\"event.preventDefault()\">" +
-      "<img src=\"" + p.src + "\" alt=\"Photo " + (i+1) + "\"/>" +
-      "<button class=\"del-btn\" onclick=\"removePhoto(" + i + ")\">✕</button>" +
-      "<span class=\"order-badge\">" + (i+1) + "</span>" +
+      "<img src=\"" + p.src + "\" alt=\"\" loading=\"lazy\"/>" +
+      "<button class=\"del\" onclick=\"removePhoto(" + i + ")\">✕</button>" +
+      "<span class=\"num\">" + (i+1) + "</span>" +
       "</div>";
   }).join("");
-  document.getElementById("photoCount").textContent = photos.length + " photos loaded" + (photos.length < 3 ? " — add at least 3 for best results" : " — ready to generate!");
-}
-
-function removePhoto(i) {
-  photos.splice(i, 1);
-  renderPhotoGrid();
+  document.getElementById("photoCount").textContent =
+    photos.length + " photo" + (photos.length !== 1 ? "s" : "") +
+    (photos.length < 3 ? " — upload at least 3 for best results" :
+     photos.length > 15 ? " — great! Long video will look amazing" : " — ready to generate");
 }
 
 var dragIdx = null;
@@ -332,314 +333,407 @@ function dragDrop(e, i) {
   var moved = photos.splice(dragIdx, 1)[0];
   photos.splice(i, 0, moved);
   dragIdx = null;
-  renderPhotoGrid();
+  renderGrid();
 }
+function removePhoto(i) { photos.splice(i,1); renderGrid(); }
 
-// ── VIDEO GENERATION ──────────────────────────────────────────
+// ── VIDEO GENERATION ──
 async function generateVideo() {
-  if (photos.length < 2) { alert("Upload at least 2 photos to generate a video."); return; }
+  if (photos.length < 2) { alert("Upload at least 2 photos."); return; }
 
-  var btn      = document.getElementById("genBtn");
-  var progCard = document.getElementById("progressCard");
-  var outCard  = document.getElementById("outputCard");
+  var btn     = document.getElementById("genBtn");
+  var progCard= document.getElementById("progressCard");
+  var outCard = document.getElementById("outputCard");
   btn.disabled = true; btn.textContent = "Generating...";
   progCard.style.display = "block";
   outCard.style.display  = "none";
 
-  var duration  = parseInt(document.getElementById("videoDuration").value);
-  var title     = document.getElementById("videoTitle").value;
-  var subtitle  = document.getElementById("videoSubtitle").value;
-  var phone     = document.getElementById("videoPhone").value;
-  var theme     = document.getElementById("textTheme").value;
-  var speed     = document.getElementById("transSpeed").value;
-  var speedMs   = speed === "slow" ? 3000 : speed === "fast" ? 1000 : 2000;
+  var duration    = parseInt(document.getElementById("videoDuration").value);
+  var quality     = document.getElementById("videoQuality").value;
+  var title       = document.getElementById("videoTitle").value;
+  var subtitle    = document.getElementById("videoSubtitle").value;
+  var phone       = document.getElementById("videoPhone").value;
+  var theme       = document.getElementById("textTheme").value;
 
-  var themes = {
-    gold:  { accent: "#c8a96e", text: "#ffffff", bg: "rgba(0,0,0,0.6)" },
-    white: { accent: "#ffffff", text: "#ffffff", bg: "rgba(0,0,0,0.5)" },
-    dark:  { accent: "#1a1a1a", text: "#1a1a1a", bg: "rgba(255,255,255,0.7)" },
-    green: { accent: "#6ec87a", text: "#ffffff", bg: "rgba(0,0,0,0.6)" },
+  // Canvas dimensions
+  var W = 1080, H = 1080;
+  if (quality === "1920") { W = 1920; H = 1080; }
+  if (quality === "1080v") { W = 1080; H = 1920; }
+
+  var colors = {
+    gold:  { accent: "#c8a96e", text: "#ffffff", shadow: "rgba(0,0,0,0.8)" },
+    white: { accent: "#ffffff", text: "#ffffff", shadow: "rgba(0,0,0,0.7)" },
+    green: { accent: "#6ec87a", text: "#ffffff", shadow: "rgba(0,0,0,0.7)" },
+    none:  null,
   };
-  var colors = themes[theme] || themes.gold;
+  var col = colors[theme];
 
-  // Setup canvas — 1080x1080 for social media (square)
   var canvas = document.getElementById("videoCanvas");
-  canvas.width  = 1080;
-  canvas.height = 1080;
-  var ctx    = canvas.getContext("2d");
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext("2d", { alpha: false });
 
-  setProgress("Loading photos...", 10);
+  setProgress("Loading photos at full quality...", 5);
 
-  // Pre-load all images
+  // Load images at full resolution
   var imgs = await Promise.all(photos.map(function(p) {
     return new Promise(function(resolve) {
       var img = new Image();
       img.onload = function(){ resolve(img); };
+      img.onerror = function(){ resolve(null); };
       img.src = p.src;
     });
   }));
+  imgs = imgs.filter(function(i){ return i !== null; });
 
-  setProgress("Setting up video recorder...", 20);
+  setProgress("Setting up recorder...", 12);
 
-  // Setup MediaRecorder
-  var stream = canvas.captureStream(30);
-  var mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" :
-                 MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "video/mp4";
-  
+  // Setup audio context for music
+  var audioTracks = [];
+  if (musicType !== "none") {
+    try {
+      audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+      audioDest = audioCtx.createMediaStreamDestination();
+      var gainNode = audioCtx.createGain();
+      gainNode.gain.value = 0.6;
+      gainNode.connect(audioDest);
+
+      if (musicBlob) {
+        // User uploaded music
+        var arrayBuf = await musicBlob.arrayBuffer();
+        var audioBuf = await audioCtx.decodeAudioData(arrayBuf);
+        audioSource  = audioCtx.createBufferSource();
+        audioSource.buffer = audioBuf;
+        audioSource.loop   = true;
+        audioSource.connect(gainNode);
+        audioSource.start();
+        audioTracks = audioDest.stream.getAudioTracks();
+      } else {
+        // Generate music using Web Audio API
+        audioSource = generateWebAudioMusic(audioCtx, gainNode, musicType, duration);
+        audioTracks = audioDest.stream.getAudioTracks();
+      }
+    } catch(e) {
+      console.log("Audio setup failed:", e.message);
+      audioTracks = [];
+    }
+  }
+
+  // Setup canvas stream + audio
+  var canvasStream = canvas.captureStream(30);
+  audioTracks.forEach(function(t){ canvasStream.addTrack(t); });
+
+  var mimeType = ["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(function(m){
+    return MediaRecorder.isTypeSupported(m);
+  }) || "video/webm";
+
   var chunks = [];
-  mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 4000000 });
-  mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) chunks.push(e.data); };
-  mediaRecorder.onstop = function() {
+  recorder = new MediaRecorder(canvasStream, { mimeType: mimeType, videoBitsPerSecond: 8000000 });
+  recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
+  recorder.onstop = function() {
+    if (audioSource) try{ audioSource.stop(); }catch(e){}
+    if (audioCtx) try{ audioCtx.close(); }catch(e){}
     videoBlob = new Blob(chunks, { type: mimeType });
     var url   = URL.createObjectURL(videoBlob);
     document.getElementById("videoOutput").src = url;
     document.getElementById("outputCard").style.display = "block";
-    setProgress("Video ready!", 100);
+    document.getElementById("progressCard").style.display = "none";
     btn.disabled = false; btn.textContent = "🎬 Generate Video";
   };
-  
-  mediaRecorder.start(100);
 
-  // Calculate time per photo
-  var totalPhotos = imgs.length;
-  var msPerPhoto  = Math.max(speedMs, (duration * 1000) / totalPhotos);
-  var fps         = 30;
-  var framesPerPhoto = Math.floor(msPerPhoto / 1000 * fps);
-  var transFrames    = Math.floor(fps * 0.5); // 0.5s transition
+  recorder.start(100);
 
-  setProgress("Rendering frames...", 30);
+  // Timing
+  var fps          = 30;
+  var totalPhotos  = imgs.length;
+  var msPerPhoto   = Math.max(1500, (duration * 1000) / totalPhotos);
+  var framesPerPh  = Math.floor(msPerPhoto / 1000 * fps);
+  var transFrames  = Math.floor(fps * 0.6);
 
-  // Render each photo
-  for (var photoIdx = 0; photoIdx < totalPhotos; photoIdx++) {
-    var img      = imgs[photoIdx];
-    var nextImg  = imgs[(photoIdx + 1) % totalPhotos];
-    var isFirst  = photoIdx === 0;
-    var isLast   = photoIdx === totalPhotos - 1;
-    var pct      = 30 + Math.round((photoIdx / totalPhotos) * 60);
-    setProgress("Rendering photo " + (photoIdx+1) + " of " + totalPhotos + "...", pct);
+  setProgress("Rendering at full quality...", 20);
 
-    for (var frame = 0; frame < framesPerPhoto; frame++) {
-      var progress = frame / framesPerPhoto; // 0 to 1
-      ctx.clearRect(0, 0, 1080, 1080);
+  // Render all frames
+  for (var pi = 0; pi < totalPhotos; pi++) {
+    var img      = imgs[pi];
+    var nextImg  = imgs[(pi+1) % totalPhotos];
+    var isFirst  = pi === 0;
+    var isLast   = pi === totalPhotos - 1;
+    var pct      = 20 + Math.round((pi/totalPhotos)*70);
+    setProgress("Photo " + (pi+1) + " of " + totalPhotos, pct, pi + " / " + totalPhotos + " photos rendered");
 
-      // Draw current photo with effect
+    for (var f = 0; f < framesPerPh; f++) {
+      var t = f / framesPerPh; // 0→1
+
+      ctx.fillStyle = "#0a0a0a";
+      ctx.fillRect(0,0,W,H);
+
+      // Draw photo with style
       if (videoStyle === "zoom") {
-        // Ken Burns: slow zoom in
-        var scale = 1 + progress * 0.08;
-        var offset = (scale - 1) * 540;
+        var scale  = 1 + t * 0.06;
+        var cx     = W/2, cy = H/2;
         ctx.save();
-        ctx.translate(540, 540);
+        ctx.translate(cx, cy);
         ctx.scale(scale, scale);
-        ctx.translate(-540, -540);
-        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+        ctx.translate(-cx, -cy);
+        coverDraw(ctx, img, 0, 0, W, H);
         ctx.restore();
-      } else if (videoStyle === "before_after" && photoIdx % 2 === 1) {
-        // Wipe reveal
-        drawPhoto(ctx, imgs[photoIdx-1], 0, 0, 1080, 1080);
-        var wipeW = Math.floor(progress * 1080);
+
+        // Crossfade to next at end
+        if (!isLast && f > framesPerPh - transFrames) {
+          var fa = (f - (framesPerPh - transFrames)) / transFrames;
+          ctx.globalAlpha = fa;
+          coverDraw(ctx, nextImg, 0, 0, W, H);
+          ctx.globalAlpha = 1;
+        }
+
+      } else if (videoStyle === "before_after" && pi % 2 === 1) {
+        coverDraw(ctx, imgs[pi-1], 0, 0, W, H);
+        var wipeX = Math.floor(t * W);
         ctx.save();
         ctx.beginPath();
-        ctx.rect(0, 0, wipeW, 1080);
+        ctx.rect(0, 0, wipeX, H);
         ctx.clip();
-        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+        coverDraw(ctx, img, 0, 0, W, H);
         ctx.restore();
-        // Wipe line
-        if (wipeW > 0 && wipeW < 1080) {
-          ctx.fillStyle = colors.accent;
-          ctx.fillRect(wipeW - 3, 0, 6, 1080);
+        if (wipeX > 5 && wipeX < W-5) {
+          ctx.fillStyle = "#c8a96e";
+          ctx.fillRect(wipeX-2, 0, 4, H);
         }
-      } else if (videoStyle === "timelapse") {
-        drawPhoto(ctx, img, 0, 0, 1080, 1080);
+
+      } else if (videoStyle === "fast") {
+        coverDraw(ctx, img, 0, 0, W, H);
+        // Flash transition at cut
+        if (f > framesPerPh - 4 && !isLast) {
+          ctx.fillStyle = "rgba(255,255,255," + ((f-(framesPerPh-4))/4*0.4) + ")";
+          ctx.fillRect(0,0,W,H);
+        }
+
       } else {
-        // Slideshow with cross-fade at end
-        drawPhoto(ctx, img, 0, 0, 1080, 1080);
-        if (frame > framesPerPhoto - transFrames && !isLast) {
-          var fadeAlpha = (frame - (framesPerPhoto - transFrames)) / transFrames;
-          ctx.globalAlpha = fadeAlpha;
-          drawPhoto(ctx, nextImg, 0, 0, 1080, 1080);
+        // Slideshow crossfade
+        coverDraw(ctx, img, 0, 0, W, H);
+        if (!isLast && f > framesPerPh - transFrames) {
+          var fa2 = (f - (framesPerPh-transFrames)) / transFrames;
+          ctx.globalAlpha = fa2;
+          coverDraw(ctx, nextImg, 0, 0, W, H);
           ctx.globalAlpha = 1;
         }
       }
 
-      // Dark overlay for text readability
-      ctx.fillStyle = "rgba(0,0,0,0.25)";
-      ctx.fillRect(0, 0, 1080, 1080);
+      // Dark vignette for text readability
+      var vig = ctx.createRadialGradient(W/2,H/2,H*0.3,W/2,H/2,H*0.8);
+      vig.addColorStop(0,"rgba(0,0,0,0)");
+      vig.addColorStop(1,"rgba(0,0,0,0.35)");
+      ctx.fillStyle = vig;
+      ctx.fillRect(0,0,W,H);
 
-      // Title on first photo
-      if (isFirst && title && progress < 0.85) {
-        drawTextOverlay(ctx, title, subtitle, phone, colors, progress);
+      // Text overlays
+      if (col) {
+        if (isFirst && title && t < 0.9) {
+          drawIntro(ctx, W, H, title, subtitle, phone, col, Math.min(1, t*5));
+        }
+        if (isLast && t > 0.2) {
+          drawEndCard(ctx, W, H, title, subtitle, phone, col, Math.min(1,(t-0.2)*2));
+        }
+        // Photo counter dots
+        drawDots(ctx, W, H, pi, totalPhotos);
       }
 
-      // Branding on last photo
-      if (isLast && progress > 0.15) {
-        drawEndCard(ctx, title, subtitle, phone, colors, progress);
-      }
-
-      // Photo number indicator (dots)
-      drawDots(ctx, photoIdx, totalPhotos);
-
-      await sleep(1000/fps);
+      await nextFrame();
     }
   }
 
-  setProgress("Finalizing...", 92);
-  mediaRecorder.stop();
+  setProgress("Finalizing...", 95);
+  await sleep(300);
+  recorder.stop();
 }
 
-function drawPhoto(ctx, img, x, y, w, h) {
-  // Cover fit
-  var scale = Math.max(w / img.width, h / img.height);
-  var sw = img.width * scale;
-  var sh = img.height * scale;
-  var sx = x + (w - sw) / 2;
-  var sy = y + (h - sh) / 2;
-  ctx.drawImage(img, sx, sy, sw, sh);
+// ── DRAWING HELPERS ──
+function coverDraw(ctx, img, x, y, w, h) {
+  if (!img) return;
+  var iw = img.naturalWidth  || img.width;
+  var ih = img.naturalHeight || img.height;
+  var scale = Math.max(w/iw, h/ih);
+  var sw = iw*scale, sh = ih*scale;
+  ctx.drawImage(img, x+(w-sw)/2, y+(h-sh)/2, sw, sh);
 }
 
-function drawTextOverlay(ctx, title, subtitle, phone, colors, progress) {
-  var alpha = Math.min(1, progress * 4);
+function drawIntro(ctx, W, H, title, sub, phone, col, alpha) {
   ctx.save();
   ctx.globalAlpha = alpha;
+  // Gradient bar at bottom
+  var g = ctx.createLinearGradient(0, H*0.6, 0, H);
+  g.addColorStop(0,"rgba(0,0,0,0)");
+  g.addColorStop(1,"rgba(0,0,0,0.85)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
 
-  // Bottom bar
-  var barH = 220;
-  var grad = ctx.createLinearGradient(0, 1080-barH-50, 0, 1080);
-  grad.addColorStop(0, "rgba(0,0,0,0)");
-  grad.addColorStop(1, "rgba(0,0,0,0.85)");
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 1080-barH-50, 1080, barH+50);
+  var fs = W/18;
+  ctx.shadowColor   = col.shadow;
+  ctx.shadowBlur    = 20;
+  ctx.textAlign     = "center";
+  ctx.fillStyle     = col.accent;
+  ctx.font          = "bold " + fs + "px DM Sans, sans-serif";
+  ctx.fillText(title.slice(0,40), W/2, H*0.8);
 
-  // Title
-  ctx.fillStyle = colors.accent;
-  ctx.font = "bold 58px DM Sans, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(title.slice(0,35), 540, 870);
+  ctx.fillStyle     = col.text;
+  ctx.font          = (fs*0.6) + "px DM Sans, sans-serif";
+  ctx.fillText(sub.slice(0,50), W/2, H*0.87);
 
-  // Subtitle
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "36px DM Sans, sans-serif";
-  ctx.fillText(subtitle.slice(0,45), 540, 930);
-
-  // Phone
   if (phone) {
-    ctx.fillStyle = colors.accent;
-    ctx.font = "bold 42px DM Sans, sans-serif";
-    ctx.fillText(phone, 540, 990);
+    ctx.fillStyle   = col.accent;
+    ctx.font        = "bold " + (fs*0.7) + "px DM Sans, sans-serif";
+    ctx.fillText(phone, W/2, H*0.94);
   }
-
+  ctx.shadowBlur = 0;
   ctx.restore();
 }
 
-function drawEndCard(ctx, title, subtitle, phone, colors, progress) {
-  var alpha = Math.min(1, (progress - 0.15) * 2.5);
+function drawEndCard(ctx, W, H, title, sub, phone, col, alpha) {
   ctx.save();
   ctx.globalAlpha = alpha;
 
-  // Full overlay
-  ctx.fillStyle = "rgba(0,0,0,0.65)";
-  ctx.fillRect(0, 0, 1080, 1080);
+  ctx.fillStyle = "rgba(0,0,0,0.72)";
+  ctx.fillRect(0,0,W,H);
 
   // Center box
-  ctx.fillStyle = colors.bg;
-  roundRect(ctx, 140, 320, 800, 440, 20);
-  ctx.fill();
+  var bw = W*0.78, bh = H*0.52, bx = (W-bw)/2, by = (H-bh)/2;
+  ctx.fillStyle = "rgba(10,10,10,0.88)";
+  roundRect(ctx,bx,by,bw,bh,W*0.025); ctx.fill();
 
   // Accent line
-  ctx.fillStyle = colors.accent;
-  ctx.fillRect(490, 360, 100, 5);
+  ctx.fillStyle = col.accent;
+  ctx.fillRect(W/2-W*0.06, by+bh*0.1, W*0.12, 3);
 
-  // Title
-  ctx.fillStyle = colors.accent;
-  ctx.font = "bold 62px DM Sans, sans-serif";
-  ctx.textAlign = "center";
-  ctx.fillText(title.slice(0,25), 540, 480);
+  var fs = W/16;
+  ctx.shadowColor = col.shadow; ctx.shadowBlur = 15;
+  ctx.textAlign   = "center";
 
-  // Subtitle
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "38px DM Sans, sans-serif";
-  ctx.fillText(subtitle.slice(0,40), 540, 545);
+  ctx.fillStyle   = col.accent;
+  ctx.font        = "bold " + fs + "px DM Sans, sans-serif";
+  ctx.fillText(title.slice(0,28), W/2, by+bh*0.35);
 
-  // Phone
+  ctx.fillStyle   = col.text;
+  ctx.font        = (fs*0.55) + "px DM Sans, sans-serif";
+  ctx.fillText(sub.slice(0,45), W/2, by+bh*0.52);
+
   if (phone) {
-    ctx.fillStyle = colors.accent;
-    ctx.font = "bold 52px DM Sans, sans-serif";
-    ctx.fillText(phone, 540, 630);
+    ctx.fillStyle = col.accent;
+    ctx.font      = "bold " + (fs*0.65) + "px DM Sans, sans-serif";
+    ctx.fillText(phone, W/2, by+bh*0.68);
   }
 
-  // CTA
-  ctx.fillStyle = colors.accent;
-  roundRect(ctx, 290, 680, 500, 60, 30);
-  ctx.fill();
-  ctx.fillStyle = "#000";
-  ctx.font = "bold 30px DM Sans, sans-serif";
-  ctx.fillText("GET A FREE ESTIMATE", 540, 720);
+  // CTA button
+  var btnW=W*0.42, btnH=H*0.055, btnX=(W-btnW)/2, btnY=by+bh*0.79;
+  ctx.fillStyle = col.accent;
+  roundRect(ctx,btnX,btnY,btnW,btnH,btnH/2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle  = "#000";
+  ctx.font       = "bold " + (fs*0.38) + "px DM Sans, sans-serif";
+  ctx.fillText("GET A FREE ESTIMATE", W/2, btnY+btnH*0.65);
 
   ctx.restore();
 }
 
-function drawDots(ctx, current, total) {
+function drawDots(ctx, W, H, cur, total) {
   if (total <= 1) return;
-  var dotSize  = 8;
-  var dotGap   = 18;
-  var totalW   = total * dotGap;
-  var startX   = 540 - totalW/2;
-  for (var i = 0; i < total; i++) {
+  var r = W*0.007, gap = r*3.5, totalW = total*gap;
+  var sx = W/2-totalW/2+gap/2;
+  for (var i=0; i<total; i++) {
     ctx.beginPath();
-    ctx.arc(startX + i*dotGap, 40, i===current ? dotSize : dotSize/2, 0, Math.PI*2);
-    ctx.fillStyle = i===current ? "#c8a96e" : "rgba(255,255,255,0.5)";
+    ctx.arc(sx+i*gap, H*0.04, i===cur?r:r*0.5, 0, Math.PI*2);
+    ctx.fillStyle = i===cur ? "#c8a96e" : "rgba(255,255,255,0.4)";
     ctx.fill();
   }
 }
 
-function roundRect(ctx, x, y, w, h, r) {
+function roundRect(ctx,x,y,w,h,r){
   ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y);
-  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h-r);
-  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  ctx.lineTo(x+r, y+h);
-  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-  ctx.lineTo(x, y+r);
-  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
   ctx.closePath();
 }
 
+// ── WEB AUDIO MUSIC GENERATOR ──
+function generateWebAudioMusic(audioCtx, dest, style, duration) {
+  var source = audioCtx.createOscillator();
+  var gainNode = audioCtx.createGain();
+
+  // Different chord progressions per style
+  var progressions = {
+    upbeat:    [[261,329,392],[293,369,440],[349,440,523],[392,493,587]],
+    corporate: [[220,277,330],[246,311,370],[261,329,392],[220,277,330]],
+    inspiring: [[261,329,392],[293,369,440],[329,415,493],[349,440,523]],
+    acoustic:  [[220,277,330],[196,247,294],[174,220,261],[196,247,294]],
+  };
+
+  var chords = progressions[style] || progressions.corporate;
+  var oscs   = [];
+
+  chords.forEach(function(chord, ci) {
+    chord.forEach(function(freq) {
+      var osc  = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type      = style === "upbeat" ? "sawtooth" : style === "acoustic" ? "triangle" : "sine";
+      osc.frequency.value = freq;
+      var startTime = ci * (duration/chords.length);
+      var endTime   = startTime + (duration/chords.length);
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.08, startTime+0.1);
+      gain.gain.setValueAtTime(0.08, endTime-0.2);
+      gain.gain.linearRampToValueAtTime(0, endTime);
+      osc.connect(gain);
+      gain.connect(dest);
+      osc.start(startTime);
+      osc.stop(endTime);
+      oscs.push(osc);
+    });
+  });
+
+  return { stop: function(){ oscs.forEach(function(o){ try{o.stop();}catch(e){} }); } };
+}
+
+// ── UTILS ──
+function nextFrame() {
+  return new Promise(function(r){ requestAnimationFrame(r); });
+}
 function sleep(ms) { return new Promise(function(r){ setTimeout(r,ms); }); }
 
-function setProgress(msg, pct) {
-  var el = document.getElementById("progressStatus");
-  var fl = document.getElementById("progressFill");
-  if (el) el.textContent = msg;
-  if (fl) fl.style.width = pct + "%";
+function setProgress(msg, pct, detail) {
+  var s = document.getElementById("progressStatus");
+  var f = document.getElementById("progressFill");
+  var d = document.getElementById("progressDetail");
+  if(s) s.textContent = msg;
+  if(f) f.style.width = pct + "%";
+  if(d && detail) d.textContent = detail;
 }
 
 function downloadVideo() {
   if (!videoBlob) return;
-  var ext  = videoBlob.type.includes("mp4") ? "mp4" : "webm";
-  var url  = URL.createObjectURL(videoBlob);
-  var a    = document.createElement("a");
-  a.href   = url;
-  a.download = "sitecommand-video." + ext;
+  var ext = videoBlob.type.includes("mp4") ? "mp4" : "webm";
+  var a   = document.createElement("a");
+  a.href  = URL.createObjectURL(videoBlob);
+  a.download = "sitecommand-video-" + Date.now() + "." + ext;
   a.click();
-  URL.revokeObjectURL(url);
 }
 
-function shareToSocial() {
-  alert("Video downloaded! Upload it to:\n\n📘 Facebook: Create Post → Photo/Video\n📸 Instagram: New Post → Video\n🔍 Google Business: Add Update → Photo/Video\n💼 LinkedIn: Start a post → Add a video");
+function shareInstructions() {
+  alert("Video ready to post!\n\n📘 Facebook: Create Post → Add Photo/Video\n📸 Instagram: New Post → select video\n🔍 Google Business: Add Update → Photo/Video\n💼 LinkedIn: Start a post → Video\n\nTip: Square (1080×1080) works on all platforms!");
   downloadVideo();
 }
 
 function resetAll() {
-  photos = [];
-  videoBlob = null;
+  photos = []; videoBlob = null;
   document.getElementById("photoGrid").innerHTML = "";
   document.getElementById("photoCount").textContent = "";
   document.getElementById("progressCard").style.display = "none";
-  document.getElementById("outputCard").style.display = "none";
-  document.getElementById("genBtn").disabled = false;
+  document.getElementById("outputCard").style.display   = "none";
+  document.getElementById("genBtn").disabled    = false;
   document.getElementById("genBtn").textContent = "🎬 Generate Video";
-  setProgress("", 0);
 }
 </script>
 </body>
