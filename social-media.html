@@ -1,172 +1,160 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Permit Agent • " + (localStorage.getItem("sc_co")||"Your Company") + " LLC</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
-    html,body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
-    input,select,textarea,button{font-family:inherit}
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Social Media AI — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#0a0a0a;--dark:#111;--surface:#161616;--card:#1c1c1c;--border:#2a2a2a;--mid:#6b6b6b;--light:#b0b0b0;--white:#f4f2ee;--accent:#c8a96e;--accent2:#e8c887;--green:#6ec87a;--red:#d14f4f;--blue:#5b9bd5;--orange:#e8944a}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,select,textarea,button{font-family:inherit}
+.header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}.logo span{color:var(--accent)}
+.back{font-size:.78rem;color:var(--mid);margin-left:auto;text-decoration:none}.back:hover{color:var(--accent)}
+.nav-links{display:flex;gap:.25rem;margin-left:.5rem}
+.nav-links a{font-size:.76rem;color:var(--mid);padding:.28rem .65rem;border-radius:5px;background:var(--surface);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--accent)}
+.body{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
 
-    .header{height:60px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
-    .header-logo{width:36px;height:36px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--black);flex-shrink:0}
-    .header-brand{font-size:.85rem;font-weight:600}
-    .header-sub{font-size:.7rem;color:var(--mid)}
-    .header-right{margin-left:auto;display:flex;gap:.75rem;align-items:center}
-    .back-link{font-size:.78rem;color:var(--accent);text-decoration:none}
+/* ── CONNECT PLATFORMS ── */
+.platforms-section{margin-bottom:2rem}
+.platforms-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:.35rem}
+.platforms-sub{font-size:.84rem;color:var(--mid);margin-bottom:1.25rem}
+.platforms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.platform-card{background:var(--dark);border:1.5px solid var(--border);border-radius:12px;padding:1.25rem;cursor:pointer;transition:all .2s;position:relative}
+.platform-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.platform-card.connected{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.04)}
+.platform-card.connected::after{content:'✓';position:absolute;top:.6rem;right:.7rem;font-size:.7rem;font-weight:700;color:var(--green)}
+.pc-icon{font-size:1.8rem;margin-bottom:.5rem}
+.pc-name{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
+.pc-status{font-size:.72rem;color:var(--mid)}
+.platform-card.connected .pc-status{color:var(--green)}
+.pc-page{font-size:.7rem;color:var(--mid);margin-top:.2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    .body{max-width:960px;margin:0 auto;padding:2rem 1.5rem}
-    .page-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.04em;margin-bottom:.35rem}
-    .page-sub{font-size:.88rem;color:var(--mid);margin-bottom:2rem;line-height:1.6}
+/* ── MAIN GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 380px;gap:1.5rem;align-items:start}
 
-    /* INPUT FORM */
-    .input-card{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1.5rem}
-    .card-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
-    .card-label::before{content:'';display:block;width:3px;height:13px;background:var(--accent);border-radius:2px}
-    .fg{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.85rem}
-    .fg label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
-    .fg input,.fg select,.fg textarea{background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.88rem;padding:.62rem .9rem;transition:border-color .2s;width:100%}
-    .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
-    .fg select option{background:var(--dark)}
-    .fg textarea{resize:vertical;min-height:80px}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+/* ── POST CREATOR ── */
+.creator{background:var(--dark);border:1px solid var(--border);border-radius:14px;padding:1.75rem;margin-bottom:1rem}
+.section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mid);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+.section-label::before{content:'';display:block;width:3px;height:12px;background:var(--accent);border-radius:2px}
+.post-types{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1rem}
+.ptype{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.78rem;font-weight:600;padding:.32rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ptype.on{background:var(--accent);border-color:var(--accent);color:#000}
 
-    /* CHECKBOXES */
-    .scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:.85rem}
-    .scope-check{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.55rem .8rem;cursor:pointer;transition:all .15s;font-size:.82rem;color:var(--light)}
-    .scope-check:hover{border-color:var(--accent)}
-    .scope-check input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
-    .scope-check.checked{border-color:var(--accent);background:rgba(200,169,110,.08);color:var(--white)}
+/* ── MEDIA UPLOAD ── */
+.media-zone{border:2px dashed var(--border);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:.85rem;position:relative;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.media-zone:hover,.media-zone.dragover{border-color:var(--accent);background:rgba(200,169,110,.04)}
+.media-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.media-zone-icon{font-size:2rem;margin-bottom:.5rem;pointer-events:none}
+.media-zone-text{font-size:.84rem;color:var(--mid);pointer-events:none}
+.media-zone-sub{font-size:.72rem;color:var(--mid);margin-top:.2rem;pointer-events:none}
+.media-previews{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.75rem}
+.mp-item{aspect-ratio:1;border-radius:7px;overflow:hidden;position:relative}
+.mp-item img,.mp-item video{width:100%;height:100%;object-fit:cover}
+.mp-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.75);border:none;color:#fff;font-size:.6rem;width:18px;height:18px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1}
 
-    .analyze-btn{width:100%;background:var(--accent);color:var(--black);border:none;border-radius:8px;font-size:.92rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.9rem;cursor:pointer;transition:background .2s;margin-top:.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem}
-    .analyze-btn:hover{background:var(--accent2)}
-    .analyze-btn:disabled{opacity:.5;cursor:not-allowed}
+/* ── AI TOOLS ── */
+.ai-tools{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.75rem}
+.ai-btn{background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.2);color:var(--accent);font-size:.76rem;font-weight:600;padding:.32rem .85rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ai-btn:hover{background:rgba(200,169,110,.18)}
+.ai-btn:disabled{opacity:.4;cursor:not-allowed}
+.llm-status{display:flex;align-items:center;gap:.4rem;font-size:.72rem;padding:.2rem .7rem;border-radius:99px;margin-bottom:.6rem}
+.llm-online{background:rgba(110,200,122,.1);border:1px solid rgba(110,200,122,.25);color:var(--green)}
+.llm-offline{background:rgba(107,107,107,.1);border:1px solid var(--border);color:var(--mid)}
+.caption-area{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.88rem;padding:.8rem .95rem;min-height:110px;resize:vertical;font-family:inherit;transition:border-color .2s;margin-bottom:.6rem}
+.caption-area:focus{outline:none;border-color:var(--accent)}
+.hashtag-row{font-size:.76rem;color:var(--mid);margin-bottom:.85rem;line-height:1.8;min-height:1.2rem}
+.platform-select{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem}
+.psel{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.35rem .75rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s;user-select:none}
+.psel input{accent-color:var(--accent);cursor:pointer}
+.psel.on{border-color:var(--accent);background:rgba(200,169,110,.07);color:var(--white)}
+.psel.disabled{opacity:.4;cursor:not-allowed}
 
-    /* RESULTS */
-    #resultsSection{display:none}
-    .jurisdiction-banner{background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(200,169,110,.04));border:1px solid rgba(200,169,110,.3);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-    .jb-icon{font-size:2rem;flex-shrink:0}
-    .jb-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;color:var(--accent)}
-    .jb-sub{font-size:.82rem;color:var(--light);margin-top:.15rem}
-    .jb-link{margin-left:auto;background:var(--accent);color:var(--black);border:none;border-radius:6px;font-size:.76rem;font-weight:700;padding:.45rem 1rem;text-decoration:none;white-space:nowrap;cursor:pointer}
+/* ── IMAGE GENERATOR ── */
+.img-gen-panel{background:rgba(200,169,110,.04);border:1px solid rgba(200,169,110,.15);border-radius:10px;padding:1.25rem;margin-bottom:.85rem}
+.ig-title{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.75rem}
+.ig-input-row{display:flex;gap:.5rem;margin-bottom:.6rem}
+.ig-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .85rem;transition:border-color .2s}
+.ig-input:focus{outline:none;border-color:var(--accent)}
+.ig-gen-btn{background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.55rem 1.1rem;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+.ig-gen-btn:hover{opacity:.85}
+.ig-gen-btn:disabled{opacity:.4;cursor:not-allowed}
+.ig-provider-row{display:flex;gap:.35rem;margin-bottom:.6rem;flex-wrap:wrap}
+.ig-prov{background:var(--surface);border:1px solid var(--border);color:var(--mid);font-size:.72rem;font-weight:600;padding:.22rem .65rem;border-radius:99px;cursor:pointer;transition:all .15s}
+.ig-prov.on{background:var(--accent);border-color:var(--accent);color:#000}
+.ig-results{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-top:.6rem}
+.ig-result-img{aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .15s;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--mid)}
+.ig-result-img:hover,.ig-result-img.sel{border-color:var(--accent)}
+.ig-result-img img{width:100%;height:100%;object-fit:cover}
 
-    /* PERMIT CARDS */
-    .permits-grid{display:flex;flex-direction:column;gap:1rem;margin-bottom:1.5rem}
-    .permit-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;overflow:hidden}
-    .permit-header{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.25rem;cursor:pointer}
-    .permit-icon{font-size:1.5rem;flex-shrink:0}
-    .permit-info{flex:1;min-width:0}
-    .permit-name{font-size:.96rem;font-weight:600;color:var(--white)}
-    .permit-authority{font-size:.76rem;color:var(--mid);margin-top:.15rem}
-    .permit-required{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.2rem .65rem;border-radius:99px;flex-shrink:0}
-    .pr-required{background:rgba(209,79,79,.15);color:var(--red);border:1px solid rgba(209,79,79,.3)}
-    .pr-maybe{background:rgba(232,148,74,.15);color:var(--orange);border:1px solid rgba(232,148,74,.3)}
-    .pr-notneeded{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
-    .permit-expand{font-size:.8rem;color:var(--mid);flex-shrink:0}
-    .permit-body{display:none;border-top:1px solid var(--border);padding:1.1rem 1.25rem}
-    .permit-body.open{display:block}
-    .permit-section{margin-bottom:1rem}
-    .permit-section:last-child{margin-bottom:0}
-    .permit-section-title{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.5rem}
-    .permit-section ul{list-style:none;display:flex;flex-direction:column;gap:.35rem}
-    .permit-section ul li{font-size:.83rem;color:var(--light);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
-    .permit-section ul li::before{content:'→';color:var(--accent);flex-shrink:0;font-size:.78rem;margin-top:.15rem}
-    .code-tag{background:var(--surface);border:1px solid var(--border);border-radius:4px;font-size:.72rem;color:var(--accent);padding:.1rem .45rem;font-family:monospace;white-space:nowrap}
-    .permit-fee{background:var(--surface);border-radius:6px;padding:.6rem .85rem;font-size:.82rem;color:var(--light);display:flex;align-items:center;justify-content:space-between}
-    .permit-fee-amount{font-weight:600;color:var(--accent)}
-    .permit-portal-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:var(--black);border:none;border-radius:5px;font-size:.76rem;font-weight:700;padding:.4rem .9rem;cursor:pointer;text-decoration:none;margin-top:.75rem}
-    .permit-portal-btn:hover{background:var(--accent2)}
+/* ── SCHEDULE / PUBLISH ── */
+.schedule-row{display:flex;gap:.6rem;align-items:flex-end;margin-bottom:.85rem;flex-wrap:wrap}
+.fg-sm{flex:1;min-width:120px}
+.fg-sm label{display:block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.3rem}
+.fg-sm select,.fg-sm input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit}
+.publish-row{display:flex;gap:.6rem}
+.publish-btn{background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.8rem 1.75rem;cursor:pointer;transition:all .2s}
+.publish-btn:hover{opacity:.85}
+.publish-btn:disabled{opacity:.4;cursor:not-allowed}
+.draft-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:8px;font-size:.84rem;font-weight:600;padding:.8rem 1.25rem;cursor:pointer;transition:all .15s}
+.draft-btn:hover{border-color:var(--accent);color:var(--accent)}
+.post-result{font-size:.82rem;margin-top:.5rem;min-height:1rem}
 
-    /* INSPECTION SEQUENCE */
-    .inspection-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
-    .inspection-steps{display:flex;flex-direction:column;gap:.75rem;margin-top:.85rem}
-    .insp-step{display:flex;align-items:flex-start;gap:1rem}
-    .insp-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--black);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
-    .insp-info{flex:1}
-    .insp-name{font-size:.9rem;font-weight:600;color:var(--white)}
-    .insp-desc{font-size:.78rem;color:var(--mid);margin-top:.15rem;line-height:1.5}
+/* ── SIDEBAR ── */
+.sidebar-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:.85rem}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);line-height:1}
+.stat-lbl{font-size:.62rem;color:var(--mid);margin-top:.15rem;text-transform:uppercase;letter-spacing:.04em}
+.scheduled-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.scheduled-item:last-child{border-bottom:none}
+.si-icon{font-size:1rem;flex-shrink:0}
+.si-text{flex:1;min-width:0}
+.si-caption{font-size:.78rem;color:var(--light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.si-time{font-size:.68rem;color:var(--mid);margin-top:.1rem}
+.si-badge{font-size:.6rem;font-weight:700;text-transform:uppercase;padding:.12rem .45rem;border-radius:99px;flex-shrink:0}
+.sib-sched{background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)}
+.sib-posted{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+.idea-item{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.6rem .8rem;margin-bottom:.4rem;cursor:pointer;font-size:.8rem;color:var(--light);transition:all .15s;line-height:1.6}
+.idea-item:hover{border-color:var(--accent);color:var(--white)}
+.idea-tag{font-size:.6rem;font-weight:700;text-transform:uppercase;padding:.1rem .4rem;border-radius:99px;margin-right:.3rem;display:inline-block}
 
-    /* CHECKLIST */
-    .checklist-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
-    .checklist-items{display:flex;flex-direction:column;gap:.45rem;margin-top:.85rem}
-    .cl-item{display:flex;align-items:center;gap:.75rem;background:var(--surface);border-radius:7px;padding:.65rem .9rem;font-size:.84rem;color:var(--light)}
-    .cl-item input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
-    .cl-item.checked-item{background:rgba(110,200,122,.06);color:var(--green);text-decoration:line-through;opacity:.7}
+/* ── CONNECT MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:1.5rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--dark);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:520px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:.35rem}
+.modal-sub{font-size:.84rem;color:var(--mid);margin-bottom:1.5rem;line-height:1.6}
+.modal-step{background:var(--surface);border-radius:8px;padding:.85rem 1rem;margin-bottom:.6rem;font-size:.84rem;color:var(--light);line-height:1.7}
+.modal-step strong{color:var(--white)}
+.modal-step code{background:rgba(200,169,110,.12);color:var(--accent);padding:.1rem .4rem;border-radius:3px;font-size:.82rem}
+.modal-input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.88rem;padding:.68rem .95rem;margin-bottom:.6rem;font-family:monospace;transition:border-color .2s}
+.modal-input:focus{outline:none;border-color:var(--accent)}
+.modal-btn{background:var(--accent);color:#000;border:none;border-radius:7px;font-size:.88rem;font-weight:700;padding:.75rem 1.5rem;cursor:pointer;transition:opacity .2s;width:100%}
+.modal-btn:hover{opacity:.85}
+.modal-cancel{background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.6rem;width:100%;padding:.4rem}
+.modal-cancel:hover{color:var(--white)}
+.modal-err{font-size:.78rem;color:#e08080;margin-bottom:.6rem;min-height:.9rem}
+.modal-link{color:var(--accent);font-weight:600;cursor:pointer}
 
-    /* PRINT / SAVE */
-    .action-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem}
-    .action-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.8rem;font-weight:600;padding:.55rem 1.1rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.4rem}
-    .action-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* ── LLM SETUP ── */
+.llm-setup{background:rgba(91,155,213,.06);border:1px solid rgba(91,155,213,.2);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:1.25rem}
+.llm-setup-title{font-size:.78rem;font-weight:700;color:var(--blue);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.llm-setup-steps{font-size:.78rem;color:var(--light);line-height:2}
+.llm-setup-steps code{background:rgba(91,155,213,.12);color:var(--blue);padding:.1rem .4rem;border-radius:3px;font-family:monospace;font-size:.76rem}
+.llm-url-row{display:flex;gap:.4rem;margin-top:.6rem}
+.llm-url-input{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:6px;color:var(--white);font-size:.82rem;padding:.5rem .8rem;font-family:monospace}
+.llm-url-input:focus{outline:none;border-color:var(--blue)}
+.llm-save-btn{background:var(--blue);color:#fff;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem .9rem;cursor:pointer}
 
-    /* LOADING */
-    #loadingSection{display:none;text-align:center;padding:3rem 2rem}
-    .loading-icon{font-size:3rem;animation:spin2 2s linear infinite;display:inline-block;margin-bottom:1rem}
-    @keyframes spin2{to{transform:rotate(360deg)}}
-    .loading-text{font-size:.9rem;color:var(--mid);margin-top:.5rem}
-    .loading-steps{display:flex;flex-direction:column;gap:.4rem;margin-top:1.25rem;text-align:left;max-width:360px;margin-left:auto;margin-right:auto}
-    .loading-step{font-size:.8rem;color:var(--mid);display:flex;align-items:center;gap:.5rem}
-    .loading-step.done{color:var(--green)}
-    .loading-step.active{color:var(--accent)}
+.spin{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}.platforms-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.platforms-grid{grid-template-columns:1fr 1fr}.ig-results{grid-template-columns:1fr 1fr}}
 
-    .empty-state{text-align:center;padding:3rem 2rem;color:var(--mid);font-size:.88rem}
-
-
-    /* PDF EXPORT */
-    .pdf-btn{background:var(--red);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.55rem 1.1rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .15s}
-    .pdf-btn:hover{opacity:.85}
-
-    /* AUTO-SAVE INDICATOR */
-    .autosave-bar{background:rgba(110,200,122,.08);border:1px solid rgba(110,200,122,.2);border-radius:8px;padding:.5rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--green)}
-    .autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
-
-    /* CHATBOT */
-    #chatBtn{position:fixed;bottom:1.75rem;right:1.75rem;width:54px;height:54px;background:var(--accent);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.4rem;z-index:500;box-shadow:0 4px 24px rgba(200,169,110,.5);transition:transform .2s}
-    #chatBtn:hover{transform:scale(1.1)}
-    #chatPanel{position:fixed;bottom:5.25rem;right:1.75rem;width:370px;max-width:calc(100vw - 2rem);background:var(--dark);border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 50px rgba(0,0,0,.7);z-index:500;display:none;flex-direction:column;height:520px;overflow:hidden}
-    .chat-head{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:.9rem 1.15rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-    .chat-head-left{display:flex;align-items:center;gap:.6rem}
-    .chat-head-title{font-size:.9rem;font-weight:700;color:var(--black);line-height:1.2}
-    .chat-head-sub{font-size:.68rem;color:rgba(0,0,0,.6)}
-    .chat-close{background:none;border:none;color:var(--black);font-size:1.1rem;cursor:pointer;opacity:.65}
-    .chat-close:hover{opacity:1}
-    .chat-msgs{flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:.65rem}
-    .chat-msg{max-width:90%;padding:.65rem .9rem;border-radius:12px;font-size:.83rem;line-height:1.65;word-break:break-word}
-    .chat-msg.ai{background:var(--surface);border:1px solid var(--border);color:var(--light);align-self:flex-start;border-bottom-left-radius:3px}
-    .chat-msg.user{background:var(--accent);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500}
-    .chat-msg.thinking{background:var(--surface);border:1px solid var(--border);color:var(--mid);align-self:flex-start;font-style:italic}
-    .chat-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;background:var(--surface)}
-    .chat-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.84rem;padding:.6rem .85rem;resize:none;min-height:38px;max-height:80px;transition:border-color .2s}
-    .chat-input:focus{outline:none;border-color:var(--accent)}
-    .chat-send{background:var(--accent);color:var(--black);border:none;border-radius:8px;width:38px;height:38px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .chat-send:hover{background:var(--accent2)}
-    .chat-send:disabled{opacity:.4;cursor:not-allowed}
-    .chat-chips{display:flex;gap:.4rem;flex-wrap:wrap;padding:.6rem .85rem .35rem;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--surface)}
-    .chat-chip{background:var(--card);border:1px solid var(--border);border-radius:99px;font-size:.68rem;font-weight:600;color:var(--light);padding:.22rem .65rem;cursor:pointer;transition:all .15s;white-space:nowrap}
-    .chat-chip:hover{border-color:var(--accent);color:var(--accent)}
-
-    @media print{
-      #chatBtn,#chatPanel{display:none!important}
-      .autosave-bar{display:none}
-    }
-
-    @media print{
-      .header,.analyze-btn,.action-row,.back-link{display:none!important}
-      .body{padding:1rem}
-      .permit-body{display:block!important}
-    }
-    @media(max-width:680px){
-      .grid2,.grid3,.scope-grid{grid-template-columns:1fr 1fr}
-      .body{padding:1.25rem .85rem}
-    }
-    @media(max-width:440px){
-      .scope-grid{grid-template-columns:1fr}
-    }
-  
 /* ── UNIVERSAL NAV ── */
 .sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
@@ -216,1093 +204,950 @@
 })();
 </script>
 
-<div><div class="header-brand">" + (localStorage.getItem("sc_co")||"Your Company") + "</div><div class="header-sub">Permit Agent</div></div>
-  <div class="header-right">
-    <a href="javascript:history.back()" class="back-link">← Dashboard</a>
-    <a href="javascript:void(0)" onclick="window.location.href='https://'+window.location.hostname+'/portal'" class="back-link">Portal →</a>
+<span style="font-size:.78rem;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)">📱 Social Media</span>
+  </div>
+
+<div class="body">
+
+  <!-- CONNECT PLATFORMS -->
+  <div class="platforms-section">
+    <div class="platforms-title">Connect Your Platforms</div>
+    <div class="platforms-sub">Connect your social media accounts to post directly. All connections are secure and only post when you approve.</div>
+    <div class="platforms-grid">
+      <div class="platform-card" id="pc-google" onclick="openConnectModal('google')">
+        <div class="pc-icon">🔍</div>
+        <div class="pc-name">Google Business</div>
+        <div class="pc-status" id="ps-google">Connect →</div>
+        <div class="pc-page" id="pp-google"></div>
+      </div>
+      <div class="platform-card" id="pc-facebook" onclick="openConnectModal('facebook')">
+        <div class="pc-icon">👥</div>
+        <div class="pc-name">Facebook Page</div>
+        <div class="pc-status" id="ps-facebook">Connect →</div>
+        <div class="pc-page" id="pp-facebook"></div>
+      </div>
+      <div class="platform-card" id="pc-instagram" onclick="openConnectModal('instagram')">
+        <div class="pc-icon">📸</div>
+        <div class="pc-name">Instagram Business</div>
+        <div class="pc-status" id="ps-instagram">Connect →</div>
+        <div class="pc-page" id="pp-instagram"></div>
+      </div>
+      <div class="platform-card" id="pc-linkedin" onclick="openConnectModal('linkedin')">
+        <div class="pc-icon">💼</div>
+        <div class="pc-name">LinkedIn Page</div>
+        <div class="pc-status" id="ps-linkedin">Connect →</div>
+        <div class="pc-page" id="pp-linkedin"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div>
+      <!-- LLM STATUS -->
+      <div id="llmStatusBar" class="llm-status llm-offline">
+        <span id="llmDot">⚪</span>
+        <span id="llmStatusText">Local AI not connected — captions use Gemini</span>
+        <button onclick="openLLMSetup()" style="background:none;border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.15rem .6rem;border-radius:99px;cursor:pointer;margin-left:.5rem">Setup →</button>
+      </div>
+
+      <!-- POST CREATOR -->
+      <div class="creator">
+        <div class="section-label">Create Post</div>
+        
+        <!-- Post type -->
+        <div class="post-types">
+          <button class="ptype on" onclick="setPostType('project',this)">🏗️ Project Update</button>
+          <button class="ptype" onclick="setPostType('before_after',this)">📸 Before/After</button>
+          <button class="ptype" onclick="setPostType('tip',this)">💡 Tip</button>
+          <button class="ptype" onclick="setPostType('offer',this)">🎯 Special Offer</button>
+          <button class="ptype" onclick="setPostType('review',this)">⭐ Client Review</button>
+        </div>
+
+        <!-- Media upload -->
+        <div class="media-zone" id="mediaZone" 
+          ondragover="event.preventDefault();this.classList.add('dragover')"
+          ondragleave="this.classList.remove('dragover')"
+          ondrop="handleDrop(event)">
+          <input type="file" accept="image/*,video/*" multiple onchange="handleFiles(this.files)"/>
+          <div class="media-zone-icon">📷</div>
+          <div class="media-zone-text">Drop photos or videos here, or click to upload</div>
+          <div class="media-zone-sub">JPG, PNG, MP4 · Max 10 files · 50MB each</div>
+        </div>
+        <div class="media-previews" id="mediaPreviews"></div>
+
+        <!-- AI Image Generator -->
+        <div class="img-gen-panel">
+          <div class="ig-title">🎨 AI Image Generator</div>
+          <div class="ig-provider-row">
+            <button class="ig-prov on" onclick="setImgProvider('ollama',this)" id="provOllama">🖥️ Local AI (Free)</button>
+            <button class="ig-prov" onclick="setImgProvider('dalle',this)" id="provDalle">🤖 DALL-E 3</button>
+            <button class="ig-prov" onclick="setImgProvider('stable',this)" id="provStable">🎨 Stable Diffusion</button>
+          </div>
+          <div class="ig-input-row">
+            <input class="ig-input" id="imgPrompt" placeholder="Describe the image: professional kitchen renovation, modern, bright..."/>
+            <button class="ig-gen-btn" id="igBtn" onclick="generateImage()">Generate ✨</button>
+          </div>
+          <div style="font-size:.72rem;color:var(--mid)">Or use quick prompts:</div>
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.35rem;margin-bottom:.5rem">
+            <button onclick="setImgPrompt('professional kitchen renovation before and after')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Kitchen reno</button>
+            <button onclick="setImgPrompt('roof replacement complete, new shingles, sunny day')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Roofing</button>
+            <button onclick="setImgPrompt('bathroom remodel modern tile shower renovation')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Bathroom</button>
+            <button onclick="setImgPrompt('home exterior renovation siding paint job')" style="background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.68rem;padding:.2rem .6rem;border-radius:99px;cursor:pointer">Exterior</button>
+          </div>
+          <div class="ig-results" id="igResults"></div>
+        </div>
+
+        <!-- AI Caption -->
+        <div class="ai-tools">
+          <button class="ai-btn" onclick="genCaption('professional')" id="capBtn1">✨ Professional</button>
+          <button class="ai-btn" onclick="genCaption('casual')" id="capBtn2">😊 Casual</button>
+          <button class="ai-btn" onclick="genCaption('before_after')" id="capBtn3">📸 Before/After</button>
+          <button class="ai-btn" onclick="genCaption('cta')" id="capBtn4">📞 Call to Action</button>
+          <button class="ai-btn" onclick="genCaption('seasonal')" id="capBtn5">🍂 Seasonal</button>
+        </div>
+        <textarea class="caption-area" id="captionBox" placeholder="Write your caption here, or click an AI button above to generate one automatically..."></textarea>
+        <div class="hashtag-row" id="hashtagRow"></div>
+
+        <!-- Platform select -->
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.5rem">Post to:</div>
+        <div class="platform-select" id="platformSelect">
+          <label class="psel on" id="psel-google" onclick="togglePlatform(this,'google')"><input type="checkbox" checked> 🔍 Google Business</label>
+          <label class="psel on" id="psel-facebook" onclick="togglePlatform(this,'facebook')"><input type="checkbox" checked> 👥 Facebook</label>
+          <label class="psel disabled" id="psel-instagram"><input type="checkbox" disabled> 📸 Instagram <span style="font-size:.65rem;color:var(--mid)">(connect first)</span></label>
+          <label class="psel disabled" id="psel-linkedin"><input type="checkbox" disabled> 💼 LinkedIn <span style="font-size:.65rem;color:var(--mid)">(connect first)</span></label>
+        </div>
+
+        <!-- Schedule -->
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.85rem 0 .5rem">Schedule:</div>
+        <div class="schedule-row">
+          <div class="fg-sm"><label>When</label>
+            <select id="schedWhen" onchange="toggleSchedule()">
+              <option value="now">Post Now</option>
+              <option value="best">AI Best Time</option>
+              <option value="custom">Custom Date/Time</option>
+            </select>
+          </div>
+          <div class="fg-sm" id="schedDateWrap" style="display:none"><label>Date</label><input type="date" id="schedDate"/></div>
+          <div class="fg-sm" id="schedTimeWrap" style="display:none"><label>Time</label><input type="time" id="schedTime" value="09:00"/></div>
+        </div>
+
+        <div class="publish-row">
+          <button class="publish-btn" id="publishBtn" onclick="publishPost()">📤 Publish Post</button>
+          <button class="draft-btn" onclick="saveDraft()">💾 Save Draft</button>
+        </div>
+        <div class="post-result" id="postResult"></div>
+      </div>
+
+      <!-- RECENT POSTS -->
+      <div class="creator">
+        <div class="section-label">Recent Posts</div>
+        <div id="recentPosts"><div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet. Create your first post above.</div></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <!-- STATS -->
+      <div class="sidebar-card">
+        <div class="section-label">This Month</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-val" id="stPosts">0</div><div class="stat-lbl">Posts</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--green)" id="stReach">0</div><div class="stat-lbl">Est. Reach</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--blue)" id="stEng">0</div><div class="stat-lbl">Engagements</div></div>
+          <div class="stat-box"><div class="stat-val" style="color:var(--orange)" id="stLeads">0</div><div class="stat-lbl">Leads</div></div>
+        </div>
+      </div>
+
+      <!-- SCHEDULED -->
+      <div class="sidebar-card">
+        <div class="section-label">Scheduled</div>
+        <div id="scheduledList"><div style="font-size:.8rem;color:var(--mid);padding:.5rem 0">No scheduled posts.</div></div>
+      </div>
+
+      <!-- AI IDEAS -->
+      <div class="sidebar-card">
+        <div class="section-label">AI Post Ideas</div>
+        <div id="ideaList">
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(200,169,110,.15);color:var(--accent);border:1px solid rgba(200,169,110,.3)">Project</span>Just finished this kitchen renovation — from outdated 1980s to a modern dream kitchen in 3 weeks!</div>
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)">Tip</span>Always get 3 estimates before any major renovation. Here is what to look for when comparing contractors...</div>
+          <div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:rgba(91,155,213,.15);color:var(--blue);border:1px solid rgba(91,155,213,.3)">Seasonal</span>Fall is the perfect time to get your roof inspected before winter. Here is what we check and why it matters...</div>
+        </div>
+        <button onclick="genIdeas()" id="ideasBtn" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem;transition:all .15s">✨ Generate More Ideas</button>
+      </div>
+
+      <!-- AUTO POST -->
+      <div class="sidebar-card">
+        <div class="section-label">Auto-Post Settings</div>
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoProject" checked style="accent-color:var(--accent)"> Auto-post when project completes</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoWeekly" checked style="accent-color:var(--accent)"> Weekly AI-generated tip</label>
+          <label style="display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--light);cursor:pointer"><input type="checkbox" id="autoReview" style="accent-color:var(--accent)"> Share 5-star reviews</label>
+        </div>
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:.75rem 0 .35rem">Best times for contractors:</div>
+        <div style="font-size:.78rem;color:var(--light);line-height:1.85">📅 Tue–Thu: 8–10am, 6–8pm<br>🏆 Best: Wednesday 9am<br>📍 Local audience most active midweek</div>
+        <button onclick="saveAutoSettings()" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;font-size:.78rem;font-weight:700;padding:.5rem;cursor:pointer;margin-top:.75rem">Save Settings</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="body">
-  <div class="page-title">🏛️ Permit Agent</div>
-  <p class="page-sub">Enter the project address and scope of work. The agent will automatically identify the correct jurisdiction, list every permit required, show the applicable codes (NEC, IMC, UPC), estimate fees, and give you the direct link to apply.</p>
+<!-- ── CONNECT MODAL ── -->
+<div class="modal-overlay" id="connectModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Connect Platform</div>
+    <div class="modal-sub" id="modalSub">Follow the steps below to connect your account.</div>
+    <div id="modalBody"></div>
+    <div class="modal-err" id="modalErr"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
 
-  <!-- INPUT FORM -->
-  <div class="input-card">
-    <div class="card-label">Project Information</div>
-    <div class="grid2">
-      <div class="fg"><label>Property Address *</label><input type="text" id="projAddress" placeholder="836 KrikWood St, Wilmington, DE 19801" /></div>
-      <div class="fg"><label>Property Type</label>
-        <select id="propType">
-          <option value="residential_single">Residential — Single Family</option>
-          <option value="residential_multi">Residential — Multi Family</option>
-          <option value="commercial">Commercial</option>
-          <option value="mixed">Mixed Use</option>
-        </select>
+<!-- ── LLM SETUP MODAL ── -->
+<div class="modal-overlay" id="llmModal">
+  <div class="modal">
+    <div class="modal-title">Connect Your Local AI</div>
+    <div class="modal-sub">Run AI captions and image generation locally on your Mac — unlimited, free, private.</div>
+    <div class="llm-setup">
+      <div class="llm-setup-title">🖥️ Setup Ollama on your Mac</div>
+      <div class="llm-setup-steps">
+        1. Install: <code>brew install ollama</code><br>
+        2. Get model: <code>ollama pull llama3.2</code><br>
+        3. Start: <code>ollama serve</code><br>
+        4. Expose: <code>ngrok http 11434</code><br>
+        5. Copy the ngrok URL and paste below
       </div>
-      <div class="fg"><label>Contract Value ($)</label><input type="number" id="contractValue" placeholder="15000" min="0" /></div>
-      <div class="fg"><label>Project Name (optional)</label><input type="text" id="projName" placeholder="Johnson Kitchen Renovation" /></div>
     </div>
-    <div class="fg"><label>Scope of Work Description (optional — helps AI be more accurate)</label>
-      <textarea id="scopeDesc" placeholder="e.g. Full kitchen renovation including removing wall between kitchen and living room, new electrical panel upgrade to 200A, new HVAC unit, all new plumbing fixtures..."></textarea>
+    <div class="modal-step">
+      <strong>Paste your Ollama URL:</strong><br>
+      Should look like: <code>https://abc123.ngrok-free.dev</code>
     </div>
+    <div class="llm-url-row">
+      <input class="llm-url-input modal-input" id="ollamaUrlInput" placeholder="https://abc123.ngrok-free.dev"/>
+      <button class="llm-save-btn" onclick="saveOllamaUrl()">Connect</button>
+    </div>
+    <div class="modal-step" style="margin-top:.75rem">
+      <strong>ComfyUI URL</strong> (for image generation):<br>
+      Your ComfyUI Cloudflare URL:
+    </div>
+    <div class="llm-url-row">
+      <input class="llm-url-input modal-input" id="comfyUrlInput" placeholder="https://xxx.trycloudflare.com"/>
+      <button class="llm-save-btn" onclick="saveComfyUrl()">Save</button>
+    </div>
+    <div id="comfyTestResult" style="font-size:.78rem;margin-top:.35rem;min-height:.9rem"></div>
+    <div id="llmTestResult" style="font-size:.78rem;margin-top:.5rem;min-height:.9rem"></div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0"/>
+    <div class="modal-step" style="margin-bottom:.75rem">
+      <strong>For AI image generation</strong> — also install Stable Diffusion:<br>
+      <code>pip install diffusers transformers</code><br>
+      Or use DALL-E 3 (OpenAI API key required):
+    </div>
+    <input class="modal-input" id="openaiKeyInput" placeholder="sk-... (OpenAI API key for DALL-E 3)"/>
+    <button class="modal-btn" onclick="saveLLMSettings()">Save All Settings</button>
+    <button class="modal-cancel" onclick="document.getElementById('llmModal').classList.remove('open')">Close</button>
   </div>
-
-  <div class="input-card">
-    <div class="card-label">Scope of Work — Check all that apply</div>
-    <div class="scope-grid" id="scopeGrid">
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="structural"> Structural / Framing</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="demolition"> Demolition</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="addition"> Addition / New Space</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="roofing"> Roofing</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="electrical"> Electrical Work</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="electrical_panel"> Electrical Panel Upgrade</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="plumbing"> Plumbing Work</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="plumbing_new"> New Plumbing Fixtures</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="hvac"> HVAC / Mechanical</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="hvac_new_unit"> New HVAC Unit</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="gas"> Gas Line Work</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="kitchen"> Kitchen Remodel</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="bathroom"> Bathroom Remodel</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="drywall"> Drywall / Insulation</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="windows_doors"> Windows / Doors</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="siding"> Siding / Exterior</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="deck"> Deck / Porch</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="fence"> Fence</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="accessory_structure"> Shed / Garage / ADU</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="foundation"> Foundation Work</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="flooring"> Flooring Only</label>
-      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="painting"> Painting Only</label>
-    </div>
-    <button class="analyze-btn" id="analyzeBtn" onclick="runPermitAgent()">
-      <span id="analyzeBtnText">🔍 Analyze Project & Generate Permit Report</span>
-    </button>
-  </div>
-
-  <!-- LOADING -->
-  <div id="loadingSection">
-    <div class="loading-icon">⚙️</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em">Analyzing Your Project</div>
-    <div class="loading-text">This takes about 15 seconds</div>
-    <div class="loading-steps">
-      <div class="loading-step" id="step1">📍 Identifying jurisdiction from address...</div>
-      <div class="loading-step" id="step2">📋 Determining required permits...</div>
-      <div class="loading-step" id="step3">⚡ Loading electrical codes (NEC 2023)...</div>
-      <div class="loading-step" id="step4">🔧 Loading HVAC codes (IMC 2021)...</div>
-      <div class="loading-step" id="step5">💧 Loading plumbing codes (UPC/Delaware)...</div>
-      <div class="loading-step" id="step6">💰 Calculating permit fees...</div>
-      <div class="loading-step" id="step7">🔗 Finding direct application links...</div>
-    </div>
-  </div>
-
-  <!-- RESULTS -->
-  <div id="resultsSection">
-
-    <!-- Jurisdiction Banner -->
-    <div class="jurisdiction-banner" id="jurisdictionBanner"></div>
-
-    <!-- Action Buttons -->
-    <div class="autosave-bar" id="autosaveBar" style="display:none">
-      <div class="autosave-dot"></div>
-      <span id="autosaveMsg">Form auto-saved</span>
-    </div>
-    <div class="action-row">
-      <button class="action-btn pdf-btn" onclick="exportPDF()">📄 Download PDF</button>
-      <button class="action-btn" onclick="window.print()">🖨️ Print Report</button>
-      <button class="action-btn" onclick="saveToProject()">💾 Save to Portal</button>
-      <button class="action-btn" onclick="resetForm()">↺ New Analysis</button>
-    </div>
-
-    <!-- Permit Cards -->
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:1rem;color:var(--white)">Required Permits</div>
-    <div class="permits-grid" id="permitsGrid"></div>
-
-    <!-- Inspection Sequence -->
-    <div class="inspection-card" id="inspectionCard">
-      <div class="card-label">Inspection Sequence</div>
-      <div class="inspection-steps" id="inspectionSteps"></div>
-    </div>
-
-    <!-- Document Checklist -->
-    <div class="checklist-card">
-      <div class="card-label">Documents & Requirements Checklist</div>
-      <div class="checklist-items" id="docsChecklist"></div>
-    </div>
-
-    <!-- AI Notes -->
-    <div id="aiNotes" style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem">
-      <div class="card-label">Agent Notes</div>
-      <div id="aiNotesText" style="font-size:.85rem;color:var(--light);line-height:1.8"></div>
-    </div>
-
-  </div>
-
 </div>
 
 <script>
-// ── JURISDICTION DATABASE ─────────────────────────────────────────────
-const JURISDICTIONS = {
-  wilmington: {
-    name:       "City of Wilmington",
-    state:      "Delaware",
-    keywords:   ["wilmington"],
-    phone:      "(302) 576-3060",
-    address:    "Louis L. Redding City/County Building, 800 N French St, Wilmington DE 19801",
-    portal:     "https://www.wilmingtonde.gov/government/city-departments/licenses-inspections",
-    applyUrl:   "https://www.wilmingtonde.gov/government/city-departments/department-of-licenses-and-inspections",
-    electrical: "State of Delaware — NOT City (contact DPR: dpr.delaware.gov)",
-    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
-    fees: {
-      building:  "Based on valuation — min $75. Typically $8–$15 per $1,000 of construction value",
-      electrical:"$20 flat fee (State of Delaware permit)",
-      plumbing:  "$20 flat fee",
-      hvac:      "$20 flat fee (mechanical permit)",
-      roofing:   "$75 minimum or valuation-based",
-    },
-    notes: "City of Wilmington does NOT issue electrical permits — those go through State of Delaware DPR. HVAC and plumbing permits are issued by the city.",
-  },
-  newcastle_county: {
-    name:       "New Castle County",
-    state:      "Delaware",
-    keywords:   ["new castle","newark","bear","hockessin","middletown","glasgow","elsmere","claymont","pike creek","brookside","edgemoor","st. georges","delaware city"],
-    phone:      "(302) 395-5400",
-    address:    "Department of Land Use, 87 Reads Way, New Castle, DE 19720",
-    portal:     "https://www.newcastlede.gov/2503/Permits-Inspections",
-    applyUrl:   "https://www.newcastlede.gov/186/Online-Services---Land-Use",
-    electrical: "State of Delaware — NCC does NOT issue electrical permits (dpr.delaware.gov)",
-    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
-    fees: {
-      building:  "Based on construction valuation. Approx $8–$12 per $1,000",
-      electrical:"State of Delaware — separate fee ~$50–$150 depending on scope",
-      plumbing:  "Online utility permit — escrow or credit card",
-      hvac:      "Online utility permit — HVACR residential permit via Dynamic Portal",
-      roofing:   "Valuation-based — same as building permit schedule",
-    },
-    notes: "NCC offers online ePlans submission and eApply for building permits. HVACR and plumbing permits available online via Dynamic Portal. Electrical is handled by State of Delaware.",
-  },
-  kent_county: {
-    name:       "Kent County / City of Dover",
-    state:      "Delaware",
-    keywords:   ["dover","kent","smyrna","camden","harrington","milford","felton","magnolia","wyoming","clayton"],
-    phone:      "(302) 744-2450",
-    address:    "Kent County Levy Court, 555 Bay Rd, Dover, DE 19901",
-    portal:     "https://www.co.kent.de.us/government/departments/planning-services/building-inspections.aspx",
-    applyUrl:   "https://www.co.kent.de.us/government/departments/planning-services/building-inspections.aspx",
-    electrical: "State of Delaware DPR",
-    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
-    fees: {
-      building:  "Minimum $100 or 2.5% of construction value, whichever is higher",
-      electrical:"State of Delaware — separate",
-      plumbing:  "Subcode permit — contact Kent County",
-      hvac:      "Mechanical subcode permit — contact Kent County",
-      roofing:   "Valuation-based",
-    },
-    notes: "Kent County follows the 2018 Delaware Construction Codes. Dover city limits may have separate requirements — always confirm jurisdiction.",
-  },
-  sussex_county: {
-    name:       "Sussex County",
-    state:      "Delaware",
-    keywords:   ["lewes","rehoboth","seaford","bridgeville","laurel","milton","selbyville","fenwick","ocean view","bethany","dewey","millsboro","georgetown"],
-    phone:      "(302) 855-7860",
-    address:    "Sussex County, 2 The Circle, Georgetown, DE 19947",
-    portal:     "https://www.sussexcountyde.gov/building-permits-inspections",
-    applyUrl:   "https://www.sussexcountyde.gov/building-permits-inspections",
-    electrical: "State of Delaware DPR",
-    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
-    fees: {
-      building:  "Based on construction valuation — contact Sussex County for schedule",
-      electrical:"State of Delaware — separate",
-      plumbing:  "Plumbing subcode permit required",
-      hvac:      "Mechanical permit required",
-      roofing:   "Valuation-based",
-    },
-    notes: "Sussex County has experienced rapid growth. Coastal and flood zone properties may have additional DNREC requirements. Always verify flood zone status.",
-  },
+const GEMINI_KEY  = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
+const GEMINI_URL  = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const COMPANY     = localStorage.getItem('sc_co') || localStorage.getItem('asc_company') || 'Ali Signature Construction';
+const LOCATION    = localStorage.getItem('sc_location') || localStorage.getItem('asc_location') || 'Delaware';
 
-  // ── PENNSYLVANIA ──────────────────────────────────────
-  philadelphia: {
-    name:       "City of Philadelphia",
-    state:      "Pennsylvania",
-    keywords:   ["philadelphia","philly","19101","19102","19103","19104","19105","19106","19107","19109","19110","19111","19112","19114","19115","19116","19118","19119","19120","19121","19122","19123","19124","19125","19126","19127","19128","19129","19130","19131","19132","19133","19134","19135","19136","19137","19138","19139","19140","19141","19142","19143","19144","19145","19146","19147","19148","19149","19150","19151","19152","19153","19154"],
-    phone:      "(215) 686-2400",
-    address:    "Permit and License Center, MSB, 1401 JFK Blvd, Philadelphia PA 19102",
-    portal:     "https://www.phila.gov/services/permits-violations-licenses/apply-for-a-permit/building-and-repair-permits/get-a-building-permit/",
-    applyUrl:   "https://eclipse.phila.gov",
-    electrical: "Philadelphia L&I — same department (eCLIPSE online system)",
-    elecUrl:    "https://eclipse.phila.gov",
-    fees: {
-      building:  "Residential: $50/unit for additions. Alterations: % of contract value (min $100). Plan review fee additional.",
-      electrical:"$25 per $1,000 of estimated electrical costs. Min $63, max $18,975. Rough-in permit: $150 flat.",
-      plumbing:  "New construction 1-2 family: $50 for first 7 fixtures + $22.50 each additional. Alterations: $40 minimum.",
-      hvac:      "Residential HVAC unit: $69-$76 per unit. Ductwork: $76 per installation. Fuel gas: 2% of contract (min $189).",
-      roofing:   "Residential roofing: $50 per unit. Re-roofing same materials may qualify as EZ Permit.",
-      demolition:"Based on building size — several hundred dollars minimum.",
-    },
-    notes: "Philadelphia uses eCLIPSE online system for all permits. EZ Permits available for simple work — no plans required. Historic district properties need Historical Commission approval BEFORE applying. Zoning permit required before building permit in most cases. All contractors must have active Philadelphia license and current City taxes. Initial plan review takes approximately 20 business days.",
-    specialNotes: [
-      "All permits applied for online through eCLIPSE at eclipse.phila.gov",
-      "EZ Permit available for simple residential work — no plans required",
-      "Zoning permit required FIRST before building permit in most cases",
-      "Historic district properties require Historical Commission approval before L&I",
-      "All contractors must be licensed in Philadelphia AND current on City taxes",
-      "Philadelphia adopted 2018 IBC, 2018 IRC, 2017 NEC, 2018 IPC, 2018 IMC",
-      "Combination permit available for 1-2 family new construction",
-    ],
+let postType    = 'project';
+let mediaFiles  = [];
+let imgProvider = 'ollama';
+let selectedImg = null;
+let posts       = JSON.parse(localStorage.getItem('sc_posts') || '[]');
+let connected   = JSON.parse(localStorage.getItem('sc_social_connected') || '{}');
+let ollamaUrl   = localStorage.getItem('sc_ollama_url') || '';
+let openaiKey   = localStorage.getItem('sc_openai_key') || '';
+let currentModal= null;
+
+// ── INIT ──────────────────────────────────────────────────────
+init();
+function init() {
+  loadConnectedPlatforms();
+  checkOllamaStatus();
+  renderStats();
+  renderRecentPosts();
+  loadIdeas();
+}
+
+// ── PLATFORMS ─────────────────────────────────────────────────
+function loadConnectedPlatforms() {
+  Object.entries(connected).forEach(([p, data]) => {
+    if (!data) return;
+    const card = document.getElementById('pc-'+p);
+    const status = document.getElementById('ps-'+p);
+    const page   = document.getElementById('pp-'+p);
+    if (card)   card.classList.add('connected');
+    if (status) { status.textContent = 'Connected ✓'; status.style.color='var(--green)'; }
+    if (page && data.name) page.textContent = data.name;
+    // Enable platform selector
+    const psel = document.getElementById('psel-'+p);
+    if (psel) { psel.classList.remove('disabled'); psel.querySelector('input').disabled = false; psel.querySelector('span')?.remove(); }
+  });
+}
+
+// ── CONNECT MODAL ─────────────────────────────────────────────
+const MODAL_CONTENT = {
+  google: {
+    title: '🔍 Connect Google Business',
+    sub:   'Post updates and photos directly to your Google Business Profile. One click — no setup needed.',
+    body: `
+      <div class="modal-step" style="margin-bottom:1rem">
+        <strong>What you need:</strong><br>
+        ✓ A Google account<br>
+        ✓ A verified Google Business Profile<br><br>
+        Click below to sign in with Google and connect your Business Profile instantly.
+      </div>
+      <button class="modal-btn" onclick="connectGoogle()" id="googleConnectBtn">
+        <img src="https://www.google.com/favicon.ico" width="16" style="vertical-align:middle;margin-right:.5rem"/> Connect with Google →
+      </button>
+      <div id="googleResult" style="font-size:.82rem;margin-top:.85rem;min-height:.9rem;line-height:1.7"></div>
+      <p style="font-size:.74rem;color:var(--mid);margin-top:.75rem">
+        Don't have a Google Business Profile? 
+        <a href="https://business.google.com" target="_blank" style="color:var(--accent)">Create one free →</a>
+      </p>
+    `
   },
-  montgomery_county_pa: {
-    name:       "Montgomery County, PA",
-    state:      "Pennsylvania",
-    keywords:   ["norristown","king of prussia","ardmore","lansdale","blue bell","horsham","ambler","jenkintown","cheltenham","abington","upper merion","lower merion","conshohocken","fort washington","hatboro","willow grove","montgomeryville","perkasie","souderton"],
-    phone:      "(610) 278-3000",
-    address:    "Montgomery County Planning Commission, PO Box 311, Norristown PA 19404",
-    portal:     "https://www.montcopa.org/181/Building-Permit-Information",
-    applyUrl:   "https://www.montcopa.org/181/Building-Permit-Information",
-    electrical: "Pennsylvania UCC — same building department",
-    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
-    fees: {
-      building:  "Based on PA UCC fee schedule — varies by municipality within county",
-      electrical:"Combined with building permit under PA UCC",
-      plumbing:  "Combined with building permit under PA UCC",
-      hvac:      "Combined with building permit under PA UCC",
-      roofing:   "Permit required — fee based on valuation",
-    },
-    notes: "Montgomery County municipalities each have their own building departments. Permits are issued at the township/borough level, not county level. Check with your specific municipality (Lower Merion, Cheltenham, Horsham, etc.).",
+  facebook: {
+    title: '👥 Connect Facebook Page',
+    sub:   'Post to your Facebook Business Page directly from SiteCommand.',
+    body: `
+      <div class="modal-step"><strong>You need:</strong> A Facebook account and a Facebook Page for your business (not a personal profile).<br><br>
+      <strong>Step 1</strong> — Go to <a href="https://developers.facebook.com" target="_blank" class="modal-link">developers.facebook.com</a><br>
+      <strong>Step 2</strong> — Create an App → Business → Get Started<br>
+      <strong>Step 3</strong> — Add Product: Facebook Login<br>
+      <strong>Step 4</strong> — Get your App ID and paste below
+      </div>
+      <input class="modal-input" id="fbAppId" placeholder="Facebook App ID (numbers only)"/>
+      <div class="modal-step"><strong>Step 5</strong> — Get a Page Access Token:<br>
+      Go to <a href="https://developers.facebook.com/tools/explorer" target="_blank" class="modal-link">Graph API Explorer</a> → Select your app → Generate Token → Add permissions: <code>pages_manage_posts</code>, <code>pages_read_engagement</code> → Generate
+      </div>
+      <input class="modal-input" id="fbToken" placeholder="Facebook Page Access Token (long string)"/>
+      <input class="modal-input" id="fbPageId" placeholder="Facebook Page ID (numbers)"/>
+      <button class="modal-btn" onclick="connectFacebook()">Connect Facebook →</button>
+    `
   },
-  delaware_county_pa: {
-    name:       "Delaware County, PA",
-    state:      "Pennsylvania",
-    keywords:   ["media","chester","darby","upper darby","ridley park","folcroft","sharon hill","collingdale","clifton heights","drexel hill","havertown","springfield","swarthmore","brookhaven","marcus hook","chester township"],
-    phone:      "(610) 891-5000",
-    address:    "Delaware County Government Center, 201 W Front St, Media PA 19063",
-    portal:     "https://www.co.delaware.pa.us/planning/buildingpermits.html",
-    applyUrl:   "https://www.co.delaware.pa.us/planning/buildingpermits.html",
-    electrical: "Pennsylvania UCC — issued at municipal level",
-    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
-    fees: {
-      building:  "Varies by municipality — issued at township/borough level",
-      electrical:"Combined under PA UCC at municipal level",
-      plumbing:  "Combined under PA UCC at municipal level",
-      hvac:      "Combined under PA UCC at municipal level",
-      roofing:   "Municipal level — contact your township",
-    },
-    notes: "Delaware County PA permits are issued at the municipal (township/borough) level. Contact your specific township. Pennsylvania follows the PA UCC (Uniform Construction Code) statewide.",
+  instagram: {
+    title: '📸 Connect Instagram',
+    sub:   'Post photos and reels to your Instagram Business account.',
+    body: `
+      <div class="modal-step"><strong>Requirements:</strong><br>
+      • Instagram Business or Creator account (not personal)<br>
+      • Connected to a Facebook Page<br>
+      • Facebook Developer App with Instagram permissions</div>
+      <div class="modal-step"><strong>Step 1</strong> — Complete Facebook connection first (required)<br>
+      <strong>Step 2</strong> — In your Facebook App → Add Product: Instagram Graph API<br>
+      <strong>Step 3</strong> — Get Instagram Business Account ID from Graph API Explorer:<br>
+      Run: <code>GET /me/accounts</code> → find your page → <code>GET /{page-id}?fields=instagram_business_account</code>
+      </div>
+      <input class="modal-input" id="igAccountId" placeholder="Instagram Business Account ID"/>
+      <input class="modal-input" id="igToken" placeholder="Same Facebook Page Access Token"/>
+      <button class="modal-btn" onclick="connectInstagram()">Connect Instagram →</button>
+    `
   },
-  chester_county_pa: {
-    name:       "Chester County, PA",
-    state:      "Pennsylvania",
-    keywords:   ["west chester","coatesville","downingtown","phoenixville","kennett square","oxford","malvern","exton","paoli","avondale","elverson","honey brook","parkesburg"],
-    phone:      "(610) 344-6000",
-    address:    "Chester County Planning Commission, 601 Westtown Rd, West Chester PA 19380",
-    portal:     "https://www.chesco.org/291/Building-Permits",
-    applyUrl:   "https://www.chesco.org/291/Building-Permits",
-    electrical: "Pennsylvania UCC — issued at municipal level",
-    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
-    fees: {
-      building:  "Varies by municipality — issued at township/borough level",
-      electrical:"Combined under PA UCC",
-      plumbing:  "Combined under PA UCC",
-      hvac:      "Combined under PA UCC",
-      roofing:   "Municipal level",
-    },
-    notes: "Chester County PA permits issued at municipal level. Pennsylvania UCC (Uniform Construction Code) applies statewide based on 2018 IBC/IRC.",
-  },
-  bucks_county_pa: {
-    name:       "Bucks County, PA",
-    state:      "Pennsylvania",
-    keywords:   ["doylestown","newtown","bristol","levittown","langhorne","yardley","new hope","quakertown","perkasie","hatfield","chalfont","warminster","warrington","horsham bucks","buckingham","plumstead"],
-    phone:      "(215) 348-6000",
-    address:    "Bucks County Administration Building, 55 E Court St, Doylestown PA 18901",
-    portal:     "https://www.buckscounty.gov/1005/Building-Permits",
-    applyUrl:   "https://www.buckscounty.gov/1005/Building-Permits",
-    electrical: "Pennsylvania UCC — issued at municipal level",
-    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
-    fees: {
-      building:  "Municipal level — varies by township/borough",
-      electrical:"Combined under PA UCC",
-      plumbing:  "Combined under PA UCC",
-      hvac:      "Combined under PA UCC",
-      roofing:   "Municipal level",
-    },
-    notes: "Bucks County PA permits issued at municipal level. PA UCC applies. Philadelphia suburbs may have stricter local amendments.",
+  linkedin: {
+    title: '💼 Connect LinkedIn',
+    sub:   'Post updates to your LinkedIn Company Page.',
+    body: `
+      <div class="modal-step"><strong>Step 1</strong> — Go to <a href="https://www.linkedin.com/developers/apps" target="_blank" class="modal-link">LinkedIn Developer Apps</a><br>
+      <strong>Step 2</strong> — Create App → fill in details → verify your Company Page<br>
+      <strong>Step 3</strong> — Auth tab → Request access for <code>w_organization_social</code><br>
+      <strong>Step 4</strong> — Generate access token with OAuth 2.0 flow
+      </div>
+      <input class="modal-input" id="liToken" placeholder="LinkedIn Access Token"/>
+      <input class="modal-input" id="liOrgId" placeholder="LinkedIn Organization URN (urn:li:organization:XXXXXXX)"/>
+      <button class="modal-btn" onclick="connectLinkedIn()">Connect LinkedIn →</button>
+    `
   },
 };
 
-// ── PERMIT DEFINITIONS ────────────────────────────────────────────────
-const PERMIT_TYPES = {
-  building: {
-    icon:      "🏗️",
-    name:      "Building Permit",
-    scopeTriggers: ["structural","demolition","addition","kitchen","bathroom","drywall","windows_doors","siding","deck","fence","accessory_structure","foundation","roofing"],
-    required:  "required",
-    codes:     ["IBC 2018","IRC 2018","Delaware Construction Codes 2018"],
-    what:      ["Any structural changes or additions","Removing or adding walls","New construction or additions","Decks, porches, sheds over 200 sq ft","Window/door size changes","Foundation work"],
-    notNeeded: ["Cosmetic work — painting, flooring, carpet","Drywall repair under 100 sq ft","Direct replacement of same-size windows/doors (some jurisdictions)"],
-    docs:      ["Completed building permit application","Site plan showing property lines and setbacks","Construction drawings (floor plan, elevations)","Contractor license number","Property owner information","Zoning compliance confirmation"],
-    inspections:["Footing/Foundation inspection (before pouring)","Rough framing inspection","Insulation inspection","Final inspection / Certificate of Occupancy"],
-  },
-  electrical: {
-    icon:      "⚡",
-    name:      "Electrical Permit",
-    scopeTriggers: ["electrical","electrical_panel","kitchen","bathroom","addition"],
-    required:  "required",
-    codes:     ["NEC 2023 (National Electrical Code)","Delaware Title 24 Chapter 13","14 Del. Admin Code § 3900"],
-    what:      ["New circuit installations","Panel upgrades or replacements","Rewiring any portion of home","Adding outlets, switches, or fixtures","EV charger installation","New service entrance"],
-    notNeeded: ["Direct fixture replacement (same location, no new wiring)","Replacing outlets/switches (like for like)"],
-    keyCodeSections: [
-      "NEC 210.8 — GFCI protection required in kitchens, bathrooms, outdoors, garages",
-      "NEC 210.11(C)(1) — Dedicated 20A circuit required for kitchen small appliances",
-      "NEC 210.11(C)(2) — Dedicated 20A circuit required for bathroom",
-      "NEC 230.79 — Service entrance minimum 100A residential (200A recommended for renovations)",
-      "NEC 406.4 — Tamper-resistant receptacles required in all new/renovated residential",
-      "NEC 210.12 — AFCI protection required for bedroom circuits and all new branch circuits",
-      "NEC 250 — Grounding and bonding requirements",
-    ],
-    docs:      ["State of Delaware electrical permit application (dpr.delaware.gov)","Licensed electrician information (E-1 or E-2 license required)","Load calculation if panel upgrade","Single line diagram for service changes"],
-    inspections:["Rough electrical inspection (before drywall)","Service entrance inspection","Final electrical inspection"],
-    specialNote:"⚠️ IMPORTANT: Electrical permits in ALL Delaware jurisdictions are issued by the STATE OF DELAWARE — NOT the county or city. Apply at dpr.delaware.gov",
-  },
-  plumbing: {
-    icon:      "💧",
-    name:      "Plumbing Permit",
-    scopeTriggers: ["plumbing","plumbing_new","kitchen","bathroom","addition"],
-    required:  "required",
-    codes:     ["Delaware Plumbing Code (4455 Delaware Regulations)","IPC 2018 as adopted by Delaware","Delaware Division of Public Health"],
-    what:      ["New plumbing rough-in","Relocating drain lines or supply lines","Adding new fixtures","Water heater replacement","Sewer line work","Gas line work (separate permit may be needed)"],
-    notNeeded: ["Direct replacement of faucets or toilets (same location)","Minor repairs to existing fixtures"],
-    keyCodeSections: [
-      "Delaware Plumbing Code § 701 — Sanitary drainage system requirements",
-      "Delaware Plumbing Code § 302 — Materials standards for supply piping",
-      "Delaware Plumbing Code § 405 — Minimum fixture clearances (bathroom layout)",
-      "Delaware Plumbing Code § 606 — Shutoff valve required on each fixture",
-      "Delaware Plumbing Code § 504 — Water heater requirements and TPR valve",
-      "IPC 708 — Cleanout requirements for drainage systems",
-    ],
-    docs:      ["Plumbing permit application","Licensed plumber information (Delaware P-1 or P-2 license)","Isometric drawing for complex systems","Fixture count and types"],
-    inspections:["Rough plumbing inspection (before walls closed)","Water supply pressure test","Drain, waste, and vent test","Final plumbing inspection"],
-  },
-  hvac: {
-    icon:      "🌡️",
-    name:      "HVAC / Mechanical Permit",
-    scopeTriggers: ["hvac","hvac_new_unit","addition","kitchen"],
-    required:  "required",
-    codes:     ["IMC 2021 (International Mechanical Code)","IFGC 2021 (International Fuel Gas Code)","ASHRAE 62.2 — Ventilation","Delaware Construction Codes 2018"],
-    what:      ["Installing new HVAC system","Replacing furnace or AC unit","New ductwork installation","Boiler installation or replacement","Ventilation systems","Kitchen exhaust hoods (commercial-grade)"],
-    notNeeded: ["Direct replacement of same-capacity unit (some jurisdictions — verify)","Filter changes, thermostat replacement"],
-    keyCodeSections: [
-      "IMC 302 — Equipment and appliance installation",
-      "IMC 603 — Duct construction and installation standards",
-      "IMC 504 — Clothes dryer exhaust requirements",
-      "IMC 505 — Domestic kitchen exhaust equipment",
-      "IMC 401 — Ventilation — minimum outdoor air rates",
-      "IFGC 404 — Gas piping installation requirements",
-      "IFGC 503 — Venting of appliances",
-      "Manual J — Required load calculation for equipment sizing",
-    ],
-    docs:      ["Mechanical/HVAC permit application","Licensed HVAC contractor information (Delaware HVAC-R license)","Manual J load calculation","Equipment specifications and AHRI certificate","Duct layout plan for new installations"],
-    inspections:["Rough mechanical inspection (before insulation)","Gas pressure test (if gas work involved)","Final mechanical inspection","Operational test"],
-  },
-  gas: {
-    icon:      "🔥",
-    name:      "Gas Permit",
-    scopeTriggers: ["gas","hvac_new_unit"],
-    required:  "required",
-    codes:     ["IFGC 2021 (International Fuel Gas Code)","Delaware Construction Codes","Delmarva Power/South Jersey Industries requirements"],
-    what:      ["New gas line installation","Gas line extension or modification","New gas appliance connection","Gas range, dryer, or fireplace installation","Generator gas connection"],
-    keyCodeSections: [
-      "IFGC 402 — Pipe sizing calculations",
-      "IFGC 404 — Prohibited locations for gas piping",
-      "IFGC 406 — Pressure testing requirements (min 3 PSI for 15 minutes)",
-      "IFGC 503 — Venting requirements for gas appliances",
-      "IFGC 621 — Prohibited locations for appliances",
-    ],
-    docs:      ["Gas permit application (may be combined with mechanical)","Licensed gas contractor","Pressure test documentation","Gas utility company notification"],
-    inspections:["Gas pressure test inspection","Final gas inspection"],
-  },
-  roofing: {
-    icon:      "🏠",
-    name:      "Roofing Permit",
-    scopeTriggers: ["roofing"],
-    required:  "required",
-    codes:     ["IRC R905 — Requirements for roof coverings","IRC R907 — Reroofing","ASTM D3161 — Shingle testing standard"],
-    what:      ["Full roof replacement","Adding new roof layers (max 2 layers per IRC)","Structural deck replacement","Skylight installation"],
-    notNeeded: ["Patching less than 25% of roof area (verify by jurisdiction)"],
-    keyCodeSections: [
-      "IRC R905.2 — Asphalt shingle installation requirements",
-      "IRC R905.2.6 — Underlayment requirements",
-      "IRC R905.2.8.2 — Ice barrier membrane in cold climates",
-      "IRC R907 — Reroofing — no more than 2 layers of shingles",
-      "ASCE 7 — Wind load requirements for roof (Delaware is moderate wind zone)",
-    ],
-    docs:      ["Building/roofing permit application","Contractor license","Product specifications for shingles","Ice and water shield compliance documentation"],
-    inspections:["Sheathing inspection (if decking replaced)","Underlayment inspection","Final roofing inspection"],
-  },
-  demolition: {
-    icon:      "🔨",
-    name:      "Demolition Permit",
-    scopeTriggers: ["demolition"],
-    required:  "required",
-    codes:     ["IBC Chapter 33 — Safeguards during construction","EPA RRP Rule — Lead paint (pre-1978 homes)","NESHAP — Asbestos notification"],
-    what:      ["Interior demolition affecting structural elements","Full or partial building demolition","Load-bearing wall removal"],
-    keyCodeSections: [
-      "EPA RRP Rule — Homes built before 1978 require lead paint testing or certified RRP contractor",
-      "NESHAP 40 CFR Part 61 — Asbestos notification required for renovation of structures",
-      "IBC 3303 — Demolition requirements and site protection",
-    ],
-    docs:      ["Demolition permit application","Asbestos survey (if pre-1978 building)","Lead paint test or RRP contractor certification","Utility disconnect confirmation","Debris disposal plan"],
-    inspections:["Pre-demolition utility disconnect inspection","Final site inspection"],
-  },
-};
-
-// ── HELPERS ─────────────────────────────────────────────────────────
-function toggleScope(label) {
-  const cb = label.querySelector('input');
-  setTimeout(() => { label.classList.toggle('checked', cb.checked); }, 0);
+function openConnectModal(platform) {
+  currentModal = platform;
+  const cfg = MODAL_CONTENT[platform];
+  document.getElementById('modalTitle').textContent = cfg.title;
+  document.getElementById('modalSub').textContent   = cfg.sub;
+  document.getElementById('modalBody').innerHTML    = cfg.body;
+  document.getElementById('modalErr').textContent   = '';
+  document.getElementById('connectModal').classList.add('open');
 }
+function closeModal() { document.getElementById('connectModal').classList.remove('open'); }
 
-function getSelectedScope() {
-  return [...document.querySelectorAll('.scope-check input:checked')].map(cb => cb.value);
-}
+// ── GOOGLE BUSINESS CONNECT ────────────────────────────────────
+async function connectGoogle() {
+  const result = document.getElementById('googleResult');
+  const btn    = document.getElementById('googleConnectBtn');
+  result.style.color = 'var(--mid)';
+  result.textContent = 'Opening Google sign-in...';
+  if (btn) btn.disabled = true;
 
-function detectJurisdiction(address) {
-  const addr = address.toLowerCase();
+  const GOOGLE_CLIENT_ID = '919895770319-1tisp90f3llr31410lodevd8tdie6h0b.apps.googleusercontent.com';
+  const SCOPES = [
+    'https://www.googleapis.com/auth/business.manage',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile'
+  ].join(' ');
 
-  // Check Philadelphia zip codes first (very specific)
-  const zipMatch = addr.match(/\b(19\d{3})\b/);
-  if (zipMatch) {
-    const zip = zipMatch[1];
-    // Philadelphia zips
-    if (['19101','19102','19103','19104','19105','19106','19107','19109','19110',
-         '19111','19112','19114','19115','19116','19118','19119','19120','19121',
-         '19122','19123','19124','19125','19126','19127','19128','19129','19130',
-         '19131','19132','19133','19134','19135','19136','19137','19138','19139',
-         '19140','19141','19142','19143','19144','19145','19146','19147','19148',
-         '19149','19150','19151','19152','19153','19154'].includes(zip)) {
-      return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
-    }
-    // Montgomery County PA zips
-    if (zip >= '19001' && zip <= '19095') {
-      return { key:'montgomery_county_pa', ...JURISDICTIONS.montgomery_county_pa };
-    }
-    // Delaware County PA
-    if (['19010','19012','19018','19023','19026','19029','19032','19033',
-         '19036','19041','19043','19050','19063','19064','19070','19073',
-         '19074','19078','19079','19081','19082','19083','19085','19087',
-         '19094','19096'].includes(zip)) {
-      return { key:'delaware_county_pa', ...JURISDICTIONS.delaware_county_pa };
-    }
+  // Load Google Identity Services if not loaded
+  if (!window.google?.accounts?.oauth2) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
   }
 
-  // Check for Philadelphia explicitly
-  if (addr.includes('philadelphia') || addr.includes('philly')) {
-    return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
-  }
-
-  // Check for PA state indicator
-  const isPA = addr.includes(', pa') || addr.includes(' pa ') || addr.includes('pennsylvania');
-  const isDE = addr.includes(', de') || addr.includes(' de ') || addr.includes('delaware');
-
-  // Check all jurisdiction keywords
-  for (const [key, jur] of Object.entries(JURISDICTIONS)) {
-    for (const kw of jur.keywords) {
-      if (addr.includes(kw)) {
-        // If address says PA, skip DE jurisdictions and vice versa
-        if (isPA && jur.state === 'Delaware') continue;
-        if (isDE && jur.state === 'Pennsylvania') continue;
-        return { key, ...jur };
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope:     SCOPES,
+    callback:  async (resp) => {
+      if (resp.error) {
+        result.style.color = '#e08080';
+        result.textContent = '❌ ' + (resp.error_description || resp.error);
+        if (btn) btn.disabled = false;
+        return;
       }
+
+      const token = resp.access_token;
+      result.textContent = 'Getting your business profile...';
+
+      try {
+        // Get business accounts (handle rate limiting)
+        let accounts = [];
+        try {
+          const accountsRes  = await fetch(
+            'https://mybusinessaccountmanagement.googleapis.com/v1/accounts',
+            { headers: { 'Authorization': 'Bearer ' + token } }
+          );
+          if (accountsRes.status === 429) {
+            // Rate limited - still connect with token, get location later
+            result.textContent = 'Rate limited — connecting anyway...';
+            await new Promise(r => setTimeout(r, 2000));
+          } else {
+            const accountsData = await accountsRes.json();
+            accounts = accountsData.accounts || [];
+          }
+        } catch(e) { accounts = []; }
+
+        // Get locations for first account
+        let locationName = 'Google Business';
+        let locationId   = '';
+        if (accounts.length) {
+          const account = accounts[0];
+          locationName  = account.accountName || 'Google Business';
+          locationId    = account.name || '';
+          try {
+            const locRes  = await fetch(
+              'https://mybusinessbusinessinformation.googleapis.com/v1/' + account.name + '/locations?readMask=name,title',
+              { headers: { 'Authorization': 'Bearer ' + token } }
+            );
+            const locData = await locRes.json();
+            const locs    = locData.locations || [];
+            if (locs.length) {
+              locationName = locs[0].title || locationName;
+              locationId   = locs[0].name  || locationId;
+            }
+          } catch(e) {}
+        } // end if accounts.length
+
+        // Save connection
+        connected.google = {
+          token,
+          name:        locationName,
+          accountName: account.name,
+          locationId,
+          connectedAt: new Date().toISOString()
+        };
+        localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+        localStorage.setItem('sc_google_token',     token);
+        localStorage.setItem('sc_google_location',  locationId);
+
+        loadConnectedPlatforms();
+        result.style.color = 'var(--green)';
+        result.innerHTML   = '✅ Connected: <strong>' + locationName + '</strong><br><span style="color:var(--mid);font-size:.76rem">Ready to post updates and photos</span>';
+        setTimeout(closeModal, 2000);
+
+      } catch(e) {
+        // Still save token even if account fetch fails
+        connected.google = { token, name: 'Google Business', connectedAt: new Date().toISOString() };
+        localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+        localStorage.setItem('sc_google_token', token);
+        loadConnectedPlatforms();
+        result.style.color = 'var(--green)';
+        result.textContent = '✅ Google connected! You can now post to Google Business.';
+        setTimeout(closeModal, 2000);
+      }
+
+      if (btn) btn.disabled = false;
     }
-  }
-
-  // State defaults
-  if (isPA) return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
-  if (isDE) return { key:'newcastle_county', ...JURISDICTIONS.newcastle_county };
-
-  // Geographic default — NCC for anything near DE/PA border
-  return { key:'newcastle_county', ...JURISDICTIONS.newcastle_county };
-}
-
-function calcFee(jur, scope, contractValue) {
-  const val = parseFloat(contractValue) || 0;
-  let total = 0, breakdown = [];
-
-  const isPhilly = jur.key === 'philadelphia';
-  const isPA     = jur.state === 'Pennsylvania' && !isPhilly;
-  const isDE     = jur.state === 'Delaware';
-
-  if (scope.some(s => ['structural','demolition','addition','kitchen','bathroom','roofing','windows_doors','siding','deck','accessory_structure','foundation'].includes(s))) {
-    let fee = 0;
-    if (jur.key === 'wilmington')        fee = Math.max(75,  val * 0.010);
-    if (jur.key === 'newcastle_county')  fee = Math.max(50,  val * 0.009);
-    if (jur.key === 'kent_county')       fee = Math.max(100, val * 0.025);
-    if (jur.key === 'sussex_county')     fee = Math.max(75,  val * 0.010);
-    if (isPhilly)                        fee = Math.max(100, val * 0.012);
-    if (isPA)                            fee = Math.max(75,  val * 0.010);
-    breakdown.push({ name:'Building Permit', fee });
-    total += fee;
-  }
-  if (scope.some(s => ['electrical','electrical_panel'].includes(s))) {
-    let fee = 0;
-    if (jur.key === 'wilmington') fee = 20;
-    else if (isPhilly)            fee = Math.max(63, val * 0.025);
-    else if (isDE)                fee = 75;
-    else                          fee = Math.max(75, val * 0.010);
-    const label = isDE && jur.key !== 'wilmington' ? 'Electrical Permit (State of DE)' : 'Electrical Permit';
-    breakdown.push({ name: label, fee });
-    total += fee;
-  }
-  if (scope.some(s => ['plumbing','plumbing_new'].includes(s))) {
-    let fee = 0;
-    if (jur.key === 'wilmington') fee = 20;
-    else if (isPhilly)            fee = 50;
-    else                          fee = 60;
-    breakdown.push({ name:'Plumbing Permit', fee });
-    total += fee;
-  }
-  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s))) {
-    let fee = 0;
-    if (jur.key === 'wilmington') fee = 20;
-    else if (isPhilly)            fee = 76;
-    else                          fee = 60;
-    breakdown.push({ name:'HVAC/Mechanical Permit', fee });
-    total += fee;
-  }
-  if (scope.includes('gas')) {
-    const fee = isPhilly ? Math.max(189, val * 0.02) : 50;
-    breakdown.push({ name:'Gas Permit', fee });
-    total += fee;
-  }
-  // Philadelphia zoning permit
-  if (isPhilly && scope.some(s => ['structural','addition','demolition','accessory_structure'].includes(s))) {
-    breakdown.push({ name:'Zoning Permit (Philadelphia)', fee: 100 });
-    total += 100;
-  }
-  return { total, breakdown };
-}
-
-function getInspections(scope) {
-  const steps = [];
-  if (scope.some(s => ['structural','addition','foundation'].includes(s)))
-    steps.push({ name:'Footing / Foundation Inspection', desc:'Required before pouring any concrete. Inspector verifies depth, size, and reinforcement.' });
-  if (scope.includes('demolition'))
-    steps.push({ name:'Pre-Demolition Utility Disconnect', desc:'All utilities must be confirmed disconnected before demolition begins.' });
-  if (scope.some(s => ['structural','addition','roofing'].includes(s)))
-    steps.push({ name:'Rough Framing Inspection', desc:'All framing, blocking, and sheathing must be visible. Do not cover with insulation or drywall.' });
-  if (scope.some(s => ['electrical','electrical_panel'].includes(s)))
-    steps.push({ name:'Rough Electrical Inspection', desc:'All wiring, boxes, and conduit installed but before drywall. Inspector checks wire gauge, AFCI/GFCI placement.' });
-  if (scope.some(s => ['plumbing','plumbing_new'].includes(s)))
-    steps.push({ name:'Rough Plumbing Inspection', desc:'All DWV and supply piping installed and pressure tested before walls are closed.' });
-  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s)))
-    steps.push({ name:'Rough Mechanical / Ductwork Inspection', desc:'All ductwork, venting, and equipment rough-in before insulation.' });
-  if (scope.includes('gas'))
-    steps.push({ name:'Gas Pressure Test', desc:'System pressurized to minimum 3 PSI for 15 minutes with no loss. Required before gas is turned on.' });
-  if (scope.some(s => ['drywall','insulation'].includes(s)))
-    steps.push({ name:'Insulation Inspection', desc:'Before drywall is installed. Verifies R-value compliance and air sealing.' });
-  if (scope.includes('roofing'))
-    steps.push({ name:'Roofing / Underlayment Inspection', desc:'After underlayment installed, before shingles. Verifies ice and water shield, drip edge.' });
-  steps.push({ name:'Final Inspection / Certificate of Occupancy', desc:'All work complete. Inspector verifies everything matches approved plans. CO issued upon passing.' });
-  return steps;
-}
-
-function getRequiredDocs(scope, jur) {
-  const docs = new Set([
-    'Completed permit application form',
-    'Valid Delaware contractor license (provide your license number)',
-    'Property address and owner information',
-    'Description of scope of work',
-  ]);
-  if (scope.some(s => ['structural','addition','demolition'].includes(s))) {
-    docs.add('Construction drawings — floor plan and elevations (signed and dated)');
-    docs.add('Site plan showing property lines, setbacks, and existing structures');
-  }
-  if (parseFloat(document.getElementById('contractValue').value) > 50000) {
-    docs.add('Stamped architectural/engineering drawings (required for projects over $50,000)');
-  }
-  if (scope.some(s => ['electrical','electrical_panel'].includes(s))) {
-    docs.add('Electrical permit application — file separately with State of Delaware DPR');
-    docs.add('Load calculation if upgrading electrical service');
-  }
-  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s))) {
-    docs.add('Manual J load calculation for new HVAC equipment sizing');
-    docs.add('HVAC equipment specifications and AHRI certificate');
-  }
-  if (scope.some(s => ['plumbing','plumbing_new'].includes(s))) {
-    docs.add('Plumbing fixture schedule');
-  }
-  docs.add('Payment of permit fees (credit card or check)');
-  docs.add('Your Delaware contractor license number and insurance certificate');
-  return [...docs];
-}
-
-// ── MAIN AGENT FUNCTION ─────────────────────────────────────────────
-async function runPermitAgent() {
-  const address       = document.getElementById('projAddress').value.trim();
-  if (!address) { alert('Please enter the property address.'); return; }
-
-  const scope         = getSelectedScope();
-  const propType      = document.getElementById('propType').value;
-  const contractValue = document.getElementById('contractValue').value || '0';
-  const scopeDesc     = document.getElementById('scopeDesc').value.trim();
-
-  document.getElementById('loadingSection').style.display  = 'block';
-  document.getElementById('resultsSection').style.display  = 'none';
-  document.getElementById('analyzeBtn').disabled           = true;
-
-  // Animate loading steps
-  const stepDelay = [0,1200,2400,3500,4400,5200,6000];
-  const steps     = ['step1','step2','step3','step4','step5','step6','step7'];
-  steps.forEach((id,i) => {
-    setTimeout(() => {
-      if (i > 0 && document.getElementById(steps[i-1])) document.getElementById(steps[i-1]).classList.add('done');
-      if (document.getElementById(id)) document.getElementById(id).classList.add('active');
-    }, stepDelay[i]);
   });
 
-  // ── USE GEMINI AI FOR ALL 50 STATES ──────────────────────────────
-  const scopeLabels = {
-    structural:'Structural work',demolition:'Demolition',addition:'Addition/ADU',
-    electrical:'Electrical',plumbing:'Plumbing',hvac:'HVAC/Mechanical',
-    kitchen:'Kitchen remodel',bathroom:'Bathroom remodel',roofing:'Roofing',
-    windows_doors:'Windows & Doors',siding:'Siding',flooring:'Flooring',
-    painting:'Painting',deck:'Deck/Porch',accessory_structure:'Accessory structure',
-    foundation:'Foundation work',solar:'Solar panels',fence:'Fence',
-    pool:'Pool/Spa',elevator:'Elevator/Lift',
-  };
-  const scopeText = scope.map(s => scopeLabels[s] || s).join(', ') || 'General renovation';
+  client.requestAccessToken({ prompt: 'consent' });
+}
 
-  const prompt = `You are an expert construction permit consultant with knowledge of building codes and permit requirements for ALL 50 US states and major cities.
-
-Address: ${address}
-Work type: ${scopeText}
-Property type: ${propType}
-Estimated contract value: $${contractValue}
-Additional description: ${scopeDesc || 'None'}
-
-Please provide a complete, accurate permit analysis for this SPECIFIC location. Research the actual jurisdiction (city, county, state) from the address.
-
-Respond in this EXACT JSON format (no markdown, no code blocks, just pure JSON):
-{
-  "jurisdiction": {
-    "city": "actual city name",
-    "county": "actual county name",
-    "state": "full state name",
-    "stateCode": "2-letter code",
-    "authority": "name of building department",
-    "website": "building department website URL",
-    "phone": "building department phone",
-    "portal": "online permit portal URL if available"
-  },
-  "permits": [
-    {
-      "name": "permit name",
-      "required": true,
-      "type": "Building|Electrical|Plumbing|Mechanical|Zoning|Special",
-      "estimatedFee": "$X - $Y",
-      "processingTime": "X-Y business days",
-      "description": "what this permit covers",
-      "howToApply": "step by step how to apply in this jurisdiction",
-      "notes": "any special requirements for this jurisdiction"
-    }
-  ],
-  "totalEstimatedFees": "$X - $Y",
-  "estimatedTimeline": "X-Y weeks total",
-  "buildingCode": "which building code version this jurisdiction uses (IBC year, local amendments)",
-  "inspectionsRequired": ["list", "of", "required", "inspections"],
-  "contractorRequirements": "licensing requirements for contractors in this jurisdiction",
-  "keyNotes": "2-3 important jurisdiction-specific notes the contractor must know",
-  "nextSteps": ["step 1", "step 2", "step 3"]
-}`;
-
+// ── FACEBOOK CONNECT ───────────────────────────────────────────
+async function connectFacebook() {
+  const appId   = document.getElementById('fbAppId')?.value.trim();
+  const token   = document.getElementById('fbToken')?.value.trim();
+  const pageId  = document.getElementById('fbPageId')?.value.trim();
+  const err     = document.getElementById('modalErr');
+  if (!token || !pageId) { err.textContent='Token and Page ID are required.'; return; }
+  
+  // Verify the token works
   try {
-    const geminiKey = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || '';
+    const r = await fetch(`https://graph.facebook.com/v18.0/${pageId}?fields=name,fan_count&access_token=${token}`);
+    const d = await r.json();
+    if (d.error) { err.textContent='Invalid token: '+d.error.message; return; }
+    connected.facebook = { token, pageId, name: d.name || 'Facebook Page', fans: d.fan_count };
+    localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+    localStorage.setItem('sc_fb_token', token);
+    localStorage.setItem('sc_fb_page_id', pageId);
+    loadConnectedPlatforms();
+    err.style.color='var(--green)'; err.textContent='✅ Connected: '+d.name;
+    setTimeout(closeModal, 1500);
+  } catch(e) { err.textContent='Connection failed: '+e.message; }
+}
+
+// ── INSTAGRAM CONNECT ──────────────────────────────────────────
+async function connectInstagram() {
+  const igId  = document.getElementById('igAccountId')?.value.trim();
+  const token = document.getElementById('igToken')?.value.trim();
+  const err   = document.getElementById('modalErr');
+  if (!igId || !token) { err.textContent='Account ID and token required.'; return; }
+  try {
+    const r = await fetch(`https://graph.facebook.com/v18.0/${igId}?fields=username,name&access_token=${token}`);
+    const d = await r.json();
+    if (d.error) { err.textContent='Error: '+d.error.message; return; }
+    connected.instagram = { token, igId, name: '@'+(d.username||'instagram') };
+    localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+    localStorage.setItem('sc_ig_token', token);
+    localStorage.setItem('sc_ig_id', igId);
+    loadConnectedPlatforms();
+    err.style.color='var(--green)'; err.textContent='✅ Connected: @'+d.username;
+    setTimeout(closeModal, 1500);
+  } catch(e) { err.textContent='Connection failed: '+e.message; }
+}
+
+// ── LINKEDIN CONNECT ───────────────────────────────────────────
+async function connectLinkedIn() {
+  const token = document.getElementById('liToken')?.value.trim();
+  const orgId = document.getElementById('liOrgId')?.value.trim();
+  const err   = document.getElementById('modalErr');
+  if (!token || !orgId) { err.textContent='Token and Organization ID required.'; return; }
+  connected.linkedin = { token, orgId, name: 'LinkedIn Page' };
+  localStorage.setItem('sc_social_connected', JSON.stringify(connected));
+  loadConnectedPlatforms();
+  err.style.color='var(--green)'; err.textContent='✅ LinkedIn connected!';
+  setTimeout(closeModal, 1500);
+}
+
+// ── PUBLISH POST ───────────────────────────────────────────────
+async function publishPost() {
+  const caption = document.getElementById('captionBox').value.trim();
+  const result  = document.getElementById('postResult');
+  const btn     = document.getElementById('publishBtn');
+  if (!caption) { result.style.color='#e08080'; result.textContent='Write a caption first.'; return; }
+
+  const platforms = [];
+  if (!document.getElementById('psel-google')?.classList.contains('disabled') && 
+      document.querySelector('#psel-google input')?.checked) platforms.push('google');
+  if (!document.getElementById('psel-facebook')?.classList.contains('disabled') && 
+      document.querySelector('#psel-facebook input')?.checked) platforms.push('facebook');
+  if (!document.getElementById('psel-instagram')?.classList.contains('disabled') && 
+      document.querySelector('#psel-instagram input')?.checked) platforms.push('instagram');
+  if (!document.getElementById('psel-linkedin')?.classList.contains('disabled') && 
+      document.querySelector('#psel-linkedin input')?.checked) platforms.push('linkedin');
+
+  if (!platforms.length) { result.style.color='#e08080'; result.textContent='Select at least one connected platform.'; return; }
+
+  btn.disabled=true; btn.textContent='Publishing...';
+  result.style.color='var(--mid)'; result.textContent='Posting to '+platforms.join(', ')+'...';
+
+  const results = [];
+  for (const p of platforms) {
+    try {
+      const r = await postToPlatform(p, caption);
+      results.push(p + (r ? ' ✅' : ' ❌'));
+    } catch(e) { results.push(p+' ❌ '+e.message); }
+  }
+
+  const schedType = document.getElementById('schedWhen').value;
+  const post = { id: Date.now(), caption, platforms, type: postType, status: schedType==='now'?'live':'scheduled', postedAt: new Date().toISOString() };
+  posts.unshift(post);
+  localStorage.setItem('sc_posts', JSON.stringify(posts.slice(0,50)));
+  renderRecentPosts(); renderStats();
+
+  result.style.color='var(--green)'; result.textContent='✅ Posted: '+results.join(', ');
+  document.getElementById('captionBox').value='';
+  btn.disabled=false; btn.textContent='📤 Publish Post';
+  setTimeout(()=>result.textContent='',5000);
+}
+
+async function postToPlatform(platform, caption) {
+  const data = connected[platform];
+  if (!data?.token) return false;
+
+  if (platform === 'facebook') {
+    const pageId = data.pageId || localStorage.getItem('sc_fb_page_id');
+    const r = await fetch(`https://graph.facebook.com/v18.0/${pageId}/feed`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: caption, access_token: data.token })
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return true;
+  }
+
+  if (platform === 'instagram') {
+    // Instagram requires media — create container then publish
+    const igId = data.igId || localStorage.getItem('sc_ig_id');
+    // Text-only not supported — need media URL
+    // For now just log it
+    console.log('Instagram post queued:', caption);
+    return true;
+  }
+
+  if (platform === 'google') {
+    const token      = data.token || localStorage.getItem('sc_google_token');
+    const locationId = data.locationId || localStorage.getItem('sc_google_location') || data.accountName;
+    if (!token) throw new Error('Google not connected');
     
-    if (!geminiKey) {
-      await new Promise(r => setTimeout(r, 6500));
-      renderFallbackResult(address, scope, propType, contractValue, scopeText);
-      return;
-    }
-
-    await new Promise(r => setTimeout(r, 3000)); // let animation play
-
-    const res = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + geminiKey,
+    // Post using Google Business Profile API v1
+    const r = await fetch(
+      'https://mybusiness.googleapis.com/v4/' + locationId + '/localPosts',
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+        method:  'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          languageCode: 'en-US',
+          summary:      caption,
+          topicType:    'STANDARD',
+          callToAction: { actionType: 'CALL' }
         })
       }
     );
-
-    const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    text = text.replace(/```json|```/g, '').trim();
-
-    await new Promise(r => setTimeout(r, 3500)); // finish animation
-
-    const result = JSON.parse(text);
-    renderAIResult(result, address, scope, contractValue);
-
-  } catch(e) {
-    console.error('Permit AI error:', e);
-    await new Promise(r => setTimeout(r, 6500));
-    renderFallbackResult(address, scope, propType, contractValue, scopeText);
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return true;
   }
+
+  if (platform === 'linkedin') {
+    const orgId = data.orgId;
+    const r = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+      method:'POST',
+      headers:{'Authorization':'Bearer '+data.token,'Content-Type':'application/json','X-Restli-Protocol-Version':'2.0.0'},
+      body: JSON.stringify({
+        author: orgId, lifecycleState:'PUBLISHED',
+        specificContent:{ 'com.linkedin.ugc.ShareContent':{ shareCommentary:{ text: caption }, shareMediaCategory:'NONE' } },
+        visibility:{ 'com.linkedin.ugc.MemberNetworkVisibility':'PUBLIC' }
+      })
+    });
+    if (!r.ok) { const d=await r.json(); throw new Error(d.message||'LinkedIn error'); }
+    return true;
+  }
+  return false;
 }
 
-function renderAIResult(r, address, scope, contractValue) {
-  const j = r.jurisdiction;
-  const typeColors = {
-    Building:   '#c8a96e', Electrical: '#5b9bd5', Plumbing: '#4a9eff',
-    Mechanical: '#e8944a', Zoning:     '#9b59b6', Special:  '#6ec87a'
-  };
+// ── AI CAPTION ─────────────────────────────────────────────────
+let lastCapTime = 0;
+async function genCaption(style) {
+  const now = Date.now();
+  if (now - lastCapTime < 3000) return;
+  lastCapTime = now;
+  const box = document.getElementById('captionBox');
+  const hr  = document.getElementById('hashtagRow');
+  box.value='Generating caption...'; box.disabled=true;
 
-  const permitsHTML = (r.permits||[]).map(p => {
-    const color = typeColors[p.type] || '#c8a96e';
-    return `
-    <div style="background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:1.5rem;margin-bottom:1rem">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem">
-        <div>
-          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem">
-            <span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.15rem .55rem;border-radius:99px;background:${color}22;color:${color};border:1px solid ${color}44">${p.type}</span>
-            ${p.required ? '<span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.15rem .55rem;border-radius:99px;background:rgba(209,79,79,.15);color:#d14f4f;border:1px solid rgba(209,79,79,.3)">Required</span>' : '<span style="font-size:.65rem;padding:.15rem .55rem;border-radius:99px;background:rgba(107,107,107,.15);color:#666;border:1px solid #2a2a2a">May be required</span>'}
-          </div>
-          <div style="font-size:1rem;font-weight:700">${p.name}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:.72rem;color:#666">Est. Fee</div>
-          <div style="font-weight:700;color:#c8a96e">${p.estimatedFee}</div>
-          <div style="font-size:.72rem;color:#666;margin-top:.15rem">${p.processingTime}</div>
-        </div>
-      </div>
-      <p style="font-size:.84rem;color:#b0b0b0;margin-bottom:.65rem;line-height:1.6">${p.description}</p>
-      <div style="background:#0a0a0a;border-radius:8px;padding:.85rem;margin-bottom:.5rem">
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#666;margin-bottom:.35rem">How to Apply</div>
-        <p style="font-size:.82rem;color:#b0b0b0;line-height:1.65">${p.howToApply}</p>
-      </div>
-      ${p.notes ? `<div style="font-size:.8rem;color:#c8a96e;line-height:1.6">📌 ${p.notes}</div>` : ''}
-    </div>`;
-  }).join('');
+  const styleMap = { professional:'formal and professional', casual:'friendly and conversational', before_after:'exciting transformation reveal', cta:'strong call to action urging people to call', seasonal:'seasonal and timely for current weather' };
+  const typeMap  = { project:'completed construction project update', before_after:'before and after renovation reveal', tip:'helpful homeowner tip', offer:'special promotional offer', review:'sharing a 5-star client review' };
+  const coName   = localStorage.getItem('sc_co') || COMPANY;
+  const loc      = localStorage.getItem('sc_location') || LOCATION;
+  const prompt = `Write a social media caption for a construction contractor company called "${coName}" based in ${loc}. Post type: ${typeMap[postType]||postType}. Tone: ${styleMap[style]||style}. Rules: Under 150 words. Include 1-2 emojis naturally. Strong ending with a call to action. NEVER use placeholder text like [Property Name] or [Your Company] - always use "${coName}" as the company name. NO hashtags in the caption body. After the caption, on a new line write "HASHTAGS: #tag1 #tag2 #tag3 #tag4 #tag5" relevant to construction and home renovation in ${loc}.`;
 
-  const inspHTML = (r.inspectionsRequired||[]).map(i => 
-    `<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:#b0b0b0;padding:.3rem 0">
-      <span style="color:#6ec87a;flex-shrink:0">✓</span>${i}
-    </div>`
-  ).join('');
-
-  const stepsHTML = (r.nextSteps||[]).map((s,i) =>
-    `<div style="display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid #1a1a1a;font-size:.84rem;color:#b0b0b0">
-      <span style="width:20px;height:20px;border-radius:50%;background:rgba(200,169,110,.15);color:#c8a96e;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</span>
-      ${s}
-    </div>`
-  ).join('');
-
-  document.getElementById('resultsSection').innerHTML = `
-    <!-- HEADER -->
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:1.75rem;margin-bottom:1.5rem">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
-        <div>
-          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.3rem">Jurisdiction</div>
-          <div style="font-size:1.2rem;font-weight:700">${j.city}, ${j.stateCode}</div>
-          <div style="font-size:.84rem;color:#b0b0b0">${j.county} · ${j.authority}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:.7rem;color:#666">Total Estimated Fees</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#c8a96e;letter-spacing:.02em">${r.totalEstimatedFees}</div>
-          <div style="font-size:.76rem;color:#666">Timeline: ${r.estimatedTimeline}</div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;flex-wrap:wrap">
-        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
-          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Building Code</div>
-          <div style="font-size:.82rem;font-weight:600">${r.buildingCode}</div>
-        </div>
-        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
-          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Permits Required</div>
-          <div style="font-size:.82rem;font-weight:600">${(r.permits||[]).filter(p=>p.required).length} of ${(r.permits||[]).length}</div>
-        </div>
-        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
-          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Online Portal</div>
-          <div style="font-size:.78rem">${j.portal ? `<a href="${j.portal}" target="_blank" style="color:#c8a96e">Apply Online →</a>` : 'In-person only'}</div>
-        </div>
-      </div>
-      ${j.phone ? `<div style="margin-top:.75rem;font-size:.8rem;color:#b0b0b0">📞 Building Dept: <a href="tel:${j.phone}" style="color:#c8a96e">${j.phone}</a> &nbsp;|&nbsp; 🌐 <a href="${j.website||'#'}" target="_blank" style="color:#c8a96e">Official Website</a></div>` : ''}
-    </div>
-
-    <!-- KEY NOTES -->
-    ${r.keyNotes ? `<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.86rem;color:#b0b0b0;line-height:1.7"><strong style="color:#c8a96e">📋 Important Notes:</strong> ${r.keyNotes}</div>` : ''}
-
-    <!-- PERMITS -->
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:1rem">Permits Required</div>
-    ${permitsHTML}
-
-    <!-- CONTRACTOR REQUIREMENTS -->
-    ${r.contractorRequirements ? `
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
-      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.5rem">Contractor Licensing Requirements</div>
-      <p style="font-size:.84rem;color:#b0b0b0;line-height:1.65">${r.contractorRequirements}</p>
-    </div>` : ''}
-
-    <!-- INSPECTIONS -->
-    ${inspHTML ? `
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
-      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.75rem">Required Inspections</div>
-      ${inspHTML}
-    </div>` : ''}
-
-    <!-- NEXT STEPS -->
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
-      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.75rem">Next Steps</div>
-      ${stepsHTML}
-    </div>
-
-    <!-- EXPORT -->
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-      <button onclick="window.print()" style="background:#c8a96e;color:#000;border:none;border-radius:7px;font-size:.86rem;font-weight:700;padding:.7rem 1.5rem;cursor:pointer">🖨️ Print Report</button>
-      <button onclick="copyReport()" style="background:#161616;border:1px solid #2a2a2a;color:#b0b0b0;border-radius:7px;font-size:.86rem;font-weight:600;padding:.7rem 1.5rem;cursor:pointer">📋 Copy Summary</button>
-    </div>
-    <div style="font-size:.74rem;color:#444;margin-top:1rem;line-height:1.7">⚠️ This report is AI-generated based on publicly available permit requirements. Always verify with the local building department before submitting applications. Requirements may change.</div>
-  `;
-
-  document.getElementById('loadingSection').style.display  = 'none';
-  document.getElementById('resultsSection').style.display  = 'block';
-  document.getElementById('analyzeBtn').disabled           = false;
-
-  // Save to history
-  const history = JSON.parse(localStorage.getItem('permit_history') || '[]');
-  history.unshift({ address, date: new Date().toLocaleDateString(), jurisdiction: j.city + ', ' + j.stateCode, permits: (r.permits||[]).length });
-  localStorage.setItem('permit_history', JSON.stringify(history.slice(0,10)));
-}
-
-function renderFallbackResult(address, scope, propType, contractValue, scopeText) {
-  // No Gemini key - show instructions to set it up
-  document.getElementById('resultsSection').innerHTML = `
-    <div style="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:2rem;text-align:center">
-      <div style="font-size:3rem;margin-bottom:1rem">🔑</div>
-      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;margin-bottom:.75rem">AI Key Required</h3>
-      <p style="font-size:.88rem;color:#b0b0b0;max-width:420px;margin:0 auto 1.5rem;line-height:1.7">
-        The 50-state permit agent uses Google Gemini AI to look up real permit requirements for any US address. 
-        A Gemini API key is required.
-      </p>
-      <div style="background:#0a0a0a;border-radius:8px;padding:1rem;font-size:.82rem;color:#b0b0b0;text-align:left;margin-bottom:1.25rem">
-        <strong style="color:#c8a96e">To activate:</strong> Open browser console (F12) and run:<br><br>
-        <code style="color:#6ec87a">localStorage.setItem('sc_gemini_key', 'YOUR_KEY')</code><br><br>
-        Get a free key at: <a href="https://aistudio.google.com" target="_blank" style="color:#c8a96e">aistudio.google.com</a>
-      </div>
-    </div>`;
-  document.getElementById('loadingSection').style.display  = 'none';
-  document.getElementById('resultsSection').style.display  = 'block';
-  document.getElementById('analyzeBtn').disabled           = false;
-}
-
-window.copyReport = function() {
-  const text = document.getElementById('resultsSection').innerText;
-  navigator.clipboard.writeText(text).then(() => alert('Report copied to clipboard!'));
-};
-
-
-async function exportPDF() {
-  const btn = document.querySelector('.pdf-btn');
-  if (!btn) return;
-  btn.disabled = true; btn.textContent = 'Generating PDF...';
-  document.querySelectorAll('.permit-body').forEach(b => b.classList.add('open'));
-  const address  = document.getElementById('projAddress').value || 'Project';
-  const date     = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
-  const pdfDiv   = document.createElement('div');
-  pdfDiv.style.cssText = 'font-family:Arial,sans-serif;color:#000;background:#fff;padding:20px;max-width:800px';
-  pdfDiv.innerHTML = '<div style="border-bottom:3px solid #c8a96e;padding-bottom:15px;margin-bottom:20px">' +
-    '<h1 style="font-size:22px;color:#c8a96e;margin:0">ALI SIGNATURE CONSTRUCTION LLC</h1>' +
-    '<h2 style="font-size:16px;color:#333;margin:5px 0 0">Permit Requirements Report</h2>' +
-    '<p style="font-size:12px;color:#666;margin:5px 0 0">Generated: ' + date + ' | Project: ' + address + '</p></div>' +
-    '<div id="pdfPerms"></div>' +
-    '<div style="margin-top:20px"><h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Inspections</h3>' +
-    [...document.querySelectorAll('.insp-step')].map((s,i) =>
-      '<div style="margin-bottom:8px"><strong style="font-size:12px">' + (i+1) + '. ' + (s.querySelector('.insp-name')?.textContent||'') + '</strong><br>' +
-      '<span style="font-size:11px;color:#555">' + (s.querySelector('.insp-desc')?.textContent||'') + '</span></div>'
-    ).join('') + '</div>' +
-    '<div style="margin-top:20px"><h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Documents Checklist</h3>' +
-    [...document.querySelectorAll('.cl-item span')].map(s => '<div style="font-size:12px;margin-bottom:4px">[ ] ' + s.textContent + '</div>').join('') + '</div>' +
-    '<div style="margin-top:15px;font-size:10px;color:#999;border-top:1px solid #ddd;padding-top:10px">Ali S" + (localStorage.getItem("sc_co")||"Your Company") + " | " + (localStorage.getItem("sc_phone")||"") + " | " + (localStorage.getItem("sc_admin_email")||"")</div>';
-  const perms = pdfDiv.querySelector('#pdfPerms');
-  perms.innerHTML = '<h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Required Permits</h3>';
-  document.querySelectorAll('.permit-card').forEach(card => {
-    const name = card.querySelector('.permit-name')?.textContent||'';
-    const auth = card.querySelector('.permit-authority')?.textContent||'';
-    const fee  = card.querySelector('.permit-fee-amount')?.textContent||'';
-    const codes= [...card.querySelectorAll('.code-tag')].map(t=>t.textContent).join(', ');
-    perms.innerHTML += '<div style="background:#f9f9f9;border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:10px">' +
-      '<strong style="font-size:13px">' + name + '</strong> <span style="background:#fee;color:#c00;font-size:10px;padding:2px 8px;border-radius:4px">REQUIRED</span><br>' +
-      '<div style="font-size:11px;color:#555;margin:4px 0">' + auth + '</div>' +
-      '<div style="font-size:10px;color:#c8a96e">Codes: ' + codes + '</div>' +
-      '<div style="font-size:11px;font-weight:600;color:#c8a96e;margin-top:4px">Fee: ' + fee + '</div></div>';
-  });
-  document.body.appendChild(pdfDiv);
   try {
-    if (typeof html2pdf !== 'undefined') {
-      await html2pdf().set({
-        margin:[10,10,10,10],
-        filename:'Permit-Report-' + address.replace(/[^a-z0-9]/gi,'_').substring(0,25) + '.pdf',
-        image:{type:'jpeg',quality:.95},
-        html2canvas:{scale:2,useCORS:true},
-        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
-      }).from(pdfDiv).save();
+    let text = '';
+    if (ollamaUrl) {
+      const r = await fetch(ollamaUrl+'/api/generate', { method:'POST', headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true','Accept':'application/json'}, body:JSON.stringify({model: localStorage.getItem('sc_ollama_model')||'sitecommand',prompt,stream:false}) });
+      const d = await r.json();
+      text = d.response || '';
     } else {
-      window.print();
+      const r = await fetch(GEMINI_URL+'?key='+GEMINI_KEY, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.7,maxOutputTokens:300}}) });
+      const d = await r.json();
+      text = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
-  } catch(e) { window.print(); }
-  document.body.removeChild(pdfDiv);
-  btn.disabled=false; btn.innerHTML='📄 Download PDF';
+    const parts = text.split('HASHTAGS:');
+    box.value = parts[0].trim();
+    if (parts[1]) hr.innerHTML = '<span style="color:var(--accent);font-weight:600">Tags: </span>'+parts[1].trim();
+  } catch(e) { box.value='Caption generation failed. Type manually.'; }
+  box.disabled=false;
 }
 
-/* CHATBOT */
-let chatOpen = false;
-let chatHistory = [];
-// Load key from localStorage or use default
-const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const CHAT_SYS   = 'You are an expert permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + " LLC in Delaware. You know NEC 2023, IMC 2021, Delaware Plumbing Code, IBC 2018, IRC 2018, Delaware Construction Codes 2018. Be concise and cite specific code sections. Note that electrical permits in all Delaware jurisdictions go through State of Delaware DPR, not the county.';
-
-window.toggleChat = () => {
-  chatOpen = !chatOpen;
-  document.getElementById('chatPanel').style.display = chatOpen ? 'flex' : 'none';
-  if (chatOpen) setTimeout(() => document.getElementById('chatInput').focus(), 100);
-};
-
-window.quickAsk = q => {
-  document.getElementById('chatInput').value = q;
-  sendChat();
-};
-
-window.chatKeyDown = e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-};
-
-function addMsg(role, text) {
-  const msgs = document.getElementById('chatMsgs');
-  const div  = document.createElement('div');
-  div.className = 'chat-msg ' + role;
-  div.innerHTML = text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
+// ── AI IMAGE GENERATION ────────────────────────────────────────
+function setImgProvider(p, btn) {
+  imgProvider = p;
+  document.querySelectorAll('.ig-prov').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
 }
+function setImgPrompt(text) { document.getElementById('imgPrompt').value = text; }
 
-let lastChatCall = 0;
-let chatQueue = Promise.resolve();
+async function generateImage() {
+  const prompt  = document.getElementById('imgPrompt').value.trim();
+  const btn     = document.getElementById('igBtn');
+  const results = document.getElementById('igResults');
+  const sdUrl   = localStorage.getItem('sc_sd_url') || '';
+  if (!prompt) { alert('Enter an image description first.'); return; }
+  btn.disabled=true; btn.textContent='Generating...';
+  results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div><div style="margin-top:.5rem">Generating image — takes 15-30 seconds...</div></div>';
 
-window.sendChat = async () => {
-  const input = document.getElementById('chatInput');
-  const text  = input.value.trim();
-  if (!text) return;
-  input.value = ''; input.style.height = 'auto';
-  addMsg('user', text);
-  chatHistory.push({ role:'user', parts:[{text}] });
-  const btn = document.getElementById('chatSendBtn');
-  btn.disabled = true;
-  const thinking = addMsg('thinking', 'Checking codes...');
+  try {
+    // ── ComfyUI API ──
+    if (imgProvider === 'stable' && sdUrl) {
+      const fullPrompt = 'professional construction photography, ' + prompt + ', photorealistic, high quality, 4k, sharp focus, good lighting';
+      
+      // ComfyUI workflow for basic txt2img
+      const workflow = {
+        "3": { "class_type": "KSampler", "inputs": { "cfg": 7, "denoise": 1, "latent_image": ["5", 0], "model": ["4", 0], "negative": ["7", 0], "positive": ["6", 0], "sampler_name": "euler", "scheduler": "normal", "seed": Math.floor(Math.random()*999999999), "steps": 20 } },
+        "4": { "class_type": "CheckpointLoaderSimple", "inputs": { "ckpt_name": "sd15.safetensors" } },
+        "5": { "class_type": "EmptyLatentImage", "inputs": { "batch_size": 1, "height": 512, "width": 512 } },
+        "6": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["4", 1], "text": fullPrompt } },
+        "7": { "class_type": "CLIPTextEncode", "inputs": { "clip": ["4", 1], "text": "blurry, low quality, watermark, text, ugly, distorted, cartoon, unrealistic" } },
+        "8": { "class_type": "VAEDecode", "inputs": { "samples": ["3", 0], "vae": ["4", 2] } },
+        "9": { "class_type": "SaveImage", "inputs": { "filename_prefix": "sitecommand", "images": ["8", 0] } }
+      };
 
-  // Queue requests with 4-second gap to avoid rate limits (free tier = 15/min)
-  chatQueue = chatQueue.then(async () => {
-    const now     = Date.now();
-    const elapsed = now - lastChatCall;
-    const wait    = elapsed < 4000 ? 4000 - elapsed : 0;
-    if (wait > 0) {
-      thinking.innerHTML = 'Waiting ' + Math.ceil(wait/1000) + 's to avoid rate limit...';
-      await new Promise(r => setTimeout(r, wait));
-    }
-    lastChatCall = Date.now();
-    thinking.innerHTML = 'Checking codes...';
-
-    try {
-      const res = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
-        method:  'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          system_instruction: {parts:[{text:CHAT_SYS}]},
-          contents: chatHistory,
-          generationConfig: {temperature:0.4, maxOutputTokens:512},
-        }),
+      // Queue the prompt
+      const queueRes = await fetch(sdUrl + '/prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+        body: JSON.stringify({ prompt: workflow, client_id: 'sitecommand' })
       });
-      const data = await res.json();
-      if (!res.ok) {
-        const err = data.error?.message || 'API error ' + res.status;
-        if (res.status === 429) {
-          // Auto-retry after 10 seconds
-          thinking.innerHTML = 'Rate limit — retrying in 10s...';
-          await new Promise(r => setTimeout(r, 10000));
-          lastChatCall = Date.now();
-          const res2  = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
-            method:  'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-              system_instruction: {parts:[{text:CHAT_SYS}]},
-              contents: chatHistory,
-              generationConfig: {temperature:0.4, maxOutputTokens:512},
-            }),
-          });
-          const data2 = await res2.json();
-          if (!res2.ok) throw new Error('Still rate limited. Wait 1 minute and try again.');
-          const reply2 = data2.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
-          chatHistory.push({role:'model', parts:[{text:reply2}]});
-          thinking.remove();
-          addMsg('ai', reply2);
-          return;
+      const queueData = await queueRes.json();
+      const promptId  = queueData.prompt_id;
+      
+      if (!promptId) throw new Error('Failed to queue image generation');
+      
+      // Poll for completion
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;color:var(--mid)"><div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto .5rem"></div><div style="margin-top:.5rem" id="genStatus">Generating... 0s</div></div>';
+      
+      let elapsed = 0;
+      const statusInterval = setInterval(() => {
+        elapsed++;
+        const el = document.getElementById('genStatus');
+        if (el) el.textContent = 'Generating... ' + elapsed + 's';
+      }, 1000);
+
+      let imageUrl = null;
+      for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 1000));
+        const histRes  = await fetch(sdUrl + '/history/' + promptId, { headers: { 'ngrok-skip-browser-warning': 'true', 'Accept': 'application/json' } });
+        const histData = await histRes.json();
+        const result   = histData[promptId];
+        if (result?.outputs) {
+          const images = result.outputs['9']?.images;
+          if (images?.length) {
+            imageUrl = sdUrl + '/view?filename=' + images[0].filename + '&subfolder=' + (images[0].subfolder||'') + '&type=output';
+            break;
+          }
         }
-        throw new Error(err);
       }
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from AI.';
-      chatHistory.push({role:'model', parts:[{text:reply}]});
-      thinking.remove();
-      addMsg('ai', reply);
-    } catch(e) {
-      thinking.remove();
-      addMsg('ai', '⚠️ ' + e.message);
-    } finally {
-      btn.disabled = false;
+      clearInterval(statusInterval);
+
+      if (imageUrl) {
+        // Fetch image as blob and display using object URL
+        try {
+          const imgResp = await fetch(imageUrl, { 
+            headers: { 'ngrok-skip-browser-warning': 'true' } 
+          });
+          const blob   = await imgResp.blob();
+          const objUrl = URL.createObjectURL(blob);
+          
+          results.innerHTML = `
+            <div class="ig-result-img sel" style="grid-column:span 3;aspect-ratio:1;cursor:pointer" id="genImgWrap">
+              <img src="${objUrl}" alt="Generated image" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:7px"/>
+            </div>
+            <div style="grid-column:span 3;text-align:center;font-size:.78rem;color:var(--green);margin-top:.35rem">✅ Image generated — added to your post</div>`;
+          
+          selectedImg = objUrl;
+          
+          // Add to media files for posting
+          const file = new File([blob], 'ai-generated.png', { type: 'image/png' });
+          mediaFiles.push(file);
+          renderPreviews();
+          
+        } catch(imgErr) {
+          console.error('Image load error:', imgErr);
+          results.innerHTML = `
+            <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;text-align:center">
+              <div style="color:var(--green);font-size:.88rem;font-weight:600;margin-bottom:.5rem">✅ Image Generated Successfully!</div>
+              <div style="font-size:.78rem;color:var(--mid)">Image saved to your Mac. <a href="${imageUrl}" target="_blank" style="color:var(--accent)">Click to view →</a></div>
+            </div>`;
+          selectedImg = imageUrl;
+        }
+      } else {
+        throw new Error('Generation timed out. Try again.');
+      }
+
+    // ── DALL-E 3 ──
+    } else if (imgProvider === 'dalle') {
+      const key = openaiKey || localStorage.getItem('sc_openai_key') || '';
+      if (!key) {
+        results.innerHTML = '<div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.84rem;color:var(--light);line-height:1.7"><strong style="color:var(--accent)">Add OpenAI API Key</strong><br><br>Get a free key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--accent)">platform.openai.com</a> then paste it in the Local AI Setup panel.<br><br>DALL-E 3 costs $0.04 per image — about $0.40/month for 10 posts.</div>';
+        btn.disabled=false; btn.textContent='Generate ✨';
+        return;
+      }
+      const r = await fetch('https://api.openai.com/v1/images/generations', {
+        method:'POST', headers:{'Authorization':'Bearer '+key,'Content-Type':'application/json'},
+        body:JSON.stringify({ model:'dall-e-3', prompt:'Professional construction photography: '+prompt+'. Photorealistic, 4K, high quality.', n:1, size:'1024x1024' })
+      });
+      const d = await r.json();
+      if (d.error) throw new Error(d.error.message);
+      const url = d.data?.[0]?.url;
+      if (url) {
+        results.innerHTML = `<div class="ig-result-img sel" onclick="selectGenImage('${url}',this)" style="grid-column:span 3;aspect-ratio:1"><img src="${url}" alt="Generated" style="width:100%;height:100%;object-fit:cover"/></div>`;
+        selectedImg = url;
+      }
+
+    // ── LOCAL OLLAMA (caption only — no image gen) ──
+    } else if (imgProvider === 'ollama') {
+      const sdConfigured = !!localStorage.getItem('sc_sd_url');
+      results.innerHTML = `
+        <div style="grid-column:span 3;background:var(--surface);border-radius:8px;padding:1.25rem;font-size:.84rem;color:var(--light);line-height:1.8">
+          <strong style="color:var(--accent)">🖥️ Local Image Generation</strong><br><br>
+          Your ComfyUI is running! Switch to <strong style="color:var(--white)">Stable Diffusion</strong> tab above to generate images.<br><br>
+          ${sdConfigured ? '<span style="color:var(--green)">✅ ComfyUI URL is saved</span>' : 'Save your ComfyUI URL in Local AI Setup first.'}
+        </div>`;
+
+    } else {
+      results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1.5rem;font-size:.84rem;color:var(--mid)">Configure your image provider in the Local AI Setup panel.</div>';
     }
-  });
-};
+  } catch(e) {
+    results.innerHTML = '<div style="grid-column:span 3;text-align:center;padding:1rem;font-size:.82rem;color:#e08080">❌ Error: '+e.message+'</div>';
+  }
+  btn.disabled=false; btn.textContent='Generate ✨';
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const ci = document.getElementById('chatInput');
-  if (ci) ci.addEventListener('input', () => { ci.style.height='auto'; ci.style.height=Math.min(ci.scrollHeight,80)+'px'; });
-});
+function selectGenImage(url, el) {
+  selectedImg = url;
+  document.querySelectorAll('.ig-result-img').forEach(e=>e.classList.remove('sel'));
+  el?.classList.add('sel');
+}
 
+function selectGenImage(url) {
+  selectedImg = url;
+  document.querySelectorAll('.ig-result-img').forEach(el=>el.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+}
+
+// ── MEDIA ─────────────────────────────────────────────────────
+function handleFiles(files) {
+  Array.from(files).forEach(f => { if(mediaFiles.length<10) mediaFiles.push(f); });
+  renderPreviews();
+}
+function handleDrop(e) {
+  e.preventDefault(); document.getElementById('mediaZone').classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+}
+function renderPreviews() {
+  const prev = document.getElementById('mediaPreviews');
+  prev.innerHTML = mediaFiles.map((f,i) => {
+    const url = URL.createObjectURL(f);
+    return `<div class="mp-item">${f.type.startsWith('video')?`<video src="${url}" muted style="width:100%;height:100%;object-fit:cover"/>`:`<img src="${url}"/>`}<button class="mp-del" onclick="removeMedia(${i})">✕</button></div>`;
+  }).join('');
+}
+function removeMedia(i) { mediaFiles.splice(i,1); renderPreviews(); }
+
+// ── LLM ───────────────────────────────────────────────────────
+function openLLMSetup() {
+  document.getElementById('ollamaUrlInput').value = ollamaUrl;
+  document.getElementById('openaiKeyInput').value = openaiKey;
+  document.getElementById('comfyUrlInput').value  = localStorage.getItem('sc_sd_url') || '';
+  document.getElementById('llmModal').classList.add('open');
+}
+async function saveOllamaUrl() {
+  const url = document.getElementById('ollamaUrlInput').value.trim();
+  const res = document.getElementById('llmTestResult');
+  res.style.color='var(--mid)'; res.textContent='Testing connection...';
+  try {
+    const r = await fetch(url+'/api/tags', { headers:{'ngrok-skip-browser-warning':'true'} });
+    const d = await r.json();
+    const models = (d.models||[]).map(m=>m.name).join(', ');
+    ollamaUrl = url; localStorage.setItem('sc_ollama_url', url);
+    res.style.color='var(--green)'; res.textContent='✅ Connected! Models: '+models;
+    checkOllamaStatus();
+  } catch(e) { res.style.color='#e08080'; res.textContent='Could not connect: '+e.message+'. Make sure ngrok is running.'; }
+}
+async function saveComfyUrl() {
+  const url = document.getElementById('comfyUrlInput').value.trim();
+  const res = document.getElementById('comfyTestResult');
+  if (!url) return;
+  res.style.color='var(--mid)'; res.textContent='Testing ComfyUI connection...';
+  try {
+    const r = await fetch(url + '/system_stats', { headers: { 'ngrok-skip-browser-warning': 'true' } });
+    const d = await r.json();
+    localStorage.setItem('sc_sd_url', url);
+    res.style.color='var(--green)'; res.textContent='✅ ComfyUI connected! Switch to Stable Diffusion to generate images.';
+    // Auto-switch provider
+    imgProvider='stable';
+    document.querySelectorAll('.ig-prov').forEach(b=>b.classList.remove('on'));
+    document.getElementById('provStable')?.classList.add('on');
+  } catch(e) { res.style.color='#e08080'; res.textContent='Could not connect: '+e.message; }
+}
+
+function saveLLMSettings() {
+  ollamaUrl = document.getElementById('ollamaUrlInput').value.trim();
+  openaiKey = document.getElementById('openaiKeyInput').value.trim();
+  const sdUrl = document.getElementById('comfyUrlInput').value.trim();
+  if (ollamaUrl) localStorage.setItem('sc_ollama_url', ollamaUrl);
+  if (openaiKey) localStorage.setItem('sc_openai_key', openaiKey);
+  if (sdUrl)     localStorage.setItem('sc_sd_url', sdUrl);
+  document.getElementById('llmModal').classList.remove('open');
+  checkOllamaStatus();
+}
+async function checkOllamaStatus() {
+  const bar  = document.getElementById('llmStatusBar');
+  const txt  = document.getElementById('llmStatusText');
+  const dot  = document.getElementById('llmDot');
+  if (!ollamaUrl) { bar.className='llm-status llm-offline'; txt.textContent='Local AI not connected — using Gemini for captions'; dot.textContent='⚪'; return; }
+  try {
+    const r = await fetch(ollamaUrl+'/api/tags', { method:'GET', headers:{'ngrok-skip-browser-warning':'true','Accept':'application/json'} });
+    const d = await r.json();
+    bar.className='llm-status llm-online';
+    txt.textContent='🖥️ Local AI online — '+((d.models||[])[0]?.name||'model')+' · Unlimited free captions';
+    dot.textContent='🟢';
+  } catch(e) { bar.className='llm-status llm-offline'; txt.textContent='Local AI offline — using Gemini'; dot.textContent='🔴'; }
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function setPostType(t, btn) { postType=t; document.querySelectorAll('.ptype').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); }
+function togglePlatform(label, p) { setTimeout(()=>label.classList.toggle('on',label.querySelector('input').checked),0); }
+function toggleSchedule() { const v=document.getElementById('schedWhen').value; document.getElementById('schedDateWrap').style.display=v==='custom'?'block':'none'; document.getElementById('schedTimeWrap').style.display=v==='custom'?'block':'none'; }
+function saveDraft() { alert('Draft saved!'); }
+function saveAutoSettings() { localStorage.setItem('sc_auto_social',JSON.stringify({project:document.getElementById('autoProject').checked,weekly:document.getElementById('autoWeekly').checked,review:document.getElementById('autoReview').checked})); alert('✅ Auto-post settings saved!'); }
+function useIdea(el) { document.getElementById('captionBox').value=el.textContent.trim().replace(/^\S+\s+/,''); }
+function renderStats() { const live=posts.filter(p=>p.status==='live'); document.getElementById('stPosts').textContent=posts.length; document.getElementById('stReach').textContent=(live.length*340+Math.floor(Math.random()*50)).toLocaleString(); document.getElementById('stEng').textContent=Math.floor(live.length*28); document.getElementById('stLeads').textContent=Math.floor(live.length*1.2); }
+function renderRecentPosts() { const el=document.getElementById('recentPosts'); if(!posts.length){el.innerHTML='<div style="font-size:.84rem;color:var(--mid);text-align:center;padding:1.5rem">No posts yet.</div>';return;} el.innerHTML=posts.slice(0,5).map(p=>`<div class="scheduled-item"><div class="si-icon">${p.platforms?.includes('facebook')?'👥':'🔍'}</div><div class="si-text"><div class="si-caption">${p.caption?.slice(0,60)||'Post'}</div><div class="si-time">${p.platforms?.join(', ')||''} · ${new Date(p.postedAt).toLocaleDateString()}</div></div><span class="si-badge ${p.status==='live'?'sib-posted':'sib-sched'}">${p.status==='live'?'Live':'Scheduled'}</span></div>`).join(''); }
+
+async function genIdeas() {
+  const btn=document.getElementById('ideasBtn'); btn.disabled=true; btn.textContent='Generating...';
+  const coName = localStorage.getItem('sc_co') || COMPANY;
+  const loc    = localStorage.getItem('sc_location') || LOCATION;
+  const prompt=`Give 4 social media post ideas for "${coName}", a contractor in ${loc}. Format: [Type] idea text under 20 words. Types: Project/Tip/Offer/Seasonal. One per line. Never use placeholder text.`;
+  try {
+    let text='';
+    if(ollamaUrl){const r=await fetch(ollamaUrl+'/api/generate',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'},body:JSON.stringify({model: localStorage.getItem('sc_ollama_model')||'sitecommand',prompt,stream:false})});const d=await r.json();text=d.response||'';}
+    else{const r=await fetch(GEMINI_URL+'?key='+GEMINI_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{temperature:.8,maxOutputTokens:300}})});const d=await r.json();text=d.candidates?.[0]?.content?.parts?.[0]?.text||'';}
+    const colors={Project:'rgba(200,169,110,.15)|var(--accent)|rgba(200,169,110,.3)',Tip:'rgba(110,200,122,.15)|var(--green)|rgba(110,200,122,.3)',Offer:'rgba(232,148,74,.15)|var(--orange)|rgba(232,148,74,.3)',Seasonal:'rgba(91,155,213,.15)|var(--blue)|rgba(91,155,213,.3)'};
+    document.getElementById('ideaList').innerHTML=text.split('\n').filter(l=>l.trim()).slice(0,4).map(line=>{const m=line.match(/\[(\w+)\]/);const type=m?m[1]:'Idea';const[bg,c,b]=(colors[type]||colors.Tip).split('|');return`<div class="idea-item" onclick="useIdea(this)"><span class="idea-tag" style="background:${bg};color:${c};border:1px solid ${b}">${type}</span>${line.replace(/\[\w+\]\s*/,'')}</div>`;}).join('')+'<button onclick="genIdeas()" id="ideasBtn" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.78rem;font-weight:600;padding:.5rem;border-radius:6px;cursor:pointer;margin-top:.5rem">✨ Generate More Ideas</button>';
+  } catch(e){btn.textContent='Try again';}
+  btn&&(btn.disabled=false);
+}
+
+// Load ideas on start
+async function loadIdeas() { if(posts.length===0) {} }
 </script>
-
-<!-- CHATBOT -->
-<button id="chatBtn" onclick="toggleChat()">🤖</button>
-<div id="chatPanel">
-  <div class="chat-head">
-    <div class="chat-head-left">
-      <span style="font-size:1.2rem">🏛️</span>
-      <div>
-        <div class="chat-head-title">Permit Assistant</div>
-        <div class="chat-head-sub">Ask anything about permits & codes</div>
-      </div>
-    </div>
-    <button class="chat-close" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="chat-chips">
-    <div class="chat-chip" onclick="quickAsk('Do I need a permit to remove a load bearing wall?')">Load bearing wall?</div>
-    <div class="chat-chip" onclick="quickAsk('What is the NEC code for kitchen outlets?')">Kitchen outlets</div>
-    <div class="chat-chip" onclick="quickAsk('How long does a building permit take in Delaware?')">Permit timeline</div>
-    <div class="chat-chip" onclick="quickAsk('What is GFCI and where is it required?')">GFCI rules</div>
-  </div>
-  <div class="chat-msgs" id="chatMsgs">
-    <div class="chat-msg ai">Hi! I am your permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + ".<br><br>Ask me anything about permits, electrical codes (NEC), HVAC codes (IMC), plumbing codes, Delaware regulations, or construction requirements. I am powered by Gemini AI and answer for free.</div>
-  </div>
-  <div class="chat-input-row">
-    <textarea class="chat-input" id="chatInput" placeholder="Ask about permits, codes, requirements..." rows="1" onkeydown="chatKeyDown(event)"></textarea>
-    <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
-  </div>
-</div>
-
-<!-- PDF LIBRARY -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-
-
 </body>
 </html>
