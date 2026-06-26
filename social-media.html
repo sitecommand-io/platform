@@ -155,43 +155,79 @@ input,select,textarea,button{font-family:inherit}
 @media(max-width:900px){.main-grid{grid-template-columns:1fr}.platforms-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:480px){.platforms-grid{grid-template-columns:1fr 1fr}.ig-results{grid-template-columns:1fr 1fr}}
 
-/* ── UNIVERSAL NAV ── */
-.sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
-.sc-badge{font-size:.72rem;padding:.18rem .65rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:#c8a96e;flex-shrink:0}
-.sc-nav{display:flex;gap:.2rem;margin-left:auto}
-.sc-nav a{font-size:.74rem;color:#6b6b6b;padding:.3rem .6rem;border-radius:6px;text-decoration:none;transition:all .15s;white-space:nowrap}
-.sc-nav a:hover,.sc-nav a.active{color:#c8a96e;background:rgba(200,169,110,.08)}
-.sc-bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid #2a2a2a;z-index:200;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
-.sc-bn-item{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.45rem .2rem;text-decoration:none;color:#6b6b6b;font-size:.52rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;transition:color .15s}
-.sc-bn-item.active,.sc-bn-item:hover{color:#c8a96e}
-.sc-bn-icon{font-size:1.25rem;line-height:1}
-@media(max-width:768px){.sc-nav{display:none}.sc-bottom-nav{display:grid}body{padding-bottom:calc(62px + env(safe-area-inset-bottom))}}
-@media(max-width:380px){.sc-badge{display:none}.sc-bn-item{font-size:.48rem}}
 
+
+
+
+
+
+/* ====== SC NAV ====== */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color:var(--sc-white);min-height:100vh;-webkit-font-smoothing:antialiased;background:rgba(10,10,10,.97);border-bottom:1px solid var(--sc-border);display:flex;align-items:center;padding:0 .85rem;gap:.5rem;position:sticky;top:0;z-index:500;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--sc-white);text-decoration:none;flex-shrink:0}.sc-logo span{color:var(--sc-accent)}
+.sc-pg{font-size:.66rem;font-weight:700;padding:.15rem .6rem;background:var(--sc-dim);border:1px solid rgba(200,169,110,.28);border-radius:99px;color:var(--sc-accent);flex-shrink:0;white-space:nowrap}
+.sc-nav{display:flex;gap:.12rem;margin-left:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.sc-nav::-webkit-scrollbar{display:none}
+.sc-nav a{font-size:.7rem;color:var(--sc-mid);padding:.28rem .5rem;border-radius:6px;text-decoration:none;white-space:nowrap;transition:color .15s,background .15s;flex-shrink:0}
+.sc-nav a:hover,.sc-nav a.sc-on{color:var(--sc-accent);background:var(--sc-dim);font-weight:600}
+.sc-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid var(--sc-border);z-index:500;grid-template-columns:repeat(9,1fr);padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(14px)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.3rem .05rem;text-decoration:none;color:var(--sc-mid);font-size:.42rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;min-height:50px;transition:color .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.sc-tab:hover,.sc-tab.sc-on{color:var(--sc-accent)}
+.sc-ti{font-size:1.05rem;line-height:1;margin-bottom:1px}
+@media(max-width:820px){.sc-nav{display:none}.sc-tabs{display:grid}body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
+@media(max-width:400px){.sc-tab{font-size:.38rem}.sc-ti{font-size:.95rem}}
+/* ====== END SC NAV ====== */
 </style>
 </head>
 <body>
-<header class="sc-header">
-  <div class="sc-logo"><span>Site</span>Command</div>
-  <span class="sc-badge" id="sc-page-badge"></span>
+<header class="sc-bar">
+  <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
+  <span class="sc-pg">Social Media</span>
   <nav class="sc-nav">
-    <a href="platform.html" id="nav-dashboard">&#x1F3E0; Dashboard</a>
-    <a href="email-ai.html" id="nav-email">&#x1F4E7; Email</a>
-    <a href="lead-finder.html" id="nav-leads">&#x1F50D; Leads</a>
-    <a href="social-media.html" id="nav-social">&#x1F4F1; Social</a>
-    <a href="permits.html" id="nav-permits">&#x1F3DB; Permits</a>
-    <a href="video-gen.html" id="nav-video">&#x1F3AC; Video</a>
+    <a href="platform.html" id="sc-n-home">🏠 Home</a>
+    <a href="email-ai.html" id="sc-n-email">📧 Email</a>
+    <a href="lead-finder.html" id="sc-n-leads">🔍 Leads</a>
+    <a href="social-media.html" id="sc-n-social" class="sc-on">📱 Social</a>
+    <a href="permits.html" id="sc-n-permits">🏛 Permits</a>
+    <a href="video-gen.html" id="sc-n-video">🎬 Video</a>
+    <a href="youtube-studio.html" id="sc-n-yt">▶️ YouTube</a>
+    <a href="real-estate.html" id="sc-n-relaw">🏡 RE Law</a>
+    <a href="ai-assistant.html" id="sc-n-ai">🤖 AI Chat</a>
   </nav>
 </header>
-<nav class="sc-bottom-nav">
-  <a href="platform.html" class="sc-bn-item" id="bn-dashboard"><span class="sc-bn-icon">&#x1F3E0;</span>Home</a>
-  <a href="email-ai.html" class="sc-bn-item" id="bn-email"><span class="sc-bn-icon">&#x1F4E7;</span>Email</a>
-  <a href="lead-finder.html" class="sc-bn-item" id="bn-leads"><span class="sc-bn-icon">&#x1F50D;</span>Leads</a>
-  <a href="social-media.html" class="sc-bn-item" id="bn-social"><span class="sc-bn-icon">&#x1F4F1;</span>Social</a>
-  <a href="permits.html" class="sc-bn-item" id="bn-permits"><span class="sc-bn-icon">&#x1F3DB;</span>Permits</a>
-  <a href="video-gen.html" class="sc-bn-item" id="bn-video"><span class="sc-bn-icon">&#x1F3AC;</span>Video</a>
+<nav class="sc-tabs">
+  <a href="platform.html" class="sc-tab" id="sc-t-home"><span class="sc-ti">🏠</span>Home</a>
+  <a href="email-ai.html" class="sc-tab" id="sc-t-email"><span class="sc-ti">📧</span>Email</a>
+  <a href="lead-finder.html" class="sc-tab" id="sc-t-leads"><span class="sc-ti">🔍</span>Leads</a>
+  <a href="social-media.html" class="sc-tab sc-on" id="sc-t-social"><span class="sc-ti">📱</span>Social</a>
+  <a href="permits.html" class="sc-tab" id="sc-t-permits"><span class="sc-ti">🏛</span>Permits</a>
+  <a href="video-gen.html" class="sc-tab" id="sc-t-video"><span class="sc-ti">🎬</span>Video</a>
+  <a href="youtube-studio.html" class="sc-tab" id="sc-t-yt"><span class="sc-ti">▶️</span>YouTube</a>
+  <a href="real-estate.html" class="sc-tab" id="sc-t-relaw"><span class="sc-ti">🏡</span>RE Law</a>
+  <a href="ai-assistant.html" class="sc-tab" id="sc-t-ai"><span class="sc-ti">🤖</span>AI Chat</a>
 </nav>
+
+
+
+<script>
+(function(){
+  var p=window.location.pathname.split('/').pop()||'platform.html';
+  var b={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','video-gen.html':'Video Generator','site-editor.html':'Site Editor'};
+  var badge=document.getElementById('sc-badge');
+  if(badge)badge.textContent=b[p]||'SiteCommand';
+  var m={'platform':'platform.html','email':'email-ai.html','leads':'lead-finder.html','social':'social-media.html','permits':'permits.html','video':'video-gen.html'};
+  Object.keys(m).forEach(function(k){
+    if(m[k]===p){
+      var n=document.getElementById('sc-nav-'+k);if(n)n.classList.add('sc-active');
+      var t=document.getElementById('sc-tab-'+k);if(t)t.classList.add('sc-active');
+    }
+  });
+})();
+</script>
+
+
+
 <script>
 (function(){
   var page=window.location.pathname.split('/').pop()||'platform.html';
