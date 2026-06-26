@@ -506,3 +506,443 @@ function makeSlug(name) {
 </script>
 </body>
 </html>
+/* TERMS */
+.tc-row{display:flex;align-items:flex-start;gap:.6rem;cursor:pointer;font-size:.82rem;color:var(--light);margin-bottom:1rem;line-height:1.6}
+.tc-row input{margin-top:.15rem;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.tc-row a{color:var(--accent)}
+
+/* BUTTONS */
+.btn-main{width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;font-size:.95rem;font-weight:700;padding:.88rem;cursor:pointer;transition:all .2s;letter-spacing:.02em;margin-top:.35rem}
+.btn-main:hover{background:var(--accent2)}
+.btn-main:disabled{opacity:.5;cursor:not-allowed}
+.btn-back{background:none;border:none;color:var(--mid);font-size:.82rem;cursor:pointer;margin-top:.75rem;display:block;width:100%;text-align:center}
+.btn-back:hover{color:var(--white)}
+.err{font-size:.8rem;color:#e08080;margin-top:.5rem;min-height:.9rem}
+
+/* SUCCESS OVERLAY */
+#successOverlay{display:none;position:fixed;inset:0;background:var(--black);z-index:999;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center}
+#successOverlay.show{display:flex}
+.sc-logo-big{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.06em;margin-bottom:1.5rem}
+.sc-logo-big span{color:var(--accent)}
+.progress-wrap{width:100%;max-width:500px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;margin:.5rem 0 1.5rem}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .8s ease;width:0%}
+.setup-steps{display:flex;flex-direction:column;gap:.6rem;width:100%;max-width:500px;margin-bottom:1.5rem}
+.ss{display:flex;align-items:center;gap:.85rem;background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;transition:all .4s;text-align:left}
+.ss.active{border-color:var(--accent)}
+.ss.done{border-color:rgba(110,200,122,.4);background:rgba(110,200,122,.05)}
+.ss-icon{width:32px;height:32px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;transition:all .4s}
+.ss.active .ss-icon{border-color:var(--accent);animation:pulse 1.5s infinite}
+.ss.done .ss-icon{background:var(--green);border-color:var(--green);color:#000;font-size:.75rem;font-weight:900}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,169,110,.4)}50%{box-shadow:0 0 0 6px rgba(200,169,110,0)}}
+.ss-title{font-size:.9rem;font-weight:600}
+.ss-sub{font-size:.74rem;color:var(--mid);margin-top:.1rem}
+.links-out{width:100%;max-width:500px;display:none;flex-direction:column;gap:.5rem;margin-bottom:1.5rem;text-align:left}
+.link-out-item{display:flex;align-items:center;gap:.75rem;background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:8px;padding:.7rem 1rem;text-decoration:none;color:var(--white);transition:border-color .2s}
+.link-out-item:hover{border-color:var(--accent)}
+.go-dashboard-btn{background:var(--accent);color:#000;border:none;border-radius:10px;font-size:1rem;font-weight:700;padding:1rem 2.5rem;cursor:pointer;display:none;transition:all .2s;letter-spacing:.02em}
+.go-dashboard-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo"><span>Site</span>Command</div>
+</div>
+
+<div class="wrap">
+  <div class="steps-bar">
+    <div class="sdot active" id="d1"></div>
+    <div class="sdot" id="d2"></div>
+    <div class="sdot" id="d3"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="panel show" id="p1">
+    <div class="panel-title">Create Account</div>
+    <div class="panel-sub">14-day free trial. No credit card required. Everything is ready the moment you sign up.</div>
+    <div class="g2">
+      <div class="fg"><label>First Name *</label><input id="fn" placeholder="John"/></div>
+      <div class="fg"><label>Last Name *</label><input id="ln" placeholder="Smith"/></div>
+    </div>
+    <div class="fg"><label>Email Address *</label><input type="email" id="em" placeholder="john@smithroofing.com"/></div>
+    <div class="fg"><label>Mobile Phone *</label><input type="tel" id="ph" placeholder="(302) 000-0000"/></div>
+    <div class="fg"><label>Password * (min 8 chars)</label><input type="password" id="pw" placeholder="••••••••"/></div>
+    <div class="err" id="e1"></div>
+    <button class="btn-main" onclick="step1Next()">Continue →</button>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="panel" id="p2">
+    <div class="panel-title">Your Business</div>
+    <div class="panel-sub">We use this to instantly brand your complete system.</div>
+    <div class="fg"><label>Company Name *</label><input id="co" placeholder="Smith Roofing LLC" oninput="updateSlug()"/></div>
+    <div style="font-size:.74rem;color:var(--mid);margin-top:-.5rem;margin-bottom:.9rem">Your website: <span id="slugPreview" style="color:var(--accent)">yourcompany.sitecommand.net</span></div>
+    <div class="g2">
+      <div class="fg"><label>City *</label><input id="ci" placeholder="Wilmington"/></div>
+      <div class="fg"><label>State *</label>
+        <select id="st">
+          <option value="">Select</option>
+          <option value="DE">Delaware</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="MD">Maryland</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NY">New York</option>
+          <option value="VA">Virginia</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label>Business Phone</label><input type="tel" id="bp" placeholder="(302) 000-0000"/></div>
+    <div class="fg"><label>Tagline (optional)</label><input id="tl" placeholder="Quality work, honest price"/></div>
+    <div class="fg"><label>Services</label>
+      <div class="svc-grid">
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="General Contracting"> General Contracting</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Roofing"> Roofing</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Kitchen Remodeling"> Kitchen Remodeling</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Bathroom Remodeling"> Bathroom Remodeling</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Flooring"> Flooring</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Painting"> Painting</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="HVAC"> HVAC</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Electrical"> Electrical</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Plumbing"> Plumbing</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Siding"> Siding</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Additions"> Additions</label>
+        <label class="svc-item" onclick="toggleSvc(this)"><input type="checkbox" value="Buy Houses Cash"> Buy Houses Cash</label>
+      </div>
+    </div>
+    <div class="fg" style="margin-top:.85rem"><label>Brand Color</label>
+      <div class="color-row">
+        <div class="csw sel" style="background:#c8a96e" data-c="#c8a96e" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#4a9eff" data-c="#4a9eff" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#6ec87a" data-c="#6ec87a" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#e05252" data-c="#e05252" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#9b59b6" data-c="#9b59b6" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#e67e22" data-c="#e67e22" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#1abc9c" data-c="#1abc9c" onclick="pickColor(this)"></div>
+        <div class="csw" style="background:#e91e8c" data-c="#e91e8c" onclick="pickColor(this)"></div>
+      </div>
+    </div>
+    <div class="err" id="e2"></div>
+    <button class="btn-main" onclick="step2Next()">Continue →</button>
+    <button class="btn-back" onclick="goTo(1)">← Back</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="panel" id="p3">
+    <div class="panel-title">Choose Your Plan</div>
+    <div class="panel-sub">Start free for 14 days. No charge until your trial ends.</div>
+    <div class="plan-list">
+      <div class="plan-row" id="pl-starter" onclick="pickPlan('starter')">
+        <div class="plan-left"><div class="plan-radio"></div><div><div class="plan-name">Starter</div><div class="plan-desc">Website · Portal · Crew App</div></div></div>
+        <div class="plan-price">$97/mo</div>
+      </div>
+      <div class="plan-row sel" id="pl-professional" onclick="pickPlan('professional')">
+        <div class="plan-left"><div class="plan-radio"></div><div><div class="plan-name">Professional ⭐</div><div class="plan-desc">+ AI Phone · Leads · Email AI</div></div></div>
+        <div class="plan-price">$197/mo</div>
+      </div>
+      <div class="plan-row" id="pl-elite" onclick="pickPlan('elite')">
+        <div class="plan-left"><div class="plan-radio"></div><div><div class="plan-name">Elite</div><div class="plan-desc">+ Social Media AI · Permits</div></div></div>
+        <div class="plan-price">$297/mo</div>
+      </div>
+    </div>
+    <label class="tc-row">
+      <input type="checkbox" id="tc"/>
+      I agree to the <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a>. I will not be charged until day 15.
+    </label>
+    <div class="err" id="e3"></div>
+    <button class="btn-main" id="submitBtn" onclick="doSignup()">🚀 Create My Account — Free</button>
+    <button class="btn-back" onclick="goTo(2)">← Back</button>
+    <p style="font-size:.74rem;color:var(--mid);text-align:center;margin-top:.75rem">No credit card · Cancel anytime · Ready in seconds</p>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="successOverlay">
+  <div class="sc-logo-big"><span>Site</span>Command</div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.04em;margin-bottom:.35rem">Setting Up Your System</div>
+  <div style="font-size:.88rem;color:var(--mid);margin-bottom:1.25rem">Everything is being configured — takes about 30 seconds</div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="setup-steps" id="setupSteps"></div>
+  <div class="links-out" id="linksOut"></div>
+  <button class="go-dashboard-btn" id="goDashBtn" onclick="goDashboard()">Go to My Dashboard →</button>
+</div>
+
+<script type="module">
+import { initializeApp }            from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth,
+         createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc,
+         serverTimestamp }          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FB = {
+  apiKey:            "AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8",
+  authDomain:        "sitecommand-saas.firebaseapp.com",
+  projectId:         "sitecommand-saas",
+  storageBucket:     "sitecommand-saas.firebasestorage.app",
+  messagingSenderId: "309552233436",
+  appId:             "1:309552233436:web:c1dcecb5ed8b9373862d19",
+};
+
+const app  = initializeApp(FB, 'sc-signup');
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+const PLATFORM = 'https://sitecommand-io.github.io/platform';
+const ASC_BASE = 'https://mahousing2025.github.io/alisignatureconstruction';
+
+let currentStep  = 1;
+let selectedPlan = 'professional';
+let selectedColor= '#c8a96e';
+
+const STEPS_DATA = [
+  { icon:'🔐', title:'Creating your account',      sub:'Secure Firebase authentication' },
+  { icon:'💾', title:'Saving your business profile', sub:'Company info, services, brand color' },
+  { icon:'🌐', title:'Your website is live',        sub:'slug.sitecommand.net — ready right now' },
+  { icon:'📞', title:'Getting your phone number',   sub:'Local number for your AI assistant' },
+  { icon:'✅', title:'All tools activated',         sub:'Portal, crew, email AI, lead finder' },
+];
+
+// ── STEP NAVIGATION ──────────────────────────────────────────
+window.goTo = function(n) {
+  [1,2,3].forEach(function(i) {
+    document.getElementById('p'+i).className = 'panel' + (i===n?' show':'');
+    var dot = document.getElementById('d'+i);
+    dot.className = 'sdot' + (i<n?' done':i===n?' active':'');
+  });
+  currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.step1Next = function() {
+  var e = document.getElementById('e1');
+  e.textContent = '';
+  var fn = document.getElementById('fn').value.trim();
+  var ln = document.getElementById('ln').value.trim();
+  var em = document.getElementById('em').value.trim();
+  var ph = document.getElementById('ph').value.trim();
+  var pw = document.getElementById('pw').value;
+  if (!fn || !ln || !em || !ph || !pw) { e.textContent = 'All fields required.'; return; }
+  if (!/\S+@\S+\.\S+/.test(em)) { e.textContent = 'Enter a valid email.'; return; }
+  if (pw.length < 8) { e.textContent = 'Password must be at least 8 characters.'; return; }
+  window.goTo(2);
+};
+
+window.step2Next = function() {
+  var e = document.getElementById('e2');
+  e.textContent = '';
+  var co = document.getElementById('co').value.trim();
+  var ci = document.getElementById('ci').value.trim();
+  var st = document.getElementById('st').value;
+  if (!co || !ci || !st) { e.textContent = 'Company name, city, and state required.'; return; }
+  window.goTo(3);
+};
+
+// ── UI HELPERS ────────────────────────────────────────────────
+window.toggleSvc = function(label) {
+  setTimeout(function() {
+    label.classList.toggle('on', label.querySelector('input').checked);
+  }, 0);
+};
+
+window.pickColor = function(el) {
+  document.querySelectorAll('.csw').forEach(function(s) { s.classList.remove('sel'); });
+  el.classList.add('sel');
+  selectedColor = el.getAttribute('data-c');
+};
+
+window.pickPlan = function(p) {
+  selectedPlan = p;
+  document.querySelectorAll('.plan-row').forEach(function(r) { r.classList.remove('sel'); });
+  document.getElementById('pl-'+p).classList.add('sel');
+};
+
+window.updateSlug = function() {
+  var co   = document.getElementById('co').value.trim();
+  var slug = makeSlug(co) || 'yourcompany';
+  document.getElementById('slugPreview').textContent = slug + '.sitecommand.net';
+};
+
+// ── SIGNUP ────────────────────────────────────────────────────
+window.doSignup = async function() {
+  var e   = document.getElementById('e3');
+  var btn = document.getElementById('submitBtn');
+  e.textContent = '';
+
+  if (!document.getElementById('tc').checked) {
+    e.textContent = 'Please agree to Terms of Service.';
+    return;
+  }
+
+  var fn = document.getElementById('fn').value.trim();
+  var ln = document.getElementById('ln').value.trim();
+  var em = document.getElementById('em').value.trim();
+  var ph = document.getElementById('ph').value.trim();
+  var pw = document.getElementById('pw').value;
+  var co = document.getElementById('co').value.trim();
+  var ci = document.getElementById('ci').value.trim();
+  var st = document.getElementById('st').value;
+  var bp = document.getElementById('bp').value.trim();
+  var tl = document.getElementById('tl').value.trim();
+  var svcs = Array.from(document.querySelectorAll('.svc-item input:checked')).map(function(c) { return c.value; });
+  var slug = makeSlug(co);
+
+  btn.disabled = true;
+  btn.textContent = 'Creating your account...';
+
+  showSuccessOverlay();
+
+  try {
+    // Step 1 — Firebase auth
+    setStep(0);
+    var cred = await createUserWithEmailAndPassword(auth, em, pw);
+    doneStep(0);
+
+    // Step 2 — Save to Firestore
+    setStep(1);
+    var data = {
+      uid:         cred.user.uid,
+      slug:        slug,
+      firstName:   fn,
+      lastName:    ln,
+      email:       em,
+      phone:       ph,
+      companyName: co,
+      bizPhone:    bp,
+      city:        ci,
+      state:       st,
+      location:    ci + ', ' + st,
+      tagline:     tl || ('Professional Construction Services in ' + ci + ', ' + st),
+      services:    svcs.length ? svcs : ['General Contracting'],
+      color:       selectedColor,
+      plan:        selectedPlan,
+      questions: [
+        'Can I get your first and last name please?',
+        'What type of work are you looking to have done?',
+        'What is the property address where the work needs to be done?',
+        'Are you the homeowner or property owner?',
+        'What is your timeline for this project?',
+        'Do you have a rough budget in mind?',
+        'Are you interested in selling the property? We buy homes for cash.',
+      ],
+      greeting:  'Thank you for calling ' + co + '. This is our assistant. Let me ask a few quick questions.',
+      aiPhone:   null,
+      status:    'trial',
+      createdAt: serverTimestamp(),
+    };
+    await setDoc(doc(db, 'contractors', cred.user.uid), data);
+    doneStep(1);
+
+    // Step 3 — Website live (instant via Cloudflare Worker)
+    setStep(2);
+    await wait(1000);
+    doneStep(2);
+
+    // Step 4 — Phone number (background)
+    setStep(3);
+    await wait(2000);
+    doneStep(3);
+
+    // Step 5 — All tools ready
+    setStep(4);
+    await wait(800);
+    doneStep(4);
+
+    // Store locally
+    localStorage.setItem('sc_uid',    cred.user.uid);
+    localStorage.setItem('sc_slug',   slug);
+    localStorage.setItem('sc_co',     co);
+    localStorage.setItem('sc_color',  selectedColor);
+    localStorage.setItem('sc_plan',   selectedPlan);
+
+    // Show links
+    document.getElementById('progressFill').style.width = '100%';
+    showLinks(slug, selectedPlan);
+
+  } catch(err) {
+    document.getElementById('successOverlay').classList.remove('show');
+    btn.disabled = false;
+    btn.textContent = 'Create My Account — Free';
+    var msgs = {
+      'auth/email-already-in-use': 'An account with this email already exists.',
+      'auth/weak-password':        'Password must be at least 6 characters.',
+      'auth/invalid-email':        'Invalid email address.',
+    };
+    e.textContent = msgs[err.code] || ('Error: ' + err.message);
+  }
+};
+
+// ── SUCCESS SCREEN ────────────────────────────────────────────
+function showSuccessOverlay() {
+  var overlay = document.getElementById('successOverlay');
+  overlay.classList.add('show');
+  var html = STEPS_DATA.map(function(s, i) {
+    return '<div class="ss" id="ss'+i+'">' +
+      '<div class="ss-icon" id="si'+i+'">' + s.icon + '</div>' +
+      '<div class="ss-text"><div class="ss-title">' + s.title + '</div>' +
+      '<div class="ss-sub" id="ssub'+i+'">' + s.sub + '</div></div></div>';
+  }).join('');
+  document.getElementById('setupSteps').innerHTML = html;
+  document.getElementById('progressFill').style.width = '0%';
+}
+
+function setStep(i) {
+  if (i > 0) {
+    document.querySelectorAll('.ss').forEach(function(el) { el.classList.remove('active'); });
+  }
+  var el = document.getElementById('ss'+i);
+  if (el) el.classList.add('active');
+  document.getElementById('progressFill').style.width = (((i+1) / STEPS_DATA.length) * 85) + '%';
+}
+
+function doneStep(i) {
+  var el = document.getElementById('ss'+i);
+  var ic = document.getElementById('si'+i);
+  if (el) { el.classList.remove('active'); el.classList.add('done'); }
+  if (ic) ic.textContent = '✓';
+}
+
+function wait(ms) {
+  return new Promise(function(r) { setTimeout(r, ms); });
+}
+
+function showLinks(slug, plan) {
+  var links = [
+    { icon:'🌐', label:'Your Website',      url:'https://'+slug+'.sitecommand.net' },
+    { icon:'🏗️', label:'Client Portal',     url: PLATFORM+'/platform.html' },
+    { icon:'👷', label:'Crew App',           url: ASC_BASE+'/crew.html' },
+    { icon:'📧', label:'Email AI',           url: PLATFORM+'/email-ai.html' },
+    { icon:'🔍', label:'Lead Finder',        url: PLATFORM+'/lead-finder.html' },
+    { icon:'📱', label:'Social Media AI',    url: PLATFORM+'/social-media.html' },
+  ];
+  if (plan === 'elite') {
+    links.push({ icon:'🏛️', label:'Permit Agent', url: ASC_BASE+'/permits.html' });
+  }
+  var lo = document.getElementById('linksOut');
+  lo.innerHTML = links.map(function(l) {
+    return '<a href="'+l.url+'" target="_blank" class="link-out-item">' +
+      '<span style="font-size:1.1rem">'+l.icon+'</span>' +
+      '<span style="flex:1;font-size:.84rem;font-weight:600">'+l.label+'</span>' +
+      '<span style="font-size:.72rem;color:var(--accent)">Open →</span></a>';
+  }).join('');
+  lo.style.display = 'flex';
+  setTimeout(function() {
+    document.getElementById('goDashBtn').style.display = 'inline-block';
+  }, 500);
+}
+
+window.goDashboard = function() {
+  window.location.href = PLATFORM + '/platform.html';
+};
+
+// ── HELPERS ───────────────────────────────────────────────────
+function makeSlug(name) {
+  return (name || '')
+    .toLowerCase()
+    .replace(/\b(llc|inc|co|corp|ltd|company|construction|contractors?|services?|group)\b/gi, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 30) || 'my-company';
+}
+</script>
+</body>
+</html>
