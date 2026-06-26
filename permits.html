@@ -167,6 +167,1279 @@
       .scope-grid{grid-template-columns:1fr}
     }
   
+
+
+
+
+
+
+/* ====== SC NAV ====== */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color:var(--sc-white);min-height:100vh;-webkit-font-smoothing:antialiased;background:rgba(10,10,10,.97);border-bottom:1px solid var(--sc-border);display:flex;align-items:center;padding:0 .85rem;gap:.5rem;position:sticky;top:0;z-index:500;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--sc-white);text-decoration:none;flex-shrink:0}.sc-logo span{color:var(--sc-accent)}
+.sc-pg{font-size:.66rem;font-weight:700;padding:.15rem .6rem;background:var(--sc-dim);border:1px solid rgba(200,169,110,.28);border-radius:99px;color:var(--sc-accent);flex-shrink:0;white-space:nowrap}
+.sc-nav{display:flex;gap:.12rem;margin-left:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.sc-nav::-webkit-scrollbar{display:none}
+.sc-nav a{font-size:.7rem;color:var(--sc-mid);padding:.28rem .5rem;border-radius:6px;text-decoration:none;white-space:nowrap;transition:color .15s,background .15s;flex-shrink:0}
+.sc-nav a:hover,.sc-nav a.sc-on{color:var(--sc-accent);background:var(--sc-dim);font-weight:600}
+.sc-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid var(--sc-border);z-index:500;grid-template-columns:repeat(9,1fr);padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(14px)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.3rem .05rem;text-decoration:none;color:var(--sc-mid);font-size:.42rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;min-height:50px;transition:color .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.sc-tab:hover,.sc-tab.sc-on{color:var(--sc-accent)}
+.sc-ti{font-size:1.05rem;line-height:1;margin-bottom:1px}
+@media(max-width:820px){.sc-nav{display:none}.sc-tabs{display:grid}body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
+@media(max-width:400px){.sc-tab{font-size:.38rem}.sc-ti{font-size:.95rem}}
+/* ====== END SC NAV ====== */
+</style>
+</head>
+<body>
+<header class="sc-bar">
+  <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
+  <span class="sc-pg">Permits</span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="sc-n-home">🏠 Home</a>
+    <a href="email-ai.html" id="sc-n-email">📧 Email</a>
+    <a href="lead-finder.html" id="sc-n-leads">🔍 Leads</a>
+    <a href="social-media.html" id="sc-n-social">📱 Social</a>
+    <a href="permits.html" id="sc-n-permits" class="sc-on">🏛 Permits</a>
+    <a href="video-gen.html" id="sc-n-video">🎬 Video</a>
+    <a href="youtube-studio.html" id="sc-n-yt">▶️ YouTube</a>
+    <a href="real-estate.html" id="sc-n-relaw">🏡 RE Law</a>
+    <a href="ai-assistant.html" id="sc-n-ai">🤖 AI Chat</a>
+  </nav>
+</header>
+<nav class="sc-tabs">
+  <a href="platform.html" class="sc-tab" id="sc-t-home"><span class="sc-ti">🏠</span>Home</a>
+  <a href="email-ai.html" class="sc-tab" id="sc-t-email"><span class="sc-ti">📧</span>Email</a>
+  <a href="lead-finder.html" class="sc-tab" id="sc-t-leads"><span class="sc-ti">🔍</span>Leads</a>
+  <a href="social-media.html" class="sc-tab" id="sc-t-social"><span class="sc-ti">📱</span>Social</a>
+  <a href="permits.html" class="sc-tab sc-on" id="sc-t-permits"><span class="sc-ti">🏛</span>Permits</a>
+  <a href="video-gen.html" class="sc-tab" id="sc-t-video"><span class="sc-ti">🎬</span>Video</a>
+  <a href="youtube-studio.html" class="sc-tab" id="sc-t-yt"><span class="sc-ti">▶️</span>YouTube</a>
+  <a href="real-estate.html" class="sc-tab" id="sc-t-relaw"><span class="sc-ti">🏡</span>RE Law</a>
+  <a href="ai-assistant.html" class="sc-tab" id="sc-t-ai"><span class="sc-ti">🤖</span>AI Chat</a>
+</nav>
+
+
+
+<script>
+(function(){
+  var p=window.location.pathname.split('/').pop()||'platform.html';
+  var b={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','video-gen.html':'Video Generator','site-editor.html':'Site Editor'};
+  var badge=document.getElementById('sc-badge');
+  if(badge)badge.textContent=b[p]||'SiteCommand';
+  var m={'platform':'platform.html','email':'email-ai.html','leads':'lead-finder.html','social':'social-media.html','permits':'permits.html','video':'video-gen.html'};
+  Object.keys(m).forEach(function(k){
+    if(m[k]===p){
+      var n=document.getElementById('sc-nav-'+k);if(n)n.classList.add('sc-active');
+      var t=document.getElementById('sc-tab-'+k);if(t)t.classList.add('sc-active');
+    }
+  });
+})();
+</script>
+
+
+
+<script>
+(function(){
+  var page=window.location.pathname.split('/').pop()||'platform.html';
+  var badges={'platform.html':'Dashboard','email-ai.html':'Email AI','lead-finder.html':'Lead Finder','social-media.html':'Social Media','permits.html':'Permits','site-editor.html':'Site Editor','video-gen.html':'Video Generator'};
+  var el=document.getElementById('sc-page-badge');
+  if(el&&badges[page])el.textContent=badges[page];
+  var map={'platform.html':'dashboard','email-ai.html':'email','lead-finder.html':'leads','social-media.html':'social','permits.html':'permits','video-gen.html':'video'};
+  var key=map[page];
+  if(key){var n=document.getElementById('nav-'+key);if(n)n.classList.add('active');var b=document.getElementById('bn-'+key);if(b)b.classList.add('active');}
+})();
+</script>
+
+<div></div>
+  
+</div>
+
+<div class="body">
+  <div class="page-title">🏛️ Permit Agent</div>
+  <p class="page-sub">Enter the project address and scope of work. The agent will automatically identify the correct jurisdiction, list every permit required, show the applicable codes (NEC, IMC, UPC), estimate fees, and give you the direct link to apply.</p>
+
+  <!-- INPUT FORM -->
+  <div class="input-card">
+    <div class="card-label">Project Information</div>
+    <div class="grid2">
+      <div class="fg"><label>Property Address *</label><input type="text" id="projAddress" placeholder="836 KrikWood St, Wilmington, DE 19801" /></div>
+      <div class="fg"><label>Property Type</label>
+        <select id="propType">
+          <option value="residential_single">Residential — Single Family</option>
+          <option value="residential_multi">Residential — Multi Family</option>
+          <option value="commercial">Commercial</option>
+          <option value="mixed">Mixed Use</option>
+        </select>
+      </div>
+      <div class="fg"><label>Contract Value ($)</label><input type="number" id="contractValue" placeholder="15000" min="0" /></div>
+      <div class="fg"><label>Project Name (optional)</label><input type="text" id="projName" placeholder="Johnson Kitchen Renovation" /></div>
+    </div>
+    <div class="fg"><label>Scope of Work Description (optional — helps AI be more accurate)</label>
+      <textarea id="scopeDesc" placeholder="e.g. Full kitchen renovation including removing wall between kitchen and living room, new electrical panel upgrade to 200A, new HVAC unit, all new plumbing fixtures..."></textarea>
+    </div>
+  </div>
+
+  <div class="input-card">
+    <div class="card-label">Scope of Work — Check all that apply</div>
+    <div class="scope-grid" id="scopeGrid">
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="structural"> Structural / Framing</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="demolition"> Demolition</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="addition"> Addition / New Space</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="roofing"> Roofing</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="electrical"> Electrical Work</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="electrical_panel"> Electrical Panel Upgrade</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="plumbing"> Plumbing Work</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="plumbing_new"> New Plumbing Fixtures</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="hvac"> HVAC / Mechanical</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="hvac_new_unit"> New HVAC Unit</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="gas"> Gas Line Work</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="kitchen"> Kitchen Remodel</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="bathroom"> Bathroom Remodel</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="drywall"> Drywall / Insulation</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="windows_doors"> Windows / Doors</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="siding"> Siding / Exterior</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="deck"> Deck / Porch</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="fence"> Fence</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="accessory_structure"> Shed / Garage / ADU</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="foundation"> Foundation Work</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="flooring"> Flooring Only</label>
+      <label class="scope-check" onclick="toggleScope(this)"><input type="checkbox" value="painting"> Painting Only</label>
+    </div>
+    <button class="analyze-btn" id="analyzeBtn" onclick="runPermitAgent()">
+      <span id="analyzeBtnText">🔍 Analyze Project & Generate Permit Report</span>
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingSection">
+    <div class="loading-icon">⚙️</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em">Analyzing Your Project</div>
+    <div class="loading-text">This takes about 15 seconds</div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1">📍 Identifying jurisdiction from address...</div>
+      <div class="loading-step" id="step2">📋 Determining required permits...</div>
+      <div class="loading-step" id="step3">⚡ Loading electrical codes (NEC 2023)...</div>
+      <div class="loading-step" id="step4">🔧 Loading HVAC codes (IMC 2021)...</div>
+      <div class="loading-step" id="step5">💧 Loading plumbing codes (UPC/Delaware)...</div>
+      <div class="loading-step" id="step6">💰 Calculating permit fees...</div>
+      <div class="loading-step" id="step7">🔗 Finding direct application links...</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsSection">
+
+    <!-- Jurisdiction Banner -->
+    <div class="jurisdiction-banner" id="jurisdictionBanner"></div>
+
+    <!-- Action Buttons -->
+    <div class="autosave-bar" id="autosaveBar" style="display:none">
+      <div class="autosave-dot"></div>
+      <span id="autosaveMsg">Form auto-saved</span>
+    </div>
+    <div class="action-row">
+      <button class="action-btn pdf-btn" onclick="exportPDF()">📄 Download PDF</button>
+      <button class="action-btn" onclick="window.print()">🖨️ Print Report</button>
+      <button class="action-btn" onclick="saveToProject()">💾 Save to Portal</button>
+      <button class="action-btn" onclick="resetForm()">↺ New Analysis</button>
+    </div>
+
+    <!-- Permit Cards -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;margin-bottom:1rem;color:var(--white)">Required Permits</div>
+    <div class="permits-grid" id="permitsGrid"></div>
+
+    <!-- Inspection Sequence -->
+    <div class="inspection-card" id="inspectionCard">
+      <div class="card-label">Inspection Sequence</div>
+      <div class="inspection-steps" id="inspectionSteps"></div>
+    </div>
+
+    <!-- Document Checklist -->
+    <div class="checklist-card">
+      <div class="card-label">Documents & Requirements Checklist</div>
+      <div class="checklist-items" id="docsChecklist"></div>
+    </div>
+
+    <!-- AI Notes -->
+    <div id="aiNotes" style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem">
+      <div class="card-label">Agent Notes</div>
+      <div id="aiNotesText" style="font-size:.85rem;color:var(--light);line-height:1.8"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ── JURISDICTION DATABASE ─────────────────────────────────────────────
+const JURISDICTIONS = {
+  wilmington: {
+    name:       "City of Wilmington",
+    state:      "Delaware",
+    keywords:   ["wilmington"],
+    phone:      "(302) 576-3060",
+    address:    "Louis L. Redding City/County Building, 800 N French St, Wilmington DE 19801",
+    portal:     "https://www.wilmingtonde.gov/government/city-departments/licenses-inspections",
+    applyUrl:   "https://www.wilmingtonde.gov/government/city-departments/department-of-licenses-and-inspections",
+    electrical: "State of Delaware — NOT City (contact DPR: dpr.delaware.gov)",
+    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
+    fees: {
+      building:  "Based on valuation — min $75. Typically $8–$15 per $1,000 of construction value",
+      electrical:"$20 flat fee (State of Delaware permit)",
+      plumbing:  "$20 flat fee",
+      hvac:      "$20 flat fee (mechanical permit)",
+      roofing:   "$75 minimum or valuation-based",
+    },
+    notes: "City of Wilmington does NOT issue electrical permits — those go through State of Delaware DPR. HVAC and plumbing permits are issued by the city.",
+  },
+  newcastle_county: {
+    name:       "New Castle County",
+    state:      "Delaware",
+    keywords:   ["new castle","newark","bear","hockessin","middletown","glasgow","elsmere","claymont","pike creek","brookside","edgemoor","st. georges","delaware city"],
+    phone:      "(302) 395-5400",
+    address:    "Department of Land Use, 87 Reads Way, New Castle, DE 19720",
+    portal:     "https://www.newcastlede.gov/2503/Permits-Inspections",
+    applyUrl:   "https://www.newcastlede.gov/186/Online-Services---Land-Use",
+    electrical: "State of Delaware — NCC does NOT issue electrical permits (dpr.delaware.gov)",
+    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
+    fees: {
+      building:  "Based on construction valuation. Approx $8–$12 per $1,000",
+      electrical:"State of Delaware — separate fee ~$50–$150 depending on scope",
+      plumbing:  "Online utility permit — escrow or credit card",
+      hvac:      "Online utility permit — HVACR residential permit via Dynamic Portal",
+      roofing:   "Valuation-based — same as building permit schedule",
+    },
+    notes: "NCC offers online ePlans submission and eApply for building permits. HVACR and plumbing permits available online via Dynamic Portal. Electrical is handled by State of Delaware.",
+  },
+  kent_county: {
+    name:       "Kent County / City of Dover",
+    state:      "Delaware",
+    keywords:   ["dover","kent","smyrna","camden","harrington","milford","felton","magnolia","wyoming","clayton"],
+    phone:      "(302) 744-2450",
+    address:    "Kent County Levy Court, 555 Bay Rd, Dover, DE 19901",
+    portal:     "https://www.co.kent.de.us/government/departments/planning-services/building-inspections.aspx",
+    applyUrl:   "https://www.co.kent.de.us/government/departments/planning-services/building-inspections.aspx",
+    electrical: "State of Delaware DPR",
+    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
+    fees: {
+      building:  "Minimum $100 or 2.5% of construction value, whichever is higher",
+      electrical:"State of Delaware — separate",
+      plumbing:  "Subcode permit — contact Kent County",
+      hvac:      "Mechanical subcode permit — contact Kent County",
+      roofing:   "Valuation-based",
+    },
+    notes: "Kent County follows the 2018 Delaware Construction Codes. Dover city limits may have separate requirements — always confirm jurisdiction.",
+  },
+  sussex_county: {
+    name:       "Sussex County",
+    state:      "Delaware",
+    keywords:   ["lewes","rehoboth","seaford","bridgeville","laurel","milton","selbyville","fenwick","ocean view","bethany","dewey","millsboro","georgetown"],
+    phone:      "(302) 855-7860",
+    address:    "Sussex County, 2 The Circle, Georgetown, DE 19947",
+    portal:     "https://www.sussexcountyde.gov/building-permits-inspections",
+    applyUrl:   "https://www.sussexcountyde.gov/building-permits-inspections",
+    electrical: "State of Delaware DPR",
+    elecUrl:    "https://dpr.delaware.gov/boards/electrician/homeowner-permit/",
+    fees: {
+      building:  "Based on construction valuation — contact Sussex County for schedule",
+      electrical:"State of Delaware — separate",
+      plumbing:  "Plumbing subcode permit required",
+      hvac:      "Mechanical permit required",
+      roofing:   "Valuation-based",
+    },
+    notes: "Sussex County has experienced rapid growth. Coastal and flood zone properties may have additional DNREC requirements. Always verify flood zone status.",
+  },
+
+  // ── PENNSYLVANIA ──────────────────────────────────────
+  philadelphia: {
+    name:       "City of Philadelphia",
+    state:      "Pennsylvania",
+    keywords:   ["philadelphia","philly","19101","19102","19103","19104","19105","19106","19107","19109","19110","19111","19112","19114","19115","19116","19118","19119","19120","19121","19122","19123","19124","19125","19126","19127","19128","19129","19130","19131","19132","19133","19134","19135","19136","19137","19138","19139","19140","19141","19142","19143","19144","19145","19146","19147","19148","19149","19150","19151","19152","19153","19154"],
+    phone:      "(215) 686-2400",
+    address:    "Permit and License Center, MSB, 1401 JFK Blvd, Philadelphia PA 19102",
+    portal:     "https://www.phila.gov/services/permits-violations-licenses/apply-for-a-permit/building-and-repair-permits/get-a-building-permit/",
+    applyUrl:   "https://eclipse.phila.gov",
+    electrical: "Philadelphia L&I — same department (eCLIPSE online system)",
+    elecUrl:    "https://eclipse.phila.gov",
+    fees: {
+      building:  "Residential: $50/unit for additions. Alterations: % of contract value (min $100). Plan review fee additional.",
+      electrical:"$25 per $1,000 of estimated electrical costs. Min $63, max $18,975. Rough-in permit: $150 flat.",
+      plumbing:  "New construction 1-2 family: $50 for first 7 fixtures + $22.50 each additional. Alterations: $40 minimum.",
+      hvac:      "Residential HVAC unit: $69-$76 per unit. Ductwork: $76 per installation. Fuel gas: 2% of contract (min $189).",
+      roofing:   "Residential roofing: $50 per unit. Re-roofing same materials may qualify as EZ Permit.",
+      demolition:"Based on building size — several hundred dollars minimum.",
+    },
+    notes: "Philadelphia uses eCLIPSE online system for all permits. EZ Permits available for simple work — no plans required. Historic district properties need Historical Commission approval BEFORE applying. Zoning permit required before building permit in most cases. All contractors must have active Philadelphia license and current City taxes. Initial plan review takes approximately 20 business days.",
+    specialNotes: [
+      "All permits applied for online through eCLIPSE at eclipse.phila.gov",
+      "EZ Permit available for simple residential work — no plans required",
+      "Zoning permit required FIRST before building permit in most cases",
+      "Historic district properties require Historical Commission approval before L&I",
+      "All contractors must be licensed in Philadelphia AND current on City taxes",
+      "Philadelphia adopted 2018 IBC, 2018 IRC, 2017 NEC, 2018 IPC, 2018 IMC",
+      "Combination permit available for 1-2 family new construction",
+    ],
+  },
+  montgomery_county_pa: {
+    name:       "Montgomery County, PA",
+    state:      "Pennsylvania",
+    keywords:   ["norristown","king of prussia","ardmore","lansdale","blue bell","horsham","ambler","jenkintown","cheltenham","abington","upper merion","lower merion","conshohocken","fort washington","hatboro","willow grove","montgomeryville","perkasie","souderton"],
+    phone:      "(610) 278-3000",
+    address:    "Montgomery County Planning Commission, PO Box 311, Norristown PA 19404",
+    portal:     "https://www.montcopa.org/181/Building-Permit-Information",
+    applyUrl:   "https://www.montcopa.org/181/Building-Permit-Information",
+    electrical: "Pennsylvania UCC — same building department",
+    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
+    fees: {
+      building:  "Based on PA UCC fee schedule — varies by municipality within county",
+      electrical:"Combined with building permit under PA UCC",
+      plumbing:  "Combined with building permit under PA UCC",
+      hvac:      "Combined with building permit under PA UCC",
+      roofing:   "Permit required — fee based on valuation",
+    },
+    notes: "Montgomery County municipalities each have their own building departments. Permits are issued at the township/borough level, not county level. Check with your specific municipality (Lower Merion, Cheltenham, Horsham, etc.).",
+  },
+  delaware_county_pa: {
+    name:       "Delaware County, PA",
+    state:      "Pennsylvania",
+    keywords:   ["media","chester","darby","upper darby","ridley park","folcroft","sharon hill","collingdale","clifton heights","drexel hill","havertown","springfield","swarthmore","brookhaven","marcus hook","chester township"],
+    phone:      "(610) 891-5000",
+    address:    "Delaware County Government Center, 201 W Front St, Media PA 19063",
+    portal:     "https://www.co.delaware.pa.us/planning/buildingpermits.html",
+    applyUrl:   "https://www.co.delaware.pa.us/planning/buildingpermits.html",
+    electrical: "Pennsylvania UCC — issued at municipal level",
+    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
+    fees: {
+      building:  "Varies by municipality — issued at township/borough level",
+      electrical:"Combined under PA UCC at municipal level",
+      plumbing:  "Combined under PA UCC at municipal level",
+      hvac:      "Combined under PA UCC at municipal level",
+      roofing:   "Municipal level — contact your township",
+    },
+    notes: "Delaware County PA permits are issued at the municipal (township/borough) level. Contact your specific township. Pennsylvania follows the PA UCC (Uniform Construction Code) statewide.",
+  },
+  chester_county_pa: {
+    name:       "Chester County, PA",
+    state:      "Pennsylvania",
+    keywords:   ["west chester","coatesville","downingtown","phoenixville","kennett square","oxford","malvern","exton","paoli","avondale","elverson","honey brook","parkesburg"],
+    phone:      "(610) 344-6000",
+    address:    "Chester County Planning Commission, 601 Westtown Rd, West Chester PA 19380",
+    portal:     "https://www.chesco.org/291/Building-Permits",
+    applyUrl:   "https://www.chesco.org/291/Building-Permits",
+    electrical: "Pennsylvania UCC — issued at municipal level",
+    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
+    fees: {
+      building:  "Varies by municipality — issued at township/borough level",
+      electrical:"Combined under PA UCC",
+      plumbing:  "Combined under PA UCC",
+      hvac:      "Combined under PA UCC",
+      roofing:   "Municipal level",
+    },
+    notes: "Chester County PA permits issued at municipal level. Pennsylvania UCC (Uniform Construction Code) applies statewide based on 2018 IBC/IRC.",
+  },
+  bucks_county_pa: {
+    name:       "Bucks County, PA",
+    state:      "Pennsylvania",
+    keywords:   ["doylestown","newtown","bristol","levittown","langhorne","yardley","new hope","quakertown","perkasie","hatfield","chalfont","warminster","warrington","horsham bucks","buckingham","plumstead"],
+    phone:      "(215) 348-6000",
+    address:    "Bucks County Administration Building, 55 E Court St, Doylestown PA 18901",
+    portal:     "https://www.buckscounty.gov/1005/Building-Permits",
+    applyUrl:   "https://www.buckscounty.gov/1005/Building-Permits",
+    electrical: "Pennsylvania UCC — issued at municipal level",
+    elecUrl:    "https://www.dli.pa.gov/Businesses/Construction-Accreditation/Pages/UCC.aspx",
+    fees: {
+      building:  "Municipal level — varies by township/borough",
+      electrical:"Combined under PA UCC",
+      plumbing:  "Combined under PA UCC",
+      hvac:      "Combined under PA UCC",
+      roofing:   "Municipal level",
+    },
+    notes: "Bucks County PA permits issued at municipal level. PA UCC applies. Philadelphia suburbs may have stricter local amendments.",
+  },
+};
+
+// ── PERMIT DEFINITIONS ────────────────────────────────────────────────
+const PERMIT_TYPES = {
+  building: {
+    icon:      "🏗️",
+    name:      "Building Permit",
+    scopeTriggers: ["structural","demolition","addition","kitchen","bathroom","drywall","windows_doors","siding","deck","fence","accessory_structure","foundation","roofing"],
+    required:  "required",
+    codes:     ["IBC 2018","IRC 2018","Delaware Construction Codes 2018"],
+    what:      ["Any structural changes or additions","Removing or adding walls","New construction or additions","Decks, porches, sheds over 200 sq ft","Window/door size changes","Foundation work"],
+    notNeeded: ["Cosmetic work — painting, flooring, carpet","Drywall repair under 100 sq ft","Direct replacement of same-size windows/doors (some jurisdictions)"],
+    docs:      ["Completed building permit application","Site plan showing property lines and setbacks","Construction drawings (floor plan, elevations)","Contractor license number","Property owner information","Zoning compliance confirmation"],
+    inspections:["Footing/Foundation inspection (before pouring)","Rough framing inspection","Insulation inspection","Final inspection / Certificate of Occupancy"],
+  },
+  electrical: {
+    icon:      "⚡",
+    name:      "Electrical Permit",
+    scopeTriggers: ["electrical","electrical_panel","kitchen","bathroom","addition"],
+    required:  "required",
+    codes:     ["NEC 2023 (National Electrical Code)","Delaware Title 24 Chapter 13","14 Del. Admin Code § 3900"],
+    what:      ["New circuit installations","Panel upgrades or replacements","Rewiring any portion of home","Adding outlets, switches, or fixtures","EV charger installation","New service entrance"],
+    notNeeded: ["Direct fixture replacement (same location, no new wiring)","Replacing outlets/switches (like for like)"],
+    keyCodeSections: [
+      "NEC 210.8 — GFCI protection required in kitchens, bathrooms, outdoors, garages",
+      "NEC 210.11(C)(1) — Dedicated 20A circuit required for kitchen small appliances",
+      "NEC 210.11(C)(2) — Dedicated 20A circuit required for bathroom",
+      "NEC 230.79 — Service entrance minimum 100A residential (200A recommended for renovations)",
+      "NEC 406.4 — Tamper-resistant receptacles required in all new/renovated residential",
+      "NEC 210.12 — AFCI protection required for bedroom circuits and all new branch circuits",
+      "NEC 250 — Grounding and bonding requirements",
+    ],
+    docs:      ["State of Delaware electrical permit application (dpr.delaware.gov)","Licensed electrician information (E-1 or E-2 license required)","Load calculation if panel upgrade","Single line diagram for service changes"],
+    inspections:["Rough electrical inspection (before drywall)","Service entrance inspection","Final electrical inspection"],
+    specialNote:"⚠️ IMPORTANT: Electrical permits in ALL Delaware jurisdictions are issued by the STATE OF DELAWARE — NOT the county or city. Apply at dpr.delaware.gov",
+  },
+  plumbing: {
+    icon:      "💧",
+    name:      "Plumbing Permit",
+    scopeTriggers: ["plumbing","plumbing_new","kitchen","bathroom","addition"],
+    required:  "required",
+    codes:     ["Delaware Plumbing Code (4455 Delaware Regulations)","IPC 2018 as adopted by Delaware","Delaware Division of Public Health"],
+    what:      ["New plumbing rough-in","Relocating drain lines or supply lines","Adding new fixtures","Water heater replacement","Sewer line work","Gas line work (separate permit may be needed)"],
+    notNeeded: ["Direct replacement of faucets or toilets (same location)","Minor repairs to existing fixtures"],
+    keyCodeSections: [
+      "Delaware Plumbing Code § 701 — Sanitary drainage system requirements",
+      "Delaware Plumbing Code § 302 — Materials standards for supply piping",
+      "Delaware Plumbing Code § 405 — Minimum fixture clearances (bathroom layout)",
+      "Delaware Plumbing Code § 606 — Shutoff valve required on each fixture",
+      "Delaware Plumbing Code § 504 — Water heater requirements and TPR valve",
+      "IPC 708 — Cleanout requirements for drainage systems",
+    ],
+    docs:      ["Plumbing permit application","Licensed plumber information (Delaware P-1 or P-2 license)","Isometric drawing for complex systems","Fixture count and types"],
+    inspections:["Rough plumbing inspection (before walls closed)","Water supply pressure test","Drain, waste, and vent test","Final plumbing inspection"],
+  },
+  hvac: {
+    icon:      "🌡️",
+    name:      "HVAC / Mechanical Permit",
+    scopeTriggers: ["hvac","hvac_new_unit","addition","kitchen"],
+    required:  "required",
+    codes:     ["IMC 2021 (International Mechanical Code)","IFGC 2021 (International Fuel Gas Code)","ASHRAE 62.2 — Ventilation","Delaware Construction Codes 2018"],
+    what:      ["Installing new HVAC system","Replacing furnace or AC unit","New ductwork installation","Boiler installation or replacement","Ventilation systems","Kitchen exhaust hoods (commercial-grade)"],
+    notNeeded: ["Direct replacement of same-capacity unit (some jurisdictions — verify)","Filter changes, thermostat replacement"],
+    keyCodeSections: [
+      "IMC 302 — Equipment and appliance installation",
+      "IMC 603 — Duct construction and installation standards",
+      "IMC 504 — Clothes dryer exhaust requirements",
+      "IMC 505 — Domestic kitchen exhaust equipment",
+      "IMC 401 — Ventilation — minimum outdoor air rates",
+      "IFGC 404 — Gas piping installation requirements",
+      "IFGC 503 — Venting of appliances",
+      "Manual J — Required load calculation for equipment sizing",
+    ],
+    docs:      ["Mechanical/HVAC permit application","Licensed HVAC contractor information (Delaware HVAC-R license)","Manual J load calculation","Equipment specifications and AHRI certificate","Duct layout plan for new installations"],
+    inspections:["Rough mechanical inspection (before insulation)","Gas pressure test (if gas work involved)","Final mechanical inspection","Operational test"],
+  },
+  gas: {
+    icon:      "🔥",
+    name:      "Gas Permit",
+    scopeTriggers: ["gas","hvac_new_unit"],
+    required:  "required",
+    codes:     ["IFGC 2021 (International Fuel Gas Code)","Delaware Construction Codes","Delmarva Power/South Jersey Industries requirements"],
+    what:      ["New gas line installation","Gas line extension or modification","New gas appliance connection","Gas range, dryer, or fireplace installation","Generator gas connection"],
+    keyCodeSections: [
+      "IFGC 402 — Pipe sizing calculations",
+      "IFGC 404 — Prohibited locations for gas piping",
+      "IFGC 406 — Pressure testing requirements (min 3 PSI for 15 minutes)",
+      "IFGC 503 — Venting requirements for gas appliances",
+      "IFGC 621 — Prohibited locations for appliances",
+    ],
+    docs:      ["Gas permit application (may be combined with mechanical)","Licensed gas contractor","Pressure test documentation","Gas utility company notification"],
+    inspections:["Gas pressure test inspection","Final gas inspection"],
+  },
+  roofing: {
+    icon:      "🏠",
+    name:      "Roofing Permit",
+    scopeTriggers: ["roofing"],
+    required:  "required",
+    codes:     ["IRC R905 — Requirements for roof coverings","IRC R907 — Reroofing","ASTM D3161 — Shingle testing standard"],
+    what:      ["Full roof replacement","Adding new roof layers (max 2 layers per IRC)","Structural deck replacement","Skylight installation"],
+    notNeeded: ["Patching less than 25% of roof area (verify by jurisdiction)"],
+    keyCodeSections: [
+      "IRC R905.2 — Asphalt shingle installation requirements",
+      "IRC R905.2.6 — Underlayment requirements",
+      "IRC R905.2.8.2 — Ice barrier membrane in cold climates",
+      "IRC R907 — Reroofing — no more than 2 layers of shingles",
+      "ASCE 7 — Wind load requirements for roof (Delaware is moderate wind zone)",
+    ],
+    docs:      ["Building/roofing permit application","Contractor license","Product specifications for shingles","Ice and water shield compliance documentation"],
+    inspections:["Sheathing inspection (if decking replaced)","Underlayment inspection","Final roofing inspection"],
+  },
+  demolition: {
+    icon:      "🔨",
+    name:      "Demolition Permit",
+    scopeTriggers: ["demolition"],
+    required:  "required",
+    codes:     ["IBC Chapter 33 — Safeguards during construction","EPA RRP Rule — Lead paint (pre-1978 homes)","NESHAP — Asbestos notification"],
+    what:      ["Interior demolition affecting structural elements","Full or partial building demolition","Load-bearing wall removal"],
+    keyCodeSections: [
+      "EPA RRP Rule — Homes built before 1978 require lead paint testing or certified RRP contractor",
+      "NESHAP 40 CFR Part 61 — Asbestos notification required for renovation of structures",
+      "IBC 3303 — Demolition requirements and site protection",
+    ],
+    docs:      ["Demolition permit application","Asbestos survey (if pre-1978 building)","Lead paint test or RRP contractor certification","Utility disconnect confirmation","Debris disposal plan"],
+    inspections:["Pre-demolition utility disconnect inspection","Final site inspection"],
+  },
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────
+function toggleScope(label) {
+  const cb = label.querySelector('input');
+  setTimeout(() => { label.classList.toggle('checked', cb.checked); }, 0);
+}
+
+function getSelectedScope() {
+  return [...document.querySelectorAll('.scope-check input:checked')].map(cb => cb.value);
+}
+
+function detectJurisdiction(address) {
+  const addr = address.toLowerCase();
+
+  // Check Philadelphia zip codes first (very specific)
+  const zipMatch = addr.match(/\b(19\d{3})\b/);
+  if (zipMatch) {
+    const zip = zipMatch[1];
+    // Philadelphia zips
+    if (['19101','19102','19103','19104','19105','19106','19107','19109','19110',
+         '19111','19112','19114','19115','19116','19118','19119','19120','19121',
+         '19122','19123','19124','19125','19126','19127','19128','19129','19130',
+         '19131','19132','19133','19134','19135','19136','19137','19138','19139',
+         '19140','19141','19142','19143','19144','19145','19146','19147','19148',
+         '19149','19150','19151','19152','19153','19154'].includes(zip)) {
+      return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
+    }
+    // Montgomery County PA zips
+    if (zip >= '19001' && zip <= '19095') {
+      return { key:'montgomery_county_pa', ...JURISDICTIONS.montgomery_county_pa };
+    }
+    // Delaware County PA
+    if (['19010','19012','19018','19023','19026','19029','19032','19033',
+         '19036','19041','19043','19050','19063','19064','19070','19073',
+         '19074','19078','19079','19081','19082','19083','19085','19087',
+         '19094','19096'].includes(zip)) {
+      return { key:'delaware_county_pa', ...JURISDICTIONS.delaware_county_pa };
+    }
+  }
+
+  // Check for Philadelphia explicitly
+  if (addr.includes('philadelphia') || addr.includes('philly')) {
+    return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
+  }
+
+  // Check for PA state indicator
+  const isPA = addr.includes(', pa') || addr.includes(' pa ') || addr.includes('pennsylvania');
+  const isDE = addr.includes(', de') || addr.includes(' de ') || addr.includes('delaware');
+
+  // Check all jurisdiction keywords
+  for (const [key, jur] of Object.entries(JURISDICTIONS)) {
+    for (const kw of jur.keywords) {
+      if (addr.includes(kw)) {
+        // If address says PA, skip DE jurisdictions and vice versa
+        if (isPA && jur.state === 'Delaware') continue;
+        if (isDE && jur.state === 'Pennsylvania') continue;
+        return { key, ...jur };
+      }
+    }
+  }
+
+  // State defaults
+  if (isPA) return { key:'philadelphia', ...JURISDICTIONS.philadelphia };
+  if (isDE) return { key:'newcastle_county', ...JURISDICTIONS.newcastle_county };
+
+  // Geographic default — NCC for anything near DE/PA border
+  return { key:'newcastle_county', ...JURISDICTIONS.newcastle_county };
+}
+
+function calcFee(jur, scope, contractValue) {
+  const val = parseFloat(contractValue) || 0;
+  let total = 0, breakdown = [];
+
+  const isPhilly = jur.key === 'philadelphia';
+  const isPA     = jur.state === 'Pennsylvania' && !isPhilly;
+  const isDE     = jur.state === 'Delaware';
+
+  if (scope.some(s => ['structural','demolition','addition','kitchen','bathroom','roofing','windows_doors','siding','deck','accessory_structure','foundation'].includes(s))) {
+    let fee = 0;
+    if (jur.key === 'wilmington')        fee = Math.max(75,  val * 0.010);
+    if (jur.key === 'newcastle_county')  fee = Math.max(50,  val * 0.009);
+    if (jur.key === 'kent_county')       fee = Math.max(100, val * 0.025);
+    if (jur.key === 'sussex_county')     fee = Math.max(75,  val * 0.010);
+    if (isPhilly)                        fee = Math.max(100, val * 0.012);
+    if (isPA)                            fee = Math.max(75,  val * 0.010);
+    breakdown.push({ name:'Building Permit', fee });
+    total += fee;
+  }
+  if (scope.some(s => ['electrical','electrical_panel'].includes(s))) {
+    let fee = 0;
+    if (jur.key === 'wilmington') fee = 20;
+    else if (isPhilly)            fee = Math.max(63, val * 0.025);
+    else if (isDE)                fee = 75;
+    else                          fee = Math.max(75, val * 0.010);
+    const label = isDE && jur.key !== 'wilmington' ? 'Electrical Permit (State of DE)' : 'Electrical Permit';
+    breakdown.push({ name: label, fee });
+    total += fee;
+  }
+  if (scope.some(s => ['plumbing','plumbing_new'].includes(s))) {
+    let fee = 0;
+    if (jur.key === 'wilmington') fee = 20;
+    else if (isPhilly)            fee = 50;
+    else                          fee = 60;
+    breakdown.push({ name:'Plumbing Permit', fee });
+    total += fee;
+  }
+  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s))) {
+    let fee = 0;
+    if (jur.key === 'wilmington') fee = 20;
+    else if (isPhilly)            fee = 76;
+    else                          fee = 60;
+    breakdown.push({ name:'HVAC/Mechanical Permit', fee });
+    total += fee;
+  }
+  if (scope.includes('gas')) {
+    const fee = isPhilly ? Math.max(189, val * 0.02) : 50;
+    breakdown.push({ name:'Gas Permit', fee });
+    total += fee;
+  }
+  // Philadelphia zoning permit
+  if (isPhilly && scope.some(s => ['structural','addition','demolition','accessory_structure'].includes(s))) {
+    breakdown.push({ name:'Zoning Permit (Philadelphia)', fee: 100 });
+    total += 100;
+  }
+  return { total, breakdown };
+}
+
+function getInspections(scope) {
+  const steps = [];
+  if (scope.some(s => ['structural','addition','foundation'].includes(s)))
+    steps.push({ name:'Footing / Foundation Inspection', desc:'Required before pouring any concrete. Inspector verifies depth, size, and reinforcement.' });
+  if (scope.includes('demolition'))
+    steps.push({ name:'Pre-Demolition Utility Disconnect', desc:'All utilities must be confirmed disconnected before demolition begins.' });
+  if (scope.some(s => ['structural','addition','roofing'].includes(s)))
+    steps.push({ name:'Rough Framing Inspection', desc:'All framing, blocking, and sheathing must be visible. Do not cover with insulation or drywall.' });
+  if (scope.some(s => ['electrical','electrical_panel'].includes(s)))
+    steps.push({ name:'Rough Electrical Inspection', desc:'All wiring, boxes, and conduit installed but before drywall. Inspector checks wire gauge, AFCI/GFCI placement.' });
+  if (scope.some(s => ['plumbing','plumbing_new'].includes(s)))
+    steps.push({ name:'Rough Plumbing Inspection', desc:'All DWV and supply piping installed and pressure tested before walls are closed.' });
+  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s)))
+    steps.push({ name:'Rough Mechanical / Ductwork Inspection', desc:'All ductwork, venting, and equipment rough-in before insulation.' });
+  if (scope.includes('gas'))
+    steps.push({ name:'Gas Pressure Test', desc:'System pressurized to minimum 3 PSI for 15 minutes with no loss. Required before gas is turned on.' });
+  if (scope.some(s => ['drywall','insulation'].includes(s)))
+    steps.push({ name:'Insulation Inspection', desc:'Before drywall is installed. Verifies R-value compliance and air sealing.' });
+  if (scope.includes('roofing'))
+    steps.push({ name:'Roofing / Underlayment Inspection', desc:'After underlayment installed, before shingles. Verifies ice and water shield, drip edge.' });
+  steps.push({ name:'Final Inspection / Certificate of Occupancy', desc:'All work complete. Inspector verifies everything matches approved plans. CO issued upon passing.' });
+  return steps;
+}
+
+function getRequiredDocs(scope, jur) {
+  const docs = new Set([
+    'Completed permit application form',
+    'Valid Delaware contractor license (provide your license number)',
+    'Property address and owner information',
+    'Description of scope of work',
+  ]);
+  if (scope.some(s => ['structural','addition','demolition'].includes(s))) {
+    docs.add('Construction drawings — floor plan and elevations (signed and dated)');
+    docs.add('Site plan showing property lines, setbacks, and existing structures');
+  }
+  if (parseFloat(document.getElementById('contractValue').value) > 50000) {
+    docs.add('Stamped architectural/engineering drawings (required for projects over $50,000)');
+  }
+  if (scope.some(s => ['electrical','electrical_panel'].includes(s))) {
+    docs.add('Electrical permit application — file separately with State of Delaware DPR');
+    docs.add('Load calculation if upgrading electrical service');
+  }
+  if (scope.some(s => ['hvac','hvac_new_unit'].includes(s))) {
+    docs.add('Manual J load calculation for new HVAC equipment sizing');
+    docs.add('HVAC equipment specifications and AHRI certificate');
+  }
+  if (scope.some(s => ['plumbing','plumbing_new'].includes(s))) {
+    docs.add('Plumbing fixture schedule');
+  }
+  docs.add('Payment of permit fees (credit card or check)');
+  docs.add('Your Delaware contractor license number and insurance certificate');
+  return [...docs];
+}
+
+// ── MAIN AGENT FUNCTION ─────────────────────────────────────────────
+async function runPermitAgent() {
+  const address       = document.getElementById('projAddress').value.trim();
+  if (!address) { alert('Please enter the property address.'); return; }
+
+  const scope         = getSelectedScope();
+  const propType      = document.getElementById('propType').value;
+  const contractValue = document.getElementById('contractValue').value || '0';
+  const scopeDesc     = document.getElementById('scopeDesc').value.trim();
+
+  document.getElementById('loadingSection').style.display  = 'block';
+  document.getElementById('resultsSection').style.display  = 'none';
+  document.getElementById('analyzeBtn').disabled           = true;
+
+  // Animate loading steps
+  const stepDelay = [0,1200,2400,3500,4400,5200,6000];
+  const steps     = ['step1','step2','step3','step4','step5','step6','step7'];
+  steps.forEach((id,i) => {
+    setTimeout(() => {
+      if (i > 0 && document.getElementById(steps[i-1])) document.getElementById(steps[i-1]).classList.add('done');
+      if (document.getElementById(id)) document.getElementById(id).classList.add('active');
+    }, stepDelay[i]);
+  });
+
+  // ── USE GEMINI AI FOR ALL 50 STATES ──────────────────────────────
+  const scopeLabels = {
+    structural:'Structural work',demolition:'Demolition',addition:'Addition/ADU',
+    electrical:'Electrical',plumbing:'Plumbing',hvac:'HVAC/Mechanical',
+    kitchen:'Kitchen remodel',bathroom:'Bathroom remodel',roofing:'Roofing',
+    windows_doors:'Windows & Doors',siding:'Siding',flooring:'Flooring',
+    painting:'Painting',deck:'Deck/Porch',accessory_structure:'Accessory structure',
+    foundation:'Foundation work',solar:'Solar panels',fence:'Fence',
+    pool:'Pool/Spa',elevator:'Elevator/Lift',
+  };
+  const scopeText = scope.map(s => scopeLabels[s] || s).join(', ') || 'General renovation';
+
+  const prompt = `You are an expert construction permit consultant with knowledge of building codes and permit requirements for ALL 50 US states and major cities.
+
+Address: ${address}
+Work type: ${scopeText}
+Property type: ${propType}
+Estimated contract value: $${contractValue}
+Additional description: ${scopeDesc || 'None'}
+
+Please provide a complete, accurate permit analysis for this SPECIFIC location. Research the actual jurisdiction (city, county, state) from the address.
+
+Respond in this EXACT JSON format (no markdown, no code blocks, just pure JSON):
+{
+  "jurisdiction": {
+    "city": "actual city name",
+    "county": "actual county name",
+    "state": "full state name",
+    "stateCode": "2-letter code",
+    "authority": "name of building department",
+    "website": "building department website URL",
+    "phone": "building department phone",
+    "portal": "online permit portal URL if available"
+  },
+  "permits": [
+    {
+      "name": "permit name",
+      "required": true,
+      "type": "Building|Electrical|Plumbing|Mechanical|Zoning|Special",
+      "estimatedFee": "$X - $Y",
+      "processingTime": "X-Y business days",
+      "description": "what this permit covers",
+      "howToApply": "step by step how to apply in this jurisdiction",
+      "notes": "any special requirements for this jurisdiction"
+    }
+  ],
+  "totalEstimatedFees": "$X - $Y",
+  "estimatedTimeline": "X-Y weeks total",
+  "buildingCode": "which building code version this jurisdiction uses (IBC year, local amendments)",
+  "inspectionsRequired": ["list", "of", "required", "inspections"],
+  "contractorRequirements": "licensing requirements for contractors in this jurisdiction",
+  "keyNotes": "2-3 important jurisdiction-specific notes the contractor must know",
+  "nextSteps": ["step 1", "step 2", "step 3"]
+}`;
+
+  try {
+    const geminiKey = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || '';
+    
+    if (!geminiKey) {
+      await new Promise(r => setTimeout(r, 6500));
+      renderFallbackResult(address, scope, propType, contractValue, scopeText);
+      return;
+    }
+
+    await new Promise(r => setTimeout(r, 3000)); // let animation play
+
+    const res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + geminiKey,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+        })
+      }
+    );
+
+    const data = await res.json();
+    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    text = text.replace(/```json|```/g, '').trim();
+
+    await new Promise(r => setTimeout(r, 3500)); // finish animation
+
+    const result = JSON.parse(text);
+    renderAIResult(result, address, scope, contractValue);
+
+  } catch(e) {
+    console.error('Permit AI error:', e);
+    await new Promise(r => setTimeout(r, 6500));
+    renderFallbackResult(address, scope, propType, contractValue, scopeText);
+  }
+}
+
+function renderAIResult(r, address, scope, contractValue) {
+  const j = r.jurisdiction;
+  const typeColors = {
+    Building:   '#c8a96e', Electrical: '#5b9bd5', Plumbing: '#4a9eff',
+    Mechanical: '#e8944a', Zoning:     '#9b59b6', Special:  '#6ec87a'
+  };
+
+  const permitsHTML = (r.permits||[]).map(p => {
+    const color = typeColors[p.type] || '#c8a96e';
+    return `
+    <div style="background:#161616;border:1px solid #2a2a2a;border-radius:12px;padding:1.5rem;margin-bottom:1rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.75rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem">
+            <span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.15rem .55rem;border-radius:99px;background:${color}22;color:${color};border:1px solid ${color}44">${p.type}</span>
+            ${p.required ? '<span style="font-size:.65rem;font-weight:700;text-transform:uppercase;padding:.15rem .55rem;border-radius:99px;background:rgba(209,79,79,.15);color:#d14f4f;border:1px solid rgba(209,79,79,.3)">Required</span>' : '<span style="font-size:.65rem;padding:.15rem .55rem;border-radius:99px;background:rgba(107,107,107,.15);color:#666;border:1px solid #2a2a2a">May be required</span>'}
+          </div>
+          <div style="font-size:1rem;font-weight:700">${p.name}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:.72rem;color:#666">Est. Fee</div>
+          <div style="font-weight:700;color:#c8a96e">${p.estimatedFee}</div>
+          <div style="font-size:.72rem;color:#666;margin-top:.15rem">${p.processingTime}</div>
+        </div>
+      </div>
+      <p style="font-size:.84rem;color:#b0b0b0;margin-bottom:.65rem;line-height:1.6">${p.description}</p>
+      <div style="background:#0a0a0a;border-radius:8px;padding:.85rem;margin-bottom:.5rem">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#666;margin-bottom:.35rem">How to Apply</div>
+        <p style="font-size:.82rem;color:#b0b0b0;line-height:1.65">${p.howToApply}</p>
+      </div>
+      ${p.notes ? `<div style="font-size:.8rem;color:#c8a96e;line-height:1.6">📌 ${p.notes}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  const inspHTML = (r.inspectionsRequired||[]).map(i => 
+    `<div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:#b0b0b0;padding:.3rem 0">
+      <span style="color:#6ec87a;flex-shrink:0">✓</span>${i}
+    </div>`
+  ).join('');
+
+  const stepsHTML = (r.nextSteps||[]).map((s,i) =>
+    `<div style="display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid #1a1a1a;font-size:.84rem;color:#b0b0b0">
+      <span style="width:20px;height:20px;border-radius:50%;background:rgba(200,169,110,.15);color:#c8a96e;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0">${i+1}</span>
+      ${s}
+    </div>`
+  ).join('');
+
+  document.getElementById('resultsSection').innerHTML = `
+    <!-- HEADER -->
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:1.75rem;margin-bottom:1.5rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.25rem">
+        <div>
+          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.3rem">Jurisdiction</div>
+          <div style="font-size:1.2rem;font-weight:700">${j.city}, ${j.stateCode}</div>
+          <div style="font-size:.84rem;color:#b0b0b0">${j.county} · ${j.authority}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:.7rem;color:#666">Total Estimated Fees</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#c8a96e;letter-spacing:.02em">${r.totalEstimatedFees}</div>
+          <div style="font-size:.76rem;color:#666">Timeline: ${r.estimatedTimeline}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;flex-wrap:wrap">
+        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
+          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Building Code</div>
+          <div style="font-size:.82rem;font-weight:600">${r.buildingCode}</div>
+        </div>
+        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
+          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Permits Required</div>
+          <div style="font-size:.82rem;font-weight:600">${(r.permits||[]).filter(p=>p.required).length} of ${(r.permits||[]).length}</div>
+        </div>
+        <div style="background:#0a0a0a;border-radius:8px;padding:.75rem">
+          <div style="font-size:.66rem;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Online Portal</div>
+          <div style="font-size:.78rem">${j.portal ? `<a href="${j.portal}" target="_blank" style="color:#c8a96e">Apply Online →</a>` : 'In-person only'}</div>
+        </div>
+      </div>
+      ${j.phone ? `<div style="margin-top:.75rem;font-size:.8rem;color:#b0b0b0">📞 Building Dept: <a href="tel:${j.phone}" style="color:#c8a96e">${j.phone}</a> &nbsp;|&nbsp; 🌐 <a href="${j.website||'#'}" target="_blank" style="color:#c8a96e">Official Website</a></div>` : ''}
+    </div>
+
+    <!-- KEY NOTES -->
+    ${r.keyNotes ? `<div style="background:rgba(200,169,110,.06);border:1px solid rgba(200,169,110,.2);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.86rem;color:#b0b0b0;line-height:1.7"><strong style="color:#c8a96e">📋 Important Notes:</strong> ${r.keyNotes}</div>` : ''}
+
+    <!-- PERMITS -->
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:1rem">Permits Required</div>
+    ${permitsHTML}
+
+    <!-- CONTRACTOR REQUIREMENTS -->
+    ${r.contractorRequirements ? `
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.5rem">Contractor Licensing Requirements</div>
+      <p style="font-size:.84rem;color:#b0b0b0;line-height:1.65">${r.contractorRequirements}</p>
+    </div>` : ''}
+
+    <!-- INSPECTIONS -->
+    ${inspHTML ? `
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.75rem">Required Inspections</div>
+      ${inspHTML}
+    </div>` : ''}
+
+    <!-- NEXT STEPS -->
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem">
+      <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:.75rem">Next Steps</div>
+      ${stepsHTML}
+    </div>
+
+    <!-- EXPORT -->
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <button onclick="window.print()" style="background:#c8a96e;color:#000;border:none;border-radius:7px;font-size:.86rem;font-weight:700;padding:.7rem 1.5rem;cursor:pointer">🖨️ Print Report</button>
+      <button onclick="copyReport()" style="background:#161616;border:1px solid #2a2a2a;color:#b0b0b0;border-radius:7px;font-size:.86rem;font-weight:600;padding:.7rem 1.5rem;cursor:pointer">📋 Copy Summary</button>
+    </div>
+    <div style="font-size:.74rem;color:#444;margin-top:1rem;line-height:1.7">⚠️ This report is AI-generated based on publicly available permit requirements. Always verify with the local building department before submitting applications. Requirements may change.</div>
+  `;
+
+  document.getElementById('loadingSection').style.display  = 'none';
+  document.getElementById('resultsSection').style.display  = 'block';
+  document.getElementById('analyzeBtn').disabled           = false;
+
+  // Save to history
+  const history = JSON.parse(localStorage.getItem('permit_history') || '[]');
+  history.unshift({ address, date: new Date().toLocaleDateString(), jurisdiction: j.city + ', ' + j.stateCode, permits: (r.permits||[]).length });
+  localStorage.setItem('permit_history', JSON.stringify(history.slice(0,10)));
+}
+
+function renderFallbackResult(address, scope, propType, contractValue, scopeText) {
+  // No Gemini key - show instructions to set it up
+  document.getElementById('resultsSection').innerHTML = `
+    <div style="background:#111;border:1px solid #2a2a2a;border-radius:14px;padding:2rem;text-align:center">
+      <div style="font-size:3rem;margin-bottom:1rem">🔑</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em;margin-bottom:.75rem">AI Key Required</h3>
+      <p style="font-size:.88rem;color:#b0b0b0;max-width:420px;margin:0 auto 1.5rem;line-height:1.7">
+        The 50-state permit agent uses Google Gemini AI to look up real permit requirements for any US address. 
+        A Gemini API key is required.
+      </p>
+      <div style="background:#0a0a0a;border-radius:8px;padding:1rem;font-size:.82rem;color:#b0b0b0;text-align:left;margin-bottom:1.25rem">
+        <strong style="color:#c8a96e">To activate:</strong> Open browser console (F12) and run:<br><br>
+        <code style="color:#6ec87a">localStorage.setItem('sc_gemini_key', 'YOUR_KEY')</code><br><br>
+        Get a free key at: <a href="https://aistudio.google.com" target="_blank" style="color:#c8a96e">aistudio.google.com</a>
+      </div>
+    </div>`;
+  document.getElementById('loadingSection').style.display  = 'none';
+  document.getElementById('resultsSection').style.display  = 'block';
+  document.getElementById('analyzeBtn').disabled           = false;
+}
+
+window.copyReport = function() {
+  const text = document.getElementById('resultsSection').innerText;
+  navigator.clipboard.writeText(text).then(() => alert('Report copied to clipboard!'));
+};
+
+
+async function exportPDF() {
+  const btn = document.querySelector('.pdf-btn');
+  if (!btn) return;
+  btn.disabled = true; btn.textContent = 'Generating PDF...';
+  document.querySelectorAll('.permit-body').forEach(b => b.classList.add('open'));
+  const address  = document.getElementById('projAddress').value || 'Project';
+  const date     = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const pdfDiv   = document.createElement('div');
+  pdfDiv.style.cssText = 'font-family:Arial,sans-serif;color:#000;background:#fff;padding:20px;max-width:800px';
+  pdfDiv.innerHTML = '<div style="border-bottom:3px solid #c8a96e;padding-bottom:15px;margin-bottom:20px">' +
+    '<h1 style="font-size:22px;color:#c8a96e;margin:0">ALI SIGNATURE CONSTRUCTION LLC</h1>' +
+    '<h2 style="font-size:16px;color:#333;margin:5px 0 0">Permit Requirements Report</h2>' +
+    '<p style="font-size:12px;color:#666;margin:5px 0 0">Generated: ' + date + ' | Project: ' + address + '</p></div>' +
+    '<div id="pdfPerms"></div>' +
+    '<div style="margin-top:20px"><h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Inspections</h3>' +
+    [...document.querySelectorAll('.insp-step')].map((s,i) =>
+      '<div style="margin-bottom:8px"><strong style="font-size:12px">' + (i+1) + '. ' + (s.querySelector('.insp-name')?.textContent||'') + '</strong><br>' +
+      '<span style="font-size:11px;color:#555">' + (s.querySelector('.insp-desc')?.textContent||'') + '</span></div>'
+    ).join('') + '</div>' +
+    '<div style="margin-top:20px"><h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Documents Checklist</h3>' +
+    [...document.querySelectorAll('.cl-item span')].map(s => '<div style="font-size:12px;margin-bottom:4px">[ ] ' + s.textContent + '</div>').join('') + '</div>' +
+    '<div style="margin-top:15px;font-size:10px;color:#999;border-top:1px solid #ddd;padding-top:10px">Ali S" + (localStorage.getItem("sc_co")||"Your Company") + " | " + (localStorage.getItem("sc_phone")||"") + " | " + (localStorage.getItem("sc_admin_email")||"")</div>';
+  const perms = pdfDiv.querySelector('#pdfPerms');
+  perms.innerHTML = '<h3 style="font-size:14px;border-bottom:1px solid #ddd;padding-bottom:6px">Required Permits</h3>';
+  document.querySelectorAll('.permit-card').forEach(card => {
+    const name = card.querySelector('.permit-name')?.textContent||'';
+    const auth = card.querySelector('.permit-authority')?.textContent||'';
+    const fee  = card.querySelector('.permit-fee-amount')?.textContent||'';
+    const codes= [...card.querySelectorAll('.code-tag')].map(t=>t.textContent).join(', ');
+    perms.innerHTML += '<div style="background:#f9f9f9;border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:10px">' +
+      '<strong style="font-size:13px">' + name + '</strong> <span style="background:#fee;color:#c00;font-size:10px;padding:2px 8px;border-radius:4px">REQUIRED</span><br>' +
+      '<div style="font-size:11px;color:#555;margin:4px 0">' + auth + '</div>' +
+      '<div style="font-size:10px;color:#c8a96e">Codes: ' + codes + '</div>' +
+      '<div style="font-size:11px;font-weight:600;color:#c8a96e;margin-top:4px">Fee: ' + fee + '</div></div>';
+  });
+  document.body.appendChild(pdfDiv);
+  try {
+    if (typeof html2pdf !== 'undefined') {
+      await html2pdf().set({
+        margin:[10,10,10,10],
+        filename:'Permit-Report-' + address.replace(/[^a-z0-9]/gi,'_').substring(0,25) + '.pdf',
+        image:{type:'jpeg',quality:.95},
+        html2canvas:{scale:2,useCORS:true},
+        jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      }).from(pdfDiv).save();
+    } else {
+      window.print();
+    }
+  } catch(e) { window.print(); }
+  document.body.removeChild(pdfDiv);
+  btn.disabled=false; btn.innerHTML='📄 Download PDF';
+}
+
+/* CHATBOT */
+let chatOpen = false;
+let chatHistory = [];
+// Load key from localStorage or use default
+const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || localStorage.getItem('asc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const CHAT_SYS   = 'You are an expert permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + " LLC in Delaware. You know NEC 2023, IMC 2021, Delaware Plumbing Code, IBC 2018, IRC 2018, Delaware Construction Codes 2018. Be concise and cite specific code sections. Note that electrical permits in all Delaware jurisdictions go through State of Delaware DPR, not the county.';
+
+window.toggleChat = () => {
+  chatOpen = !chatOpen;
+  document.getElementById('chatPanel').style.display = chatOpen ? 'flex' : 'none';
+  if (chatOpen) setTimeout(() => document.getElementById('chatInput').focus(), 100);
+};
+
+window.quickAsk = q => {
+  document.getElementById('chatInput').value = q;
+  sendChat();
+};
+
+window.chatKeyDown = e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+};
+
+function addMsg(role, text) {
+  const msgs = document.getElementById('chatMsgs');
+  const div  = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+let lastChatCall = 0;
+let chatQueue = Promise.resolve();
+
+window.sendChat = async () => {
+  const input = document.getElementById('chatInput');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = ''; input.style.height = 'auto';
+  addMsg('user', text);
+  chatHistory.push({ role:'user', parts:[{text}] });
+  const btn = document.getElementById('chatSendBtn');
+  btn.disabled = true;
+  const thinking = addMsg('thinking', 'Checking codes...');
+
+  // Queue requests with 4-second gap to avoid rate limits (free tier = 15/min)
+  chatQueue = chatQueue.then(async () => {
+    const now     = Date.now();
+    const elapsed = now - lastChatCall;
+    const wait    = elapsed < 4000 ? 4000 - elapsed : 0;
+    if (wait > 0) {
+      thinking.innerHTML = 'Waiting ' + Math.ceil(wait/1000) + 's to avoid rate limit...';
+      await new Promise(r => setTimeout(r, wait));
+    }
+    lastChatCall = Date.now();
+    thinking.innerHTML = 'Checking codes...';
+
+    try {
+      const res = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
+        method:  'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          system_instruction: {parts:[{text:CHAT_SYS}]},
+          contents: chatHistory,
+          generationConfig: {temperature:0.4, maxOutputTokens:512},
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const err = data.error?.message || 'API error ' + res.status;
+        if (res.status === 429) {
+          // Auto-retry after 10 seconds
+          thinking.innerHTML = 'Rate limit — retrying in 10s...';
+          await new Promise(r => setTimeout(r, 10000));
+          lastChatCall = Date.now();
+          const res2  = await fetch(GEMINI_URL + '?key=' + GEMINI_KEY, {
+            method:  'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+              system_instruction: {parts:[{text:CHAT_SYS}]},
+              contents: chatHistory,
+              generationConfig: {temperature:0.4, maxOutputTokens:512},
+            }),
+          });
+          const data2 = await res2.json();
+          if (!res2.ok) throw new Error('Still rate limited. Wait 1 minute and try again.');
+          const reply2 = data2.candidates?.[0]?.content?.parts?.[0]?.text || 'No response.';
+          chatHistory.push({role:'model', parts:[{text:reply2}]});
+          thinking.remove();
+          addMsg('ai', reply2);
+          return;
+        }
+        throw new Error(err);
+      }
+      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from AI.';
+      chatHistory.push({role:'model', parts:[{text:reply}]});
+      thinking.remove();
+      addMsg('ai', reply);
+    } catch(e) {
+      thinking.remove();
+      addMsg('ai', '⚠️ ' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const ci = document.getElementById('chatInput');
+  if (ci) ci.addEventListener('input', () => { ci.style.height='auto'; ci.style.height=Math.min(ci.scrollHeight,80)+'px'; });
+});
+
+</script>
+
+<!-- CHATBOT -->
+<button id="chatBtn" onclick="toggleChat()">🤖</button>
+<div id="chatPanel">
+  <div class="chat-head">
+    <div class="chat-head-left">
+      <span style="font-size:1.2rem">🏛️</span>
+      <div>
+        <div class="chat-head-title">Permit Assistant</div>
+        <div class="chat-head-sub">Ask anything about permits & codes</div>
+      </div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-chips">
+    <div class="chat-chip" onclick="quickAsk('Do I need a permit to remove a load bearing wall?')">Load bearing wall?</div>
+    <div class="chat-chip" onclick="quickAsk('What is the NEC code for kitchen outlets?')">Kitchen outlets</div>
+    <div class="chat-chip" onclick="quickAsk('How long does a building permit take in Delaware?')">Permit timeline</div>
+    <div class="chat-chip" onclick="quickAsk('What is GFCI and where is it required?')">GFCI rules</div>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="chat-msg ai">Hi! I am your permit and building code assistant for " + (localStorage.getItem("sc_co")||"Your Company") + ".<br><br>Ask me anything about permits, electrical codes (NEC), HVAC codes (IMC), plumbing codes, Delaware regulations, or construction requirements. I am powered by Gemini AI and answer for free.</div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chatInput" placeholder="Ask about permits, codes, requirements..." rows="1" onkeydown="chatKeyDown(event)"></textarea>
+    <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<!-- PDF LIBRARY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+
+</body>
+</html>    .pr-maybe{background:rgba(232,148,74,.15);color:var(--orange);border:1px solid rgba(232,148,74,.3)}
+    .pr-notneeded{background:rgba(110,200,122,.15);color:var(--green);border:1px solid rgba(110,200,122,.3)}
+    .permit-expand{font-size:.8rem;color:var(--mid);flex-shrink:0}
+    .permit-body{display:none;border-top:1px solid var(--border);padding:1.1rem 1.25rem}
+    .permit-body.open{display:block}
+    .permit-section{margin-bottom:1rem}
+    .permit-section:last-child{margin-bottom:0}
+    .permit-section-title{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.5rem}
+    .permit-section ul{list-style:none;display:flex;flex-direction:column;gap:.35rem}
+    .permit-section ul li{font-size:.83rem;color:var(--light);display:flex;align-items:flex-start;gap:.5rem;line-height:1.5}
+    .permit-section ul li::before{content:'→';color:var(--accent);flex-shrink:0;font-size:.78rem;margin-top:.15rem}
+    .code-tag{background:var(--surface);border:1px solid var(--border);border-radius:4px;font-size:.72rem;color:var(--accent);padding:.1rem .45rem;font-family:monospace;white-space:nowrap}
+    .permit-fee{background:var(--surface);border-radius:6px;padding:.6rem .85rem;font-size:.82rem;color:var(--light);display:flex;align-items:center;justify-content:space-between}
+    .permit-fee-amount{font-weight:600;color:var(--accent)}
+    .permit-portal-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent);color:var(--black);border:none;border-radius:5px;font-size:.76rem;font-weight:700;padding:.4rem .9rem;cursor:pointer;text-decoration:none;margin-top:.75rem}
+    .permit-portal-btn:hover{background:var(--accent2)}
+
+    /* INSPECTION SEQUENCE */
+    .inspection-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+    .inspection-steps{display:flex;flex-direction:column;gap:.75rem;margin-top:.85rem}
+    .insp-step{display:flex;align-items:flex-start;gap:1rem}
+    .insp-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--black);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.05rem}
+    .insp-info{flex:1}
+    .insp-name{font-size:.9rem;font-weight:600;color:var(--white)}
+    .insp-desc{font-size:.78rem;color:var(--mid);margin-top:.15rem;line-height:1.5}
+
+    /* CHECKLIST */
+    .checklist-card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+    .checklist-items{display:flex;flex-direction:column;gap:.45rem;margin-top:.85rem}
+    .cl-item{display:flex;align-items:center;gap:.75rem;background:var(--surface);border-radius:7px;padding:.65rem .9rem;font-size:.84rem;color:var(--light)}
+    .cl-item input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+    .cl-item.checked-item{background:rgba(110,200,122,.06);color:var(--green);text-decoration:line-through;opacity:.7}
+
+    /* PRINT / SAVE */
+    .action-row{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem}
+    .action-btn{background:var(--surface);border:1px solid var(--border);color:var(--light);font-size:.8rem;font-weight:600;padding:.55rem 1.1rem;border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+    .action-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+    /* LOADING */
+    #loadingSection{display:none;text-align:center;padding:3rem 2rem}
+    .loading-icon{font-size:3rem;animation:spin2 2s linear infinite;display:inline-block;margin-bottom:1rem}
+    @keyframes spin2{to{transform:rotate(360deg)}}
+    .loading-text{font-size:.9rem;color:var(--mid);margin-top:.5rem}
+    .loading-steps{display:flex;flex-direction:column;gap:.4rem;margin-top:1.25rem;text-align:left;max-width:360px;margin-left:auto;margin-right:auto}
+    .loading-step{font-size:.8rem;color:var(--mid);display:flex;align-items:center;gap:.5rem}
+    .loading-step.done{color:var(--green)}
+    .loading-step.active{color:var(--accent)}
+
+    .empty-state{text-align:center;padding:3rem 2rem;color:var(--mid);font-size:.88rem}
+
+
+    /* PDF EXPORT */
+    .pdf-btn{background:var(--red);color:#fff;border:none;border-radius:6px;font-size:.8rem;font-weight:700;padding:.55rem 1.1rem;cursor:pointer;display:flex;align-items:center;gap:.4rem;transition:all .15s}
+    .pdf-btn:hover{opacity:.85}
+
+    /* AUTO-SAVE INDICATOR */
+    .autosave-bar{background:rgba(110,200,122,.08);border:1px solid rgba(110,200,122,.2);border-radius:8px;padding:.5rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:var(--green)}
+    .autosave-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+    /* CHATBOT */
+    #chatBtn{position:fixed;bottom:1.75rem;right:1.75rem;width:54px;height:54px;background:var(--accent);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.4rem;z-index:500;box-shadow:0 4px 24px rgba(200,169,110,.5);transition:transform .2s}
+    #chatBtn:hover{transform:scale(1.1)}
+    #chatPanel{position:fixed;bottom:5.25rem;right:1.75rem;width:370px;max-width:calc(100vw - 2rem);background:var(--dark);border:1px solid var(--border);border-radius:16px;box-shadow:0 12px 50px rgba(0,0,0,.7);z-index:500;display:none;flex-direction:column;height:520px;overflow:hidden}
+    .chat-head{background:linear-gradient(135deg,var(--accent),var(--accent2));padding:.9rem 1.15rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .chat-head-left{display:flex;align-items:center;gap:.6rem}
+    .chat-head-title{font-size:.9rem;font-weight:700;color:var(--black);line-height:1.2}
+    .chat-head-sub{font-size:.68rem;color:rgba(0,0,0,.6)}
+    .chat-close{background:none;border:none;color:var(--black);font-size:1.1rem;cursor:pointer;opacity:.65}
+    .chat-close:hover{opacity:1}
+    .chat-msgs{flex:1;overflow-y:auto;padding:.85rem;display:flex;flex-direction:column;gap:.65rem}
+    .chat-msg{max-width:90%;padding:.65rem .9rem;border-radius:12px;font-size:.83rem;line-height:1.65;word-break:break-word}
+    .chat-msg.ai{background:var(--surface);border:1px solid var(--border);color:var(--light);align-self:flex-start;border-bottom-left-radius:3px}
+    .chat-msg.user{background:var(--accent);color:var(--black);align-self:flex-end;border-bottom-right-radius:3px;font-weight:500}
+    .chat-msg.thinking{background:var(--surface);border:1px solid var(--border);color:var(--mid);align-self:flex-start;font-style:italic}
+    .chat-input-row{padding:.75rem;border-top:1px solid var(--border);display:flex;gap:.5rem;flex-shrink:0;background:var(--surface)}
+    .chat-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.84rem;padding:.6rem .85rem;resize:none;min-height:38px;max-height:80px;transition:border-color .2s}
+    .chat-input:focus{outline:none;border-color:var(--accent)}
+    .chat-send{background:var(--accent);color:var(--black);border:none;border-radius:8px;width:38px;height:38px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .chat-send:hover{background:var(--accent2)}
+    .chat-send:disabled{opacity:.4;cursor:not-allowed}
+    .chat-chips{display:flex;gap:.4rem;flex-wrap:wrap;padding:.6rem .85rem .35rem;flex-shrink:0;border-bottom:1px solid var(--border);background:var(--surface)}
+    .chat-chip{background:var(--card);border:1px solid var(--border);border-radius:99px;font-size:.68rem;font-weight:600;color:var(--light);padding:.22rem .65rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .chat-chip:hover{border-color:var(--accent);color:var(--accent)}
+
+    @media print{
+      #chatBtn,#chatPanel{display:none!important}
+      .autosave-bar{display:none}
+    }
+
+    @media print{
+      .header,.analyze-btn,.action-row,.back-link{display:none!important}
+      .body{padding:1rem}
+      .permit-body{display:block!important}
+    }
+    @media(max-width:680px){
+      .grid2,.grid3,.scope-grid{grid-template-columns:1fr 1fr}
+      .body{padding:1.25rem .85rem}
+    }
+    @media(max-width:440px){
+      .scope-grid{grid-template-columns:1fr}
+    }
+  
 /* ── UNIVERSAL NAV ── */
 .sc-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid #2a2a2a;display:flex;align-items:center;padding:0 1.25rem;gap:.6rem;position:sticky;top:0;z-index:200;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .sc-logo{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.06em;color:#f4f2ee;flex-shrink:0}.sc-logo span{color:#c8a96e}
