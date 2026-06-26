@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>Real Estate — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0a0a0a;--dark:#111;--surface:#181818;--card:#1c1c1c;
+  --border:#252525;--mid:#5a5a5a;--light:#a0a0a0;--white:#f0ede8;
+  --accent:#c8a96e;--accent-dim:rgba(200,169,110,.1);
+  --green:#5cb85c;--red:#e05252;--blue:#5b9bd5;--warn:#e8944a;
+}
+body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased;background:rgba(11,11,11,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1rem;gap:.5rem;position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--white);text-decoration:none}.sc-logo span{color:var(--accent)}
+.sc-badge{font-size:.68rem;font-weight:600;padding:.16rem .6rem;background:var(--accent-dim);border:1px solid rgba(200,169,110,.3);border-radius:99px;color:var(--accent)}
+.sc-nav{display:flex;gap:.15rem;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.sc-nav a{font-size:.7rem;color:var(--mid);padding:.28rem .5rem;border-radius:6px;text-decoration:none;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:var(--accent);background:var(--accent-dim)}
+.sc-tabbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,11,.97);border-top:1px solid var(--border);z-index:300;grid-template-columns:repeat(7,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.38rem .1rem;text-decoration:none;color:var(--mid);font-size:.44rem;font-weight:600;text-transform:uppercase;border:none;background:none;cursor:pointer;min-height:52px}
+.sc-tab:hover,.sc-tab.active{color:var(--accent)}
+.sc-tab-icon{font-size:1.1rem;line-height:1}
+@media(max-width:760px){.sc-nav{display:none}.sc-tabbar{display:grid}}
+.page{max-width:1200px;margin:0 auto;padding:1.25rem 1rem}
+.page-title{font-family:"Bebas Neue",sans-serif;font-size:1.75rem;letter-spacing:.04em;margin-bottom:.2rem}
+.page-sub{font-size:.82rem;color:var(--mid);margin-bottom:1.25rem}
+/* TABS */
+.tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1.25rem;overflow-x:auto;scrollbar-width:none}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--mid);font-size:.8rem;font-weight:600;padding:.5rem .75rem;cursor:pointer;font-family:inherit;margin-bottom:-1px;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+/* CARDS */
+.card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:.85rem}
+.card-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:1rem}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+/* UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--accent-dim)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+/* ANALYSIS */
+.analysis-output{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.84rem;line-height:1.85;color:var(--light)}
+.analysis-output h3{color:var(--accent);font-family:"Bebas Neue",sans-serif;font-size:1rem;letter-spacing:.04em;margin:1rem 0 .4rem}
+.analysis-output h3:first-child{margin-top:0}
+.good-item{background:rgba(92,184,92,.06);border:1px solid rgba(92,184,92,.2);border-radius:7px;padding:.5rem .75rem;margin:.3rem 0;font-size:.82rem;color:var(--light)}
+.good-item::before{content:"✅ ";color:var(--green)}
+.bad-item{background:rgba(224,82,82,.06);border:1px solid rgba(224,82,82,.2);border-radius:7px;padding:.5rem .75rem;margin:.3rem 0;font-size:.82rem;color:var(--light)}
+.bad-item::before{content:"❌ ";color:var(--red)}
+.warn-item{background:rgba(232,148,74,.06);border:1px solid rgba(232,148,74,.2);border-radius:7px;padding:.5rem .75rem;margin:.3rem 0;font-size:.82rem;color:var(--light)}
+.warn-item::before{content:"⚠️ ";color:var(--warn)}
+.law-cite{background:rgba(91,155,213,.06);border-left:3px solid var(--blue);padding:.5rem .75rem;border-radius:0 7px 7px 0;font-size:.8rem;color:var(--light);font-style:italic;margin:.4rem 0}
+.score-display{display:flex;align-items:center;gap:1rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.85rem}
+.score-circle{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:1.8rem;flex-shrink:0;border:3px solid}
+.score-info{flex:1}
+.score-label{font-size:.72rem;color:var(--mid);text-transform:uppercase;letter-spacing:.06em}
+.score-verdict{font-size:.9rem;font-weight:700;margin-top:.15rem}
+/* PROGRESS */
+.progress-bar{background:var(--border);border-radius:99px;height:4px;overflow:hidden;margin:.4rem 0}
+.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .35s}
+/* FORM */
+.fg{margin-bottom:.7rem}
+.fg label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.28rem}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit;-webkit-appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+.fg textarea{resize:vertical;min-height:100px}
+/* BTN */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn-primary{background:var(--accent);color:#000;font-size:.86rem;padding:.62rem 1.25rem}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-secondary{background:var(--surface);border:1.5px solid var(--border);color:var(--light);font-size:.82rem;padding:.58rem 1rem}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-full{width:100%}
+/* LAW BOOK */
+.law-section{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;margin-bottom:.5rem;cursor:pointer;transition:border-color .15s}
+.law-section:hover{border-color:var(--accent)}
+.law-section-title{font-size:.84rem;font-weight:700;color:var(--white);margin-bottom:.15rem}
+.law-section-ref{font-size:.7rem;color:var(--accent);font-weight:600}
+.law-section-preview{font-size:.78rem;color:var(--mid);margin-top:.25rem;line-height:1.6}
+/* DEAL ANALYZER */
+.deal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;margin-bottom:.85rem}
+@media(max-width:600px){.deal-grid{grid-template-columns:1fr 1fr}}
+.deal-metric{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
+.deal-metric-val{font-family:"Bebas Neue",sans-serif;font-size:1.4rem;color:var(--accent);line-height:1}
+.deal-metric-lbl{font-size:.62rem;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;margin-top:.1rem}
+.deal-metric.good .deal-metric-val{color:var(--green)}
+.deal-metric.bad .deal-metric-val{color:var(--red)}
+
+/* ====== SC NAV ====== */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color:var(--sc-white);min-height:100vh;-webkit-font-smoothing:antialiased;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+.sc-bar{height:54px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--sc-border);display:flex;align-items:center;padding:0 .85rem;gap:.5rem;position:sticky;top:0;z-index:500;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--sc-white);text-decoration:none;flex-shrink:0}.sc-logo span{color:var(--sc-accent)}
+.sc-pg{font-size:.66rem;font-weight:700;padding:.15rem .6rem;background:var(--sc-dim);border:1px solid rgba(200,169,110,.28);border-radius:99px;color:var(--sc-accent);flex-shrink:0;white-space:nowrap}
+.sc-nav{display:flex;gap:.12rem;margin-left:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.sc-nav::-webkit-scrollbar{display:none}
+.sc-nav a{font-size:.7rem;color:var(--sc-mid);padding:.28rem .5rem;border-radius:6px;text-decoration:none;white-space:nowrap;transition:color .15s,background .15s;flex-shrink:0}
+.sc-nav a:hover,.sc-nav a.sc-on{color:var(--sc-accent);background:var(--sc-dim);font-weight:600}
+.sc-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid var(--sc-border);z-index:500;grid-template-columns:repeat(9,1fr);padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(14px)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.3rem .05rem;text-decoration:none;color:var(--sc-mid);font-size:.42rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;min-height:50px;transition:color .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.sc-tab:hover,.sc-tab.sc-on{color:var(--sc-accent)}
+.sc-ti{font-size:1.05rem;line-height:1;margin-bottom:1px}
+@media(max-width:820px){.sc-nav{display:none}.sc-tabs{display:grid}body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
+@media(max-width:400px){.sc-tab{font-size:.38rem}.sc-ti{font-size:.95rem}}
+/* ====== END SC NAV ====== */
+</style>
+</head>
+<body>
+<header class="sc-bar">
+  <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
+  <span class="sc-pg">Real Estate</span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="sc-n-home">🏠 Home</a>
+    <a href="email-ai.html" id="sc-n-email">📧 Email</a>
+    <a href="lead-finder.html" id="sc-n-leads">🔍 Leads</a>
+    <a href="social-media.html" id="sc-n-social">📱 Social</a>
+    <a href="permits.html" id="sc-n-permits">🏛 Permits</a>
+    <a href="video-gen.html" id="sc-n-video">🎬 Video</a>
+    <a href="youtube-studio.html" id="sc-n-yt">▶️ YouTube</a>
+    <a href="real-estate.html" id="sc-n-relaw" class="sc-on">🏡 RE Law</a>
+    <a href="ai-assistant.html" id="sc-n-ai">🤖 AI Chat</a>
+  </nav>
+</header>
+<nav class="sc-tabs">
+  <a href="platform.html" class="sc-tab" id="sc-t-home"><span class="sc-ti">🏠</span>Home</a>
+  <a href="email-ai.html" class="sc-tab" id="sc-t-email"><span class="sc-ti">📧</span>Email</a>
+  <a href="lead-finder.html" class="sc-tab" id="sc-t-leads"><span class="sc-ti">🔍</span>Leads</a>
+  <a href="social-media.html" class="sc-tab" id="sc-t-social"><span class="sc-ti">📱</span>Social</a>
+  <a href="permits.html" class="sc-tab" id="sc-t-permits"><span class="sc-ti">🏛</span>Permits</a>
+  <a href="video-gen.html" class="sc-tab" id="sc-t-video"><span class="sc-ti">🎬</span>Video</a>
+  <a href="youtube-studio.html" class="sc-tab" id="sc-t-yt"><span class="sc-ti">▶️</span>YouTube</a>
+  <a href="real-estate.html" class="sc-tab sc-on" id="sc-t-relaw"><span class="sc-ti">🏡</span>RE Law</a>
+  <a href="ai-assistant.html" class="sc-tab" id="sc-t-ai"><span class="sc-ti">🤖</span>AI Chat</a>
+</nav>
+
+
+
+
+
+<div class="page">
+  <div class="page-title">🏡 Real Estate Intelligence</div>
+  <div class="page-sub">AI-powered contract analysis, deal calculator, and real estate law reference — all in one place.</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('contract',this)">📄 Contract Analyzer</button>
+    <button class="tab-btn" onclick="showTab('deal',this)">💰 Deal Calculator</button>
+    <button class="tab-btn" onclick="showTab('laws',this)">⚖️ US Real Estate Laws</button>
+    <button class="tab-btn" onclick="showTab('ask',this)">🤖 Ask AI</button>
+    <button class="tab-btn" onclick="showTab('templates',this)">📋 Templates</button>
+  </div>
+
+  <!-- CONTRACT ANALYZER -->
+  <div class="tab-pane active" id="tab-contract">
+    <div class="main-grid">
+      <div>
+        <!-- Upload -->
+        <div class="card" id="uploadCard">
+          <div class="card-title">📄 Upload Contract</div>
+          <div class="upload-zone" id="uploadZone"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="handleDrop(event)">
+            <input type="file" accept=".pdf,.txt,.doc,.docx" onchange="handleContractFile(this.files[0])"/>
+            <div style="font-size:2.5rem;margin-bottom:.75rem">📄</div>
+            <div style="font-size:.92rem;font-weight:600;margin-bottom:.25rem">Drop your contract here</div>
+            <div style="font-size:.78rem;color:var(--mid)">PDF, Word, or Text · Purchase agreements, listing contracts, construction contracts</div>
+          </div>
+          <div style="text-align:center;margin:.75rem 0;font-size:.78rem;color:var(--mid)">— or paste contract text —</div>
+          <div class="fg">
+            <textarea id="contractText" placeholder="Paste contract text here..." rows="6"></textarea>
+          </div>
+          <div class="fg">
+            <label>I am the</label>
+            <select id="clientRole">
+              <option value="buyer">Buyer</option>
+              <option value="seller">Seller</option>
+              <option value="contractor">Contractor</option>
+              <option value="homeowner">Homeowner (hiring contractor)</option>
+              <option value="landlord">Landlord</option>
+              <option value="tenant">Tenant</option>
+              <option value="investor">Real Estate Investor</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Contract Type</label>
+            <select id="contractType">
+              <option value="purchase">Purchase Agreement / Sales Contract</option>
+              <option value="listing">Listing Agreement</option>
+              <option value="construction">Construction Contract</option>
+              <option value="lease">Lease Agreement</option>
+              <option value="contingency">Offer with Contingencies</option>
+              <option value="addendum">Contract Addendum</option>
+              <option value="other">Other / Unknown</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="analyzeContract()" id="analyzeBtn">
+            🔍 Analyze Contract
+          </button>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div>
+        <div class="card">
+          <div class="card-title">📊 Quick Guide</div>
+          <div style="font-size:.8rem;color:var(--light);line-height:1.9">
+            <strong style="color:var(--green)">✅ Favorable</strong> — Clauses that protect you<br>
+            <strong style="color:var(--red)">❌ Red Flags</strong> — Terms that hurt you<br>
+            <strong style="color:var(--warn)">⚠️ Concerns</strong> — Things to watch<br>
+            <strong style="color:var(--blue)">⚖️ Law</strong> — Relevant legal citations<br>
+            <strong style="color:var(--accent)">📋 Missing</strong> — Clauses you should add<br><br>
+            <strong style="color:var(--white)">AI checks for:</strong><br>
+            • Contingencies (inspection, financing, appraisal)<br>
+            • Earnest money terms<br>
+            • Closing cost allocation<br>
+            • Warranty provisions<br>
+            • Dispute resolution<br>
+            • Exit clauses<br>
+            • Payment schedules<br>
+            • Liability limitations
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚖️ Key Laws AI References</div>
+          <div style="font-size:.78rem;color:var(--light);line-height:1.85">
+            • RESPA (Real Settlement Procedures Act)<br>
+            • Fair Housing Act (42 U.S.C. § 3604)<br>
+            • Truth in Lending Act (TILA)<br>
+            • Dodd-Frank Act<br>
+            • State property disclosure laws<br>
+            • UCC Article 2 (goods/materials)<br>
+            • Mechanics lien statutes<br>
+            • Delaware Code Title 25 (Property)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYSIS RESULTS (hidden initially) -->
+    <div id="analysisResults" style="display:none">
+      <div id="scoreSection" class="score-display">
+        <div class="score-circle" id="scoreCircle">
+          <span id="scoreNum">—</span>
+        </div>
+        <div class="score-info">
+          <div class="score-label">Contract Fairness Score</div>
+          <div class="score-verdict" id="scoreVerdict">Analyzing...</div>
+          <div style="font-size:.74rem;color:var(--mid);margin-top:.2rem" id="scoreNote"></div>
+        </div>
+      </div>
+      <div class="progress-bar" id="analyzeProgress" style="display:none"><div class="progress-fill" id="analyzeFill"></div></div>
+      <div id="analysisOutput" class="analysis-output"></div>
+    </div>
+  </div>
+
+  <!-- DEAL CALCULATOR -->
+  <div class="tab-pane" id="tab-deal">
+    <div class="main-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">🏠 Property Details</div>
+          <div class="fg"><label>Property Address</label><input id="dealAddr" placeholder="1130 W 2nd St, Wilmington, DE"/></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+            <div class="fg"><label>Purchase Price</label><input id="dealPrice" type="number" placeholder="150000"/></div>
+            <div class="fg"><label>After Repair Value (ARV)</label><input id="dealARV" type="number" placeholder="250000"/></div>
+            <div class="fg"><label>Estimated Rehab Cost</label><input id="dealRehab" type="number" placeholder="40000"/></div>
+            <div class="fg"><label>Holding Period (months)</label><input id="dealHold" type="number" placeholder="6"/></div>
+            <div class="fg"><label>Down Payment %</label><input id="dealDown" type="number" placeholder="20"/></div>
+            <div class="fg"><label>Interest Rate %</label><input id="dealRate" type="number" placeholder="7.5"/></div>
+          </div>
+          <div class="fg">
+            <label>Exit Strategy</label>
+            <select id="dealExit">
+              <option value="flip">Fix & Flip</option>
+              <option value="rent">Buy & Hold (Rental)</option>
+              <option value="wholesale">Wholesale</option>
+              <option value="refinance">BRRRR (Refinance)</option>
+            </select>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="calculateDeal()">📊 Calculate Deal</button>
+        </div>
+      </div>
+      <div>
+        <div class="card" id="dealResults" style="display:none">
+          <div class="card-title">📊 Deal Analysis</div>
+          <div class="deal-grid" id="dealMetrics"></div>
+          <div id="dealRecommendation" style="font-size:.82rem;color:var(--light);line-height:1.75;margin-top:.5rem"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💡 70% Rule</div>
+          <div style="font-size:.82rem;color:var(--light);line-height:1.85">
+            The 70% rule says:<br>
+            <strong style="color:var(--accent)">Max Offer = (ARV × 0.70) − Rehab Cost</strong><br><br>
+            This ensures enough profit margin after buying, rehabbing, holding costs, and selling.<br><br>
+            <strong style="color:var(--white)">Example:</strong><br>
+            ARV = $250,000<br>
+            Rehab = $40,000<br>
+            Max Offer = ($250k × 0.70) − $40k = <strong style="color:var(--green)">$135,000</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- US REAL ESTATE LAWS -->
+  <div class="tab-pane" id="tab-laws">
+    <div class="main-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">⚖️ US Real Estate Law Reference</div>
+          <div class="fg" style="margin-bottom:.75rem">
+            <input id="lawSearch" placeholder="Search laws (e.g. earnest money, disclosure, lien...)" oninput="searchLaws(this.value)"/>
+          </div>
+          <div id="lawsList"></div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">📚 Law Categories</div>
+          <div style="display:flex;flex-direction:column;gap:.35rem">
+            <button onclick="filterLaws('federal')" class="btn btn-secondary btn-full" style="justify-content:flex-start">🇺🇸 Federal Real Estate Law</button>
+            <button onclick="filterLaws('contract')" class="btn btn-secondary btn-full" style="justify-content:flex-start">📄 Contract Law</button>
+            <button onclick="filterLaws('disclosure')" class="btn btn-secondary btn-full" style="justify-content:flex-start">📋 Disclosure Requirements</button>
+            <button onclick="filterLaws('financing')" class="btn btn-secondary btn-full" style="justify-content:flex-start">💰 Financing & Mortgages</button>
+            <button onclick="filterLaws('lien')" class="btn btn-secondary btn-full" style="justify-content:flex-start">🔨 Mechanic's Lien Law</button>
+            <button onclick="filterLaws('landlord')" class="btn btn-secondary btn-full" style="justify-content:flex-start">🏠 Landlord-Tenant Law</button>
+            <button onclick="filterLaws('title')" class="btn btn-secondary btn-full" style="justify-content:flex-start">📜 Title & Ownership</button>
+            <button onclick="filterLaws('delaware')" class="btn btn-secondary btn-full" style="justify-content:flex-start">🏛️ Delaware State Law</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🤖 Ask About a Law</div>
+          <div class="fg"><textarea id="lawQuestion" placeholder="What is RESPA? Can a seller back out after signing? What are my rights if contractor doesn't finish?" rows="3"></textarea></div>
+          <button class="btn btn-primary btn-full" onclick="askLawQuestion()">Ask AI Lawyer →</button>
+          <div id="lawAnswer" style="display:none;margin-top:.75rem;font-size:.82rem;color:var(--light);line-height:1.85;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASK AI -->
+  <div class="tab-pane" id="tab-ask">
+    <div class="main-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">🤖 Real Estate AI Advisor</div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem;margin-bottom:.85rem;min-height:300px;max-height:500px;overflow-y:auto" id="askChat"></div>
+          <div style="display:flex;gap:.5rem">
+            <input id="askInput" class="fg" style="margin:0;flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;color:var(--white);font-size:.84rem;padding:.58rem .85rem;font-family:inherit" placeholder="Ask anything about real estate..." onkeydown="if(event.key==='Enter')askRealEstate()"/>
+            <button class="btn btn-primary" onclick="askRealEstate()">→</button>
+          </div>
+          <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.5rem">
+            <button onclick="quickAsk('What are my rights as a home seller in Delaware?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Seller rights DE</button>
+            <button onclick="quickAsk('Explain earnest money — can I get it back?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Earnest money</button>
+            <button onclick="quickAsk('What contingencies should I have as a buyer?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Buyer contingencies</button>
+            <button onclick="quickAsk('What is a mechanics lien and how do I file one?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Mechanic's lien</button>
+            <button onclick="quickAsk('What must sellers disclose in Delaware?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Disclosure law DE</button>
+            <button onclick="quickAsk('Can I back out of a real estate contract?')" class="btn btn-secondary" style="font-size:.72rem;padding:.28rem .65rem">Back out of contract</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">⚖️ Legal Disclaimer</div>
+          <div style="font-size:.78rem;color:var(--mid);line-height:1.85">
+            This AI provides <strong style="color:var(--white)">legal information</strong>, not legal advice. It references US real estate law, statutes, and common legal principles.<br><br>
+            For specific legal decisions, always consult a licensed real estate attorney in your state.<br><br>
+            <strong style="color:var(--accent)">Find a Delaware Attorney:</strong><br>
+            • Delaware State Bar: dsba.org<br>
+            • Legal Aid Delaware: legaldelaware.org<br>
+            • Delaware Courts Self-Help: courts.delaware.gov
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📞 Quick Resources</div>
+          <div style="font-size:.8rem;color:var(--light);line-height:2">
+            <a href="https://www.hud.gov" target="_blank" style="color:var(--accent)">HUD.gov</a> — Housing laws<br>
+            <a href="https://www.cfpb.gov" target="_blank" style="color:var(--accent)">CFPB.gov</a> — Mortgage rules<br>
+            <a href="https://www.nar.realtor" target="_blank" style="color:var(--accent)">NAR.realtor</a> — Industry standards<br>
+            <a href="https://delcode.delaware.gov/title25" target="_blank" style="color:var(--accent)">Delaware Code Title 25</a> — DE Property law<br>
+            <a href="https://revenue.delaware.gov" target="_blank" style="color:var(--accent)">DE Revenue</a> — Transfer tax
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="tab-pane" id="tab-templates">
+    <div class="main-grid">
+      <div>
+        <div class="card">
+          <div class="card-title">📋 Generate Contract Template</div>
+          <div class="fg"><label>Template Type</label>
+            <select id="templateType">
+              <option value="offer">Home Purchase Offer Letter</option>
+              <option value="counter">Counter Offer</option>
+              <option value="addendum">Contract Addendum</option>
+              <option value="contingency">Contingency Removal</option>
+              <option value="demand">Demand Letter (contractor payment)</option>
+              <option value="lien_notice">Mechanic's Lien Notice</option>
+              <option value="lease">Month-to-Month Lease</option>
+              <option value="scope">Scope of Work (construction)</option>
+            </select>
+          </div>
+          <div class="fg"><label>Property Address</label><input id="tplAddr" placeholder="1130 W 2nd St, Wilmington, DE 19805"/></div>
+          <div class="fg"><label>Your Name / Company</label><input id="tplName" placeholder="Mohamed Ali / Ali Signature Construction"/></div>
+          <div class="fg"><label>Other Party</label><input id="tplOther" placeholder="Buyer name, seller name, or contractor name"/></div>
+          <div class="fg"><label>Key Amount ($)</label><input id="tplAmount" type="number" placeholder="150000"/></div>
+          <div class="fg"><label>Additional Details</label><textarea id="tplDetails" placeholder="Any specific terms, dates, conditions to include..." rows="3"></textarea></div>
+          <button class="btn btn-primary btn-full" onclick="generateTemplate()" id="tplBtn">📄 Generate Template</button>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">📥 Generated Document</div>
+          <div id="tplOutput" style="font-size:.8rem;color:var(--light);line-height:1.85;min-height:200px;white-space:pre-wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem;max-height:500px;overflow-y:auto">
+            Choose a template type and click Generate.
+          </div>
+          <div style="display:flex;gap:.5rem;margin-top:.6rem">
+            <button class="btn btn-secondary" style="flex:1" onclick="copyTemplate()">📋 Copy</button>
+            <button class="btn btn-primary" style="flex:1" onclick="downloadTemplate()">⬇️ Download</button>
+          </div>
+          <div style="font-size:.7rem;color:var(--mid);margin-top:.4rem;text-align:center">Templates are starting points. Have an attorney review before signing.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var GEMINI_KEY = localStorage.getItem("sc_gemini_key") || "AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8";
+var GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+var OLLAMA_URL = localStorage.getItem("sc_ollama_url") || "";
+var askHistory = [];
+
+// ── TABS ──
+function showTab(id, btn) {
+  document.querySelectorAll(".tab-pane").forEach(function(p){ p.classList.remove("active"); });
+  document.querySelectorAll(".tab-btn").forEach(function(b){ b.classList.remove("active"); });
+  document.getElementById("tab-"+id).classList.add("active");
+  if (btn) btn.classList.add("active");
+  if (id === "laws") renderLaws(US_RE_LAWS);
+}
+
+// ── CONTRACT UPLOAD ──
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById("uploadZone").classList.remove("drag");
+  var file = e.dataTransfer.files[0];
+  if (file) handleContractFile(file);
+}
+
+async function handleContractFile(file) {
+  if (!file) return;
+  if (file.type === "application/pdf" || file.name.endsWith(".pdf")) {
+    var b64 = await fileToBase64(file);
+    window._contractPDF = b64;
+    window._contractText = null;
+    document.getElementById("contractText").value = "[PDF uploaded: " + file.name + "]";
+  } else {
+    var text = await file.text();
+    document.getElementById("contractText").value = text;
+    window._contractPDF  = null;
+    window._contractText = text;
+  }
+}
+
+function fileToBase64(file) {
+  return new Promise(function(r){ var fr=new FileReader(); fr.onload=function(e){r(e.target.result.split(",")[1]);}; fr.readAsDataURL(file); });
+}
+
+// ── CONTRACT ANALYSIS ──
+async function analyzeContract() {
+  var text   = window._contractText || document.getElementById("contractText").value.trim();
+  var pdf    = window._contractPDF;
+  var role   = document.getElementById("clientRole").value;
+  var type   = document.getElementById("contractType").value;
+  var btn    = document.getElementById("analyzeBtn");
+
+  if (!text && !pdf) { alert("Please upload a contract or paste the text."); return; }
+
+  btn.disabled = true; btn.textContent = "Analyzing...";
+  document.getElementById("analysisResults").style.display = "block";
+  document.getElementById("analyzeProgress").style.display = "block";
+  document.getElementById("analyzeFill").style.width = "20%";
+  document.getElementById("analysisOutput").innerHTML = "";
+  document.getElementById("scoreNum").textContent = "...";
+  document.getElementById("scoreVerdict").textContent = "Analyzing your contract...";
+
+  var roleLabels = {buyer:"buyer",seller:"seller",contractor:"contractor (doing the work)",
+    homeowner:"homeowner (hiring a contractor)",landlord:"landlord",tenant:"tenant",investor:"real estate investor"};
+  var typeLabels = {purchase:"real estate purchase agreement",listing:"listing agreement",
+    construction:"construction contract",lease:"lease agreement",contingency:"offer with contingencies",
+    addendum:"contract addendum",other:"contract"};
+
+  var prompt = "You are an expert real estate and construction law attorney. Analyze this " + typeLabels[type] + " for the " + roleLabels[role] + ".\n\n" +
+    "Provide a COMPLETE analysis:\n\n" +
+    "## ✅ FAVORABLE TERMS\n" +
+    "List every clause that protects or benefits the " + role + ". Be specific — quote or reference exact sections.\n\n" +
+    "## ⚠️ CONCERNS\n" +
+    "List terms that need attention or could become problematic.\n\n" +
+    "## ❌ RED FLAGS\n" +
+    "List any dangerous, unfair, or unusual terms the " + role + " should NOT accept.\n\n" +
+    "## 📋 MISSING CLAUSES\n" +
+    "List important standard protections that are NOT in this contract and SHOULD be.\n\n" +
+    "## ⚖️ LEGAL REFERENCES\n" +
+    "Cite specific US laws relevant to this contract (RESPA, Fair Housing Act, UCC, state statutes, etc). Format: [LAW: statute name, section, what it says]\n\n" +
+    "## 💡 NEGOTIATION STRATEGY\n" +
+    "List the top 5 specific changes the " + role + " should negotiate before signing.\n\n" +
+    "## 📊 FAIRNESS SCORE\n" +
+    "Rate this contract 1-10 for fairness to the " + role + ". Format: SCORE: X/10 — [brief verdict]\n\n" +
+    "Be thorough. Reference specific clauses. This is a real legal decision.";
+
+  document.getElementById("analyzeFill").style.width = "50%";
+
+  var result;
+  if (pdf) {
+    result = await callGeminiPDF(pdf, prompt);
+  } else {
+    result = await callAI(prompt + "\n\nCONTRACT:\n" + text.slice(0,10000));
+  }
+
+  document.getElementById("analyzeFill").style.width = "100%";
+  setTimeout(function(){ document.getElementById("analyzeProgress").style.display="none"; },500);
+
+  if (result) {
+    renderAnalysis(result, role);
+  }
+
+  btn.disabled = false; btn.textContent = "🔍 Analyze Contract";
+}
+
+function renderAnalysis(text, role) {
+  // Extract score
+  var scoreMatch = text.match(/SCORE:\s*(\d+)\/10\s*[—-]\s*([^\n]+)/i);
+  if (scoreMatch) {
+    var score = parseInt(scoreMatch[1]);
+    var circle = document.getElementById("scoreCircle");
+    circle.textContent = score;
+    circle.style.borderColor = score >= 7 ? "#5cb85c" : score >= 4 ? "#e8944a" : "#e05252";
+    circle.style.color       = score >= 7 ? "#5cb85c" : score >= 4 ? "#e8944a" : "#e05252";
+    document.getElementById("scoreNum").textContent    = score;
+    document.getElementById("scoreVerdict").textContent = score >= 7 ? "Favorable Contract" : score >= 4 ? "Neutral — Negotiate Before Signing" : "Unfavorable — Major Issues";
+    document.getElementById("scoreNote").textContent   = "Score for " + role + " · AI analysis";
+  }
+
+  // Format the output
+  var html = text
+    .replace(/## ✅ FAVORABLE TERMS/g, '<h3 style="color:var(--green)">✅ FAVORABLE TERMS</h3>')
+    .replace(/## ⚠️ CONCERNS/g, '<h3 style="color:var(--warn)">⚠️ CONCERNS</h3>')
+    .replace(/## ❌ RED FLAGS/g, '<h3 style="color:var(--red)">❌ RED FLAGS</h3>')
+    .replace(/## 📋 MISSING CLAUSES/g, '<h3 style="color:var(--accent)">📋 MISSING CLAUSES</h3>')
+    .replace(/## ⚖️ LEGAL REFERENCES/g, '<h3 style="color:var(--blue)">⚖️ LEGAL REFERENCES</h3>')
+    .replace(/## 💡 NEGOTIATION STRATEGY/g, '<h3 style="color:var(--accent)">💡 NEGOTIATION STRATEGY</h3>')
+    .replace(/## 📊 FAIRNESS SCORE/g, '<h3>📊 FAIRNESS SCORE</h3>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/^• (.+)$/gm, '<li>$1</li>')
+    .replace(/\[LAW: ([^\]]+)\]/g, '<div class="law-cite">⚖️ $1</div>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+
+  document.getElementById("analysisOutput").innerHTML = "<p>" + html + "</p>";
+}
+
+// ── DEAL CALCULATOR ──
+function calculateDeal() {
+  var price = parseFloat(document.getElementById("dealPrice").value) || 0;
+  var arv   = parseFloat(document.getElementById("dealARV").value)   || 0;
+  var rehab = parseFloat(document.getElementById("dealRehab").value) || 0;
+  var hold  = parseFloat(document.getElementById("dealHold").value)  || 6;
+  var down  = parseFloat(document.getElementById("dealDown").value)  || 20;
+  var rate  = parseFloat(document.getElementById("dealRate").value)  || 7.5;
+  var exit  = document.getElementById("dealExit").value;
+
+  if (!price || !arv) { alert("Enter purchase price and ARV"); return; }
+
+  var downAmt      = price * (down/100);
+  var loanAmt      = price - downAmt;
+  var monthlyRate  = rate / 100 / 12;
+  var monthlyPmt   = loanAmt * monthlyRate / (1 - Math.pow(1+monthlyRate, -360));
+  var holdingCost  = monthlyPmt * hold + (price * 0.01 * hold); // mortgage + 1% holding
+  var closingBuy   = price * 0.03;
+  var closingSell  = arv  * 0.08; // agent + closing
+  var totalCost    = downAmt + rehab + holdingCost + closingBuy;
+  var profit       = arv - price - rehab - holdingCost - closingBuy - closingSell;
+  var roi          = (profit / totalCost) * 100;
+  var maxOffer70   = (arv * 0.70) - rehab;
+  var cashOnCash   = exit === "rent" ? ((arv*0.007 - monthlyPmt) * 12 / downAmt) * 100 : 0;
+  var goodDeal     = price <= maxOffer70;
+
+  var metrics = [
+    {label:"Purchase Price",  val:"$"+price.toLocaleString(),  cls:""},
+    {label:"ARV",             val:"$"+arv.toLocaleString(),    cls:"good"},
+    {label:"Rehab Cost",      val:"$"+rehab.toLocaleString(),  cls:""},
+    {label:"70% Rule Max",    val:"$"+Math.round(maxOffer70).toLocaleString(), cls: goodDeal?"good":"bad"},
+    {label:"Total Investment",val:"$"+Math.round(totalCost).toLocaleString(),  cls:""},
+    {label:"Net Profit",      val:"$"+Math.round(profit).toLocaleString(),     cls: profit>0?"good":"bad"},
+    {label:"ROI",             val:Math.round(roi)+"%",          cls: roi>20?"good":roi>0?"":"bad"},
+    {label:"Monthly Payment", val:"$"+Math.round(monthlyPmt).toLocaleString()+"/mo", cls:""},
+    {label:"Holding Costs",   val:"$"+Math.round(holdingCost).toLocaleString(), cls:""},
+    exit==="rent"?{label:"Cash-on-Cash",val:Math.round(cashOnCash)+"%",cls:cashOnCash>8?"good":cashOnCash>0?"":"bad"}:null,
+  ].filter(Boolean);
+
+  document.getElementById("dealMetrics").innerHTML = metrics.map(function(m){
+    return "<div class=\"deal-metric " + m.cls + "\"><div class=\"deal-metric-val\">" + m.val + "</div><div class=\"deal-metric-lbl\">" + m.label + "</div></div>";
+  }).join("");
+
+  var verdict = goodDeal && profit > 0
+    ? "✅ GOOD DEAL — Price is within the 70% rule and profit margin is positive."
+    : !goodDeal
+    ? "❌ OVERPRICED — Price exceeds 70% rule max of $" + Math.round(maxOffer70).toLocaleString() + ". Negotiate down or pass."
+    : "⚠️ MARGINAL — Price is within 70% rule but profit margin is thin.";
+
+  document.getElementById("dealRecommendation").innerHTML = "<strong style=\"color:var(--accent)\">" + verdict + "</strong><br><br>" +
+    "Closing costs (buying): ~$" + Math.round(closingBuy).toLocaleString() + "<br>" +
+    "Closing costs (selling): ~$" + Math.round(closingSell).toLocaleString() + "<br>" +
+    "Break-even price: $" + Math.round(price+rehab+holdingCost+closingBuy+closingSell).toLocaleString();
+
+  document.getElementById("dealResults").style.display = "block";
+}
+
+// ── LAWS DATABASE ──
+var US_RE_LAWS = [
+  {title:"RESPA — Real Estate Settlement Procedures Act",ref:"12 U.S.C. § 2601",cat:"federal",preview:"Requires lenders to provide disclosures about settlement costs. Prohibits kickbacks and referral fees. Requires good faith estimate within 3 days of loan application."},
+  {title:"Fair Housing Act",ref:"42 U.S.C. § 3604",cat:"federal",preview:"Prohibits discrimination in sale, rental, or financing of housing based on race, color, national origin, religion, sex, familial status, or disability."},
+  {title:"Truth in Lending Act (TILA)",ref:"15 U.S.C. § 1601",cat:"financing",preview:"Requires clear disclosure of loan terms including APR, total cost, and payment schedule. Gives borrowers right of rescission within 3 days for non-purchase refinances."},
+  {title:"Dodd-Frank Wall Street Reform Act",ref:"Pub. L. 111-203",cat:"financing",preview:"Requires mortgage lenders to verify borrower's ability to repay. Created the Consumer Financial Protection Bureau (CFPB). Introduced Qualified Mortgage standards."},
+  {title:"Earnest Money — Liquidated Damages",ref:"Restatement 2d Contracts § 356",cat:"contract",preview:"Earnest money provisions are enforceable if they represent a reasonable estimate of damages. Courts may void penalty clauses deemed excessive or unconscionable."},
+  {title:"Inspection Contingency Rights",ref:"Common Law / State Statutes",cat:"contract",preview:"Buyers typically have the right to inspect property within agreed timeframe. If inspection reveals material defects, buyer may negotiate repairs, price reduction, or withdraw with earnest money returned."},
+  {title:"Seller Disclosure Requirements (Federal)",ref:"42 U.S.C. § 4852d",cat:"disclosure",preview:"Federal law requires sellers to disclose known lead-based paint hazards in homes built before 1978. Buyers have 10-day right to test for lead paint."},
+  {title:"Delaware Seller Disclosure Law",ref:"6 Del. C. § 2572",cat:"delaware",preview:"Delaware requires sellers to complete a Seller's Disclosure of Real Property Condition Report disclosing known material defects. Failure to disclose may allow buyer to rescind contract."},
+  {title:"Delaware Transfer Tax",ref:"30 Del. C. § 5401",cat:"delaware",preview:"Delaware imposes a 4% realty transfer tax (2% state + up to 2% county/municipal). Typically split 50/50 between buyer and seller unless otherwise negotiated."},
+  {title:"Delaware Mechanic's Lien Act",ref:"25 Del. C. § 2701",cat:"lien",preview:"Contractors, subcontractors, and suppliers can file a mechanic's lien for unpaid work within 120 days of last work performed. Lien must be enforced within 1 year."},
+  {title:"UCC Article 2 — Sale of Goods",ref:"UCC § 2-101",cat:"contract",preview:"Governs contracts for sale of goods over $500. Implies warranties of merchantability and fitness for particular purpose. Relevant for construction material contracts."},
+  {title:"Statute of Frauds (Real Estate)",ref:"Common Law / State Statutes",cat:"contract",preview:"Real estate contracts must be in writing to be enforceable. Verbal agreements for purchase/sale of real property are generally not enforceable."},
+  {title:"Financing Contingency",ref:"Standard Contract Provisions",cat:"contract",preview:"Buyer's obligation to purchase is contingent on obtaining financing at specified terms. If financing falls through, buyer can typically withdraw with earnest money returned."},
+  {title:"Appraisal Contingency",ref:"Standard Contract Provisions",cat:"contract",preview:"If property appraises for less than purchase price, buyer can renegotiate price, make up difference, or withdraw. Protects buyer from overpaying."},
+  {title:"Delaware Landlord-Tenant Code",ref:"25 Del. C. § 5101",cat:"landlord",preview:"Governs residential landlord-tenant relationships in Delaware. Requires written lease for tenancies over 1 year, security deposit limits (1 month for leases under 1 year), and habitability standards."},
+  {title:"Right of First Refusal",ref:"Contract Law",cat:"contract",preview:"Gives holder the right to match any offer before property can be sold to a third party. Must be clearly defined in writing with time limits for response."},
+  {title:"1031 Exchange — Like-Kind Exchange",ref:"26 U.S.C. § 1031",cat:"financing",preview:"Allows deferral of capital gains tax when selling investment property if proceeds are reinvested in like-kind property within 180 days. Requires qualified intermediary."},
+  {title:"Title Insurance",ref:"Standard Industry Practice",cat:"title",preview:"Owner's title insurance protects against defects in title discovered after closing. Lender's title insurance required by most lenders. One-time premium paid at closing."},
+  {title:"Quiet Title Action",ref:"State Property Law",cat:"title",preview:"Legal proceeding to establish clear ownership when title is disputed. Common for foreclosures, estates, adverse possession claims, or unclear chain of title."},
+  {title:"Adverse Possession",ref:"Common Law / State Statutes",cat:"title",preview:"Open, notorious, continuous, hostile use of another's property for statutory period (Delaware: 20 years) can result in legal ownership. Requires court action to perfect title."},
+];
+
+var filteredLaws = US_RE_LAWS;
+
+function renderLaws(laws) {
+  var list = document.getElementById("lawsList");
+  list.innerHTML = laws.map(function(l, i) {
+    return "<div class=\"law-section\" onclick=\"expandLaw(" + US_RE_LAWS.indexOf(l) + ")\">" +
+      "<div style=\"display:flex;justify-content:space-between;align-items:flex-start\">" +
+        "<div class=\"law-section-title\">" + l.title + "</div>" +
+        "<span class=\"law-section-ref\">" + l.ref + "</span>" +
+      "</div>" +
+      "<div class=\"law-section-preview\">" + l.preview + "</div>" +
+      "</div>";
+  }).join("");
+}
+
+function searchLaws(q) {
+  if (!q) { renderLaws(US_RE_LAWS); return; }
+  var lower = q.toLowerCase();
+  renderLaws(US_RE_LAWS.filter(function(l){
+    return l.title.toLowerCase().includes(lower) || l.preview.toLowerCase().includes(lower) || l.ref.toLowerCase().includes(lower);
+  }));
+}
+
+function filterLaws(cat) {
+  renderLaws(US_RE_LAWS.filter(function(l){ return l.cat === cat; }));
+}
+
+async function expandLaw(idx) {
+  var law = US_RE_LAWS[idx];
+  var q   = "Explain " + law.title + " (" + law.ref + ") in detail. Cover: what it requires, who it protects, penalties for violation, and how it applies to real estate transactions in Delaware and nationally. Be comprehensive.";
+  document.getElementById("lawQuestion").value = q;
+  showTab("laws", null);
+  await askLawQuestion();
+}
+
+async function askLawQuestion() {
+  var q      = document.getElementById("lawQuestion").value.trim();
+  var ansDiv = document.getElementById("lawAnswer");
+  if (!q) return;
+  ansDiv.style.display = "block";
+  ansDiv.innerHTML = "<div style=\"color:var(--mid);font-size:.8rem\">Researching...</div>";
+
+  var system = "You are an expert real estate attorney with comprehensive knowledge of US real estate law, Delaware state law, construction law, and contract law. Cite specific statutes, sections, and case law. Be thorough and accurate. Note: This is legal information, not legal advice.";
+  var result = await callAI(system + "\n\n" + q);
+
+  ansDiv.innerHTML = result
+    ? result.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>")
+    : "Could not get response. Check AI connection.";
+}
+
+// ── ASK AI TAB ──
+function quickAsk(q) {
+  document.getElementById("askInput").value = q;
+  askRealEstate();
+}
+
+async function askRealEstate() {
+  var input = document.getElementById("askInput");
+  var q     = input.value.trim();
+  if (!q) return;
+  input.value = "";
+
+  var chat = document.getElementById("askChat");
+  chat.innerHTML += "<div style=\"background:rgba(91,155,213,.08);border:1px solid rgba(91,155,213,.2);border-radius:8px;padding:.55rem .75rem;margin-bottom:.4rem;font-size:.82rem\"><strong style=\"color:var(--blue)\">You:</strong> " + escHtml(q) + "</div>";
+  chat.innerHTML += "<div id=\"aiTyping\" style=\"color:var(--mid);font-size:.78rem;padding:.25rem .5rem\">Thinking...</div>";
+  chat.scrollTop = chat.scrollHeight;
+
+  askHistory.push({role:"user", content:q});
+
+  var system = "You are an expert real estate attorney and advisor. You have comprehensive knowledge of US real estate law, Delaware state law, RESPA, Fair Housing Act, contract law, landlord-tenant law, mechanic's lien law, and real estate investment. Always cite relevant laws and statutes. Be specific and actionable. Note: This is legal information, not legal advice.";
+  var history = askHistory.slice(-8).map(function(m){ return m.role+": "+m.content; }).join("\n");
+  var result  = await callAI(system + "\n\nCONVERSATION:\n" + history);
+
+  var typingEl = document.getElementById("aiTyping");
+  if (typingEl) typingEl.remove();
+
+  if (result) {
+    askHistory.push({role:"assistant", content:result});
+    var formatted = result
+      .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+      .replace(/\n/g,"<br>");
+    chat.innerHTML += "<div style=\"background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.55rem .75rem;margin-bottom:.6rem;font-size:.82rem;line-height:1.8\"><strong style=\"color:var(--accent)\">AI Advisor:</strong><br>" + formatted + "</div>";
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+
+// ── TEMPLATES ──
+async function generateTemplate() {
+  var type   = document.getElementById("templateType").value;
+  var addr   = document.getElementById("tplAddr").value;
+  var name   = document.getElementById("tplName").value;
+  var other  = document.getElementById("tplOther").value;
+  var amount = document.getElementById("tplAmount").value;
+  var details= document.getElementById("tplDetails").value;
+  var btn    = document.getElementById("tplBtn");
+  btn.disabled = true; btn.textContent = "Generating...";
+
+  var typeNames = {
+    offer:"Home Purchase Offer Letter", counter:"Counter Offer",
+    addendum:"Contract Addendum", contingency:"Contingency Removal",
+    demand:"Demand Letter for Payment", lien_notice:"Mechanic's Lien Notice",
+    lease:"Month-to-Month Lease Agreement", scope:"Scope of Work"
+  };
+
+  var prompt = "Generate a professional, legally sound " + typeNames[type] + " template for use in Delaware.\n\n" +
+    "Property: " + (addr||"[PROPERTY ADDRESS]") + "\n" +
+    "Party 1 (client): " + (name||"[YOUR NAME/COMPANY]") + "\n" +
+    "Party 2: " + (other||"[OTHER PARTY]") + "\n" +
+    (amount?"Amount: $"+amount+"\n":"") +
+    (details?"Additional details: "+details+"\n":"") + "\n" +
+    "Create a complete, professional template with all standard clauses. Include blank spaces [FILL IN] where specific information needs to be added. Make it legally sound and reference applicable Delaware law where appropriate. Include signature blocks.";
+
+  var result = await callAI(prompt);
+  document.getElementById("tplOutput").textContent = result || "Generation failed. Check AI connection.";
+  btn.disabled = false; btn.textContent = "📄 Generate Template";
+}
+
+function copyTemplate() {
+  var text = document.getElementById("tplOutput").textContent;
+  navigator.clipboard.writeText(text).then(function(){ alert("Copied to clipboard!"); });
+}
+
+function downloadTemplate() {
+  var text = document.getElementById("tplOutput").textContent;
+  var a = document.createElement("a");
+  a.href = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+  a.download = "contract-template-" + Date.now() + ".txt";
+  a.click();
+}
+
+// ── AI ──
+async function callAI(prompt) {
+  if (OLLAMA_URL) {
+    try {
+      var r = await fetch(OLLAMA_URL + "/api/generate", {
+        method:"POST",
+        headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
+        body: JSON.stringify({ model: localStorage.getItem("sc_ollama_model")||"llama3.2", prompt: prompt, stream: false })
+      });
+      var d = await r.json();
+      if (d.response && d.response.length > 20) return d.response;
+    } catch(e) {}
+  }
+  try {
+    var r2 = await fetch(GEMINI_URL + "?key=" + GEMINI_KEY, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        contents:[{role:"user",parts:[{text:prompt}]}],
+        generationConfig:{temperature:0.2,maxOutputTokens:4000}
+      })
+    });
+    var d2 = await r2.json();
+    return d2.candidates[0].content.parts[0].text || "";
+  } catch(e){ return null; }
+}
+
+async function callGeminiPDF(base64, prompt) {
+  try {
+    var r = await fetch(GEMINI_URL + "?key=" + GEMINI_KEY, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        contents:[{role:"user",parts:[
+          {inline_data:{mime_type:"application/pdf",data:base64}},
+          {text:prompt}
+        ]}],
+        generationConfig:{temperature:0.2,maxOutputTokens:4000}
+      })
+    });
+    var d = await r.json();
+    return d.candidates[0].content.parts[0].text || "";
+  } catch(e){ return null; }
+}
+
+function escHtml(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+renderLaws(US_RE_LAWS);
+</script>
+</body>
+</html>
