@@ -119,6 +119,8 @@
 
     @media(max-width:680px){.dash-grid{grid-template-columns:1fr 1fr}.stat-row{grid-template-columns:1fr 1fr}.links-grid{grid-template-columns:1fr}.p-nav{display:none}.p-body{padding:1.25rem .85rem}}
   
+@media(max-width:760px){body{padding-bottom:20px}}
+@media(max-width:820px){body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
 </style>
 </head>
 <body>
@@ -179,7 +181,20 @@
 <div id="platform">
   <div class="p-header">
     <div class="p-logo"><span>Site</span>Command</div>
-    <div class="p-company" id="headerCompany"></div>
+  <!-- ── TOOLS QUICK NAV ── -->
+  <div id="sc-tools-bar" style="display:flex;gap:.35rem;padding:.55rem .85rem;background:rgba(10,10,10,.95);border-bottom:1px solid #252525;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;z-index:400">
+    <a href="email-ai.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">📧 Email</a>
+    <a href="lead-finder.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🔍 Leads</a>
+    <a href="social-media.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">📱 Social</a>
+    <a href="permits.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🏛 Permits</a>
+    <a href="video-gen.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🎬 Video</a>
+    <a href="youtube-studio.html" style="display:flex;align-items:center;gap:.3rem;background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#ff7070;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">▶️ YouTube</a>
+    <a href="real-estate.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🏡 RE Law</a>
+    <a href="ai-assistant.html" style="display:flex;align-items:center;gap:.3rem;background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.25);border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#c8a96e;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🤖 AI Chat</a>
+    <a href="site-editor.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">✏️ Editor</a>
+  </div>
+
+      <div class="p-company" id="headerCompany"></div>
     <div class="p-nav">
       <button class="p-nav-btn active" onclick="showSection('dashboard',this)">Dashboard</button>
       <button class="p-nav-btn" onclick="showSection('links',this)">My Links</button>
