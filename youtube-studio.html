@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>YouTube Studio — SiteCommand</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0a0a0a;--dark:#111;--surface:#181818;--card:#1c1c1c;
+  --border:#252525;--mid:#5a5a5a;--light:#a0a0a0;--white:#f0ede8;
+  --accent:#c8a96e;--accent-dim:rgba(200,169,110,.1);
+  --green:#5cb85c;--red:#e05252;--blue:#5b9bd5;--yt:#ff0000;
+}
+body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white);min-height:100vh;-webkit-font-smoothing:antialiased;background:rgba(11,11,11,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1rem;gap:.5rem;position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--white);text-decoration:none;flex-shrink:0}.sc-logo span{color:var(--accent)}
+.sc-badge{font-size:.68rem;font-weight:600;padding:.16rem .6rem;background:var(--accent-dim);border:1px solid rgba(200,169,110,.3);border-radius:99px;color:var(--accent)}
+.sc-nav{display:flex;gap:.15rem;margin-left:auto}
+.sc-nav a{font-size:.72rem;color:var(--mid);padding:.28rem .55rem;border-radius:6px;text-decoration:none;white-space:nowrap}
+.sc-nav a:hover,.sc-nav a.active{color:var(--accent);background:var(--accent-dim)}
+.sc-tabbar{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(11,11,11,.97);border-top:1px solid var(--border);z-index:300;grid-template-columns:repeat(6,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.38rem .1rem;text-decoration:none;color:var(--mid);font-size:.48rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border:none;background:none;cursor:pointer;min-height:52px}
+.sc-tab:hover,.sc-tab.active{color:var(--accent)}
+.sc-tab-icon{font-size:1.2rem;line-height:1}
+@media(max-width:760px){.sc-nav{display:none}.sc-tabbar{display:grid}}
+/* ── PAGE ── */
+.page{max-width:1200px;margin:0 auto;padding:1.25rem 1rem}
+.page-title{font-family:"Bebas Neue",sans-serif;font-size:1.75rem;letter-spacing:.04em;margin-bottom:.2rem}
+.page-sub{font-size:.82rem;color:var(--mid);margin-bottom:1.25rem}
+/* ── GRID ── */
+.main-grid{display:grid;grid-template-columns:1fr 340px;gap:1rem}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr}}
+/* ── CARDS ── */
+.card{background:var(--dark);border:1px solid var(--border);border-radius:12px;padding:1.1rem;margin-bottom:.85rem}
+.card-title{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+/* ── CONNECT YOUTUBE ── */
+.yt-connect{background:linear-gradient(135deg,rgba(255,0,0,.08),rgba(11,11,11,.9));border:1px solid rgba(255,0,0,.25);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem}
+.yt-logo{font-size:3rem;margin-bottom:.5rem}
+.yt-connect h2{font-family:"Bebas Neue",sans-serif;font-size:1.4rem;letter-spacing:.04em;margin-bottom:.35rem}
+.yt-connect p{font-size:.82rem;color:var(--light);margin-bottom:1rem;line-height:1.6}
+.yt-btn{display:inline-flex;align-items:center;gap:.5rem;background:#ff0000;color:#fff;border:none;border-radius:8px;font-size:.9rem;font-weight:700;padding:.7rem 1.5rem;cursor:pointer;transition:opacity .2s}
+.yt-btn:hover{opacity:.85}
+.yt-connected{display:none;background:rgba(92,184,92,.08);border:1px solid rgba(92,184,92,.25);border-radius:10px;padding:.85rem 1rem;display:none;align-items:center;gap:.75rem;margin-bottom:1rem}
+/* ── TOPIC GENERATOR ── */
+.topic-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.85rem}
+.topic-card{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.6rem;cursor:pointer;transition:all .15s;text-align:center}
+.topic-card:hover,.topic-card.selected{border-color:var(--accent);background:var(--accent-dim)}
+.topic-card-icon{font-size:1.4rem;margin-bottom:.2rem}
+.topic-card-name{font-size:.72rem;font-weight:600;color:var(--white)}
+.topic-card-desc{font-size:.62rem;color:var(--mid);margin-top:.1rem}
+@media(max-width:600px){.topic-grid{grid-template-columns:repeat(2,1fr)}}
+/* ── SCRIPT EDITOR ── */
+.script-box{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.75rem;font-size:.84rem;color:var(--white);min-height:120px;line-height:1.75;outline:none;width:100%;font-family:inherit;resize:vertical;margin-bottom:.5rem}
+.script-box:focus{border-color:var(--accent)}
+.word-count{font-size:.7rem;color:var(--mid);text-align:right;margin-bottom:.75rem}
+/* ── SCHEDULE ── */
+.schedule-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;margin-bottom:.75rem}
+.sched-day{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.6rem .4rem;text-align:center;cursor:pointer;transition:all .15s}
+.sched-day:hover,.sched-day.on{border-color:var(--accent);background:var(--accent-dim)}
+.sched-day-name{font-size:.7rem;font-weight:700;color:var(--white)}
+.sched-day-time{font-size:.62rem;color:var(--mid);margin-top:.15rem}
+/* ── QUEUE ── */
+.queue-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.75rem .85rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.75rem}
+.qi-thumb{width:60px;height:38px;background:var(--card);border-radius:5px;flex-shrink:0;overflow:hidden;position:relative}
+.qi-thumb img{width:100%;height:100%;object-fit:cover}
+.qi-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.qi-info{flex:1;min-width:0}
+.qi-title{font-size:.8rem;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qi-meta{font-size:.68rem;color:var(--mid);margin-top:.1rem}
+.qi-status{font-size:.65rem;font-weight:700;padding:.12rem .5rem;border-radius:99px}
+.qi-status.scheduled{background:rgba(91,155,213,.15);color:var(--blue)}
+.qi-status.uploading{background:rgba(200,169,110,.15);color:var(--accent)}
+.qi-status.live{background:rgba(92,184,92,.15);color:var(--green)}
+.qi-status.draft{background:rgba(90,90,90,.2);color:var(--mid)}
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1rem}
+.stat{background:var(--dark);border:1px solid var(--border);border-radius:10px;padding:.85rem;text-align:center}
+.stat-val{font-family:"Bebas Neue",sans-serif;font-size:1.6rem;color:var(--accent);line-height:1}
+.stat-lbl{font-size:.62rem;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;margin-top:.1rem}
+/* ── FORM ── */
+.fg{margin-bottom:.7rem}
+.fg label{display:block;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin-bottom:.28rem}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.84rem;padding:.55rem .8rem;font-family:inherit;-webkit-appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--accent)}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn:active{opacity:.75}
+.btn-primary{background:var(--accent);color:#000;font-size:.86rem;padding:.62rem 1.25rem}
+.btn-primary:hover{opacity:.85}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed}
+.btn-secondary{background:var(--surface);border:1.5px solid var(--border);color:var(--light);font-size:.82rem;padding:.58rem 1rem}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-full{width:100%}
+.btn-yt{background:#ff0000;color:#fff;font-size:.86rem;padding:.62rem 1.25rem}
+.btn-yt:hover{opacity:.85}
+/* ── PROGRESS ── */
+.progress-bar{background:var(--border);border-radius:99px;height:4px;overflow:hidden;margin:.4rem 0}
+.progress-fill{background:var(--accent);height:100%;border-radius:99px;transition:width .35s}
+/* ── PREVIEW ── */
+.video-preview{background:#000;border-radius:8px;overflow:hidden;aspect-ratio:9/16;max-height:300px;position:relative;margin-bottom:.75rem}
+.video-preview video,.video-preview canvas{width:100%;height:100%;object-fit:contain}
+.video-preview-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--mid);font-size:.82rem}
+/* ── TABS ── */
+.tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1rem}
+.tab-btn{background:none;border:none;border-bottom:2px solid transparent;color:var(--mid);font-size:.8rem;font-weight:600;padding:.5rem .75rem;cursor:pointer;font-family:inherit;margin-bottom:-1px;transition:all .15s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-pane{display:none}.tab-pane.active{display:block}
+/* ── VOICEOVER ── */
+.voice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:.75rem}
+.voice-btn{background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:.5rem;cursor:pointer;transition:all .15s;text-align:center}
+.voice-btn:hover,.voice-btn.on{border-color:var(--accent);background:var(--accent-dim)}
+.voice-btn-name{font-size:.75rem;font-weight:600;color:var(--white)}
+.voice-btn-desc{font-size:.62rem;color:var(--mid);margin-top:.1rem}
+/* ── CHANNEL INFO ── */
+.channel-card{display:flex;align-items:center;gap:.85rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;margin-bottom:.75rem}
+.channel-avatar{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.channel-name{font-size:.88rem;font-weight:700}
+.channel-subs{font-size:.72rem;color:var(--mid);margin-top:.1rem}
+
+/* ====== SC NAV ====== */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color:var(--sc-white);min-height:100vh;-webkit-font-smoothing:antialiased;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+.sc-bar{height:54px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--sc-border);display:flex;align-items:center;padding:0 .85rem;gap:.5rem;position:sticky;top:0;z-index:500;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.sc-logo{font-family:"Bebas Neue",sans-serif;font-size:1.1rem;letter-spacing:.07em;color:var(--sc-white);text-decoration:none;flex-shrink:0}.sc-logo span{color:var(--sc-accent)}
+.sc-pg{font-size:.66rem;font-weight:700;padding:.15rem .6rem;background:var(--sc-dim);border:1px solid rgba(200,169,110,.28);border-radius:99px;color:var(--sc-accent);flex-shrink:0;white-space:nowrap}
+.sc-nav{display:flex;gap:.12rem;margin-left:auto;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.sc-nav::-webkit-scrollbar{display:none}
+.sc-nav a{font-size:.7rem;color:var(--sc-mid);padding:.28rem .5rem;border-radius:6px;text-decoration:none;white-space:nowrap;transition:color .15s,background .15s;flex-shrink:0}
+.sc-nav a:hover,.sc-nav a.sc-on{color:var(--sc-accent);background:var(--sc-dim);font-weight:600}
+.sc-tabs{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.97);border-top:1px solid var(--sc-border);z-index:500;grid-template-columns:repeat(9,1fr);padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(14px)}
+.sc-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:.3rem .05rem;text-decoration:none;color:var(--sc-mid);font-size:.42rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;border:none;background:none;cursor:pointer;min-height:50px;transition:color .15s;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.sc-tab:hover,.sc-tab.sc-on{color:var(--sc-accent)}
+.sc-ti{font-size:1.05rem;line-height:1;margin-bottom:1px}
+@media(max-width:820px){.sc-nav{display:none}.sc-tabs{display:grid}body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
+@media(max-width:400px){.sc-tab{font-size:.38rem}.sc-ti{font-size:.95rem}}
+/* ====== END SC NAV ====== */
+</style>
+</head>
+<body>
+<header class="sc-bar">
+  <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
+  <span class="sc-pg">YouTube Studio</span>
+  <nav class="sc-nav">
+    <a href="platform.html" id="sc-n-home">🏠 Home</a>
+    <a href="email-ai.html" id="sc-n-email">📧 Email</a>
+    <a href="lead-finder.html" id="sc-n-leads">🔍 Leads</a>
+    <a href="social-media.html" id="sc-n-social">📱 Social</a>
+    <a href="permits.html" id="sc-n-permits">🏛 Permits</a>
+    <a href="video-gen.html" id="sc-n-video">🎬 Video</a>
+    <a href="youtube-studio.html" id="sc-n-yt" class="sc-on">▶️ YouTube</a>
+    <a href="real-estate.html" id="sc-n-relaw">🏡 RE Law</a>
+    <a href="ai-assistant.html" id="sc-n-ai">🤖 AI Chat</a>
+  </nav>
+</header>
+<nav class="sc-tabs">
+  <a href="platform.html" class="sc-tab" id="sc-t-home"><span class="sc-ti">🏠</span>Home</a>
+  <a href="email-ai.html" class="sc-tab" id="sc-t-email"><span class="sc-ti">📧</span>Email</a>
+  <a href="lead-finder.html" class="sc-tab" id="sc-t-leads"><span class="sc-ti">🔍</span>Leads</a>
+  <a href="social-media.html" class="sc-tab" id="sc-t-social"><span class="sc-ti">📱</span>Social</a>
+  <a href="permits.html" class="sc-tab" id="sc-t-permits"><span class="sc-ti">🏛</span>Permits</a>
+  <a href="video-gen.html" class="sc-tab" id="sc-t-video"><span class="sc-ti">🎬</span>Video</a>
+  <a href="youtube-studio.html" class="sc-tab sc-on" id="sc-t-yt"><span class="sc-ti">▶️</span>YouTube</a>
+  <a href="real-estate.html" class="sc-tab" id="sc-t-relaw"><span class="sc-ti">🏡</span>RE Law</a>
+  <a href="ai-assistant.html" class="sc-tab" id="sc-t-ai"><span class="sc-ti">🤖</span>AI Chat</a>
+</nav>
+
+
+
+
+
+<div class="page">
+  <div class="page-title">▶️ YouTube Studio</div>
+  <div class="page-sub">AI generates 30-second construction videos and posts 5 per day to your YouTube channel automatically. Build an audience and start earning ad revenue.</div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val" id="statVideos">0</div><div class="stat-lbl">Videos Posted</div></div>
+    <div class="stat"><div class="stat-val" id="statViews">0</div><div class="stat-lbl">Total Views</div></div>
+    <div class="stat"><div class="stat-val" id="statSubs">0</div><div class="stat-lbl">Subscribers</div></div>
+    <div class="stat"><div class="stat-val" id="statEarnings">$0</div><div class="stat-lbl">Est. Earnings</div></div>
+  </div>
+
+  <div class="main-grid">
+    <!-- LEFT -->
+    <div>
+      <!-- CONNECT YOUTUBE -->
+      <div id="ytConnectSection">
+        <div class="yt-connect">
+          <div class="yt-logo">▶️</div>
+          <h2>Connect Your YouTube Channel</h2>
+          <p>Connect your channel and AI will generate and post 5 construction videos per day automatically. Each video is unique, keyword-optimized, and built to grow your audience.</p>
+          <button class="yt-btn" onclick="connectYouTube()">
+            <span>▶</span> Connect YouTube Channel
+          </button>
+          <div style="font-size:.72rem;color:var(--mid);margin-top:.75rem">Uses YouTube Data API v3 · Free · Your content stays yours</div>
+        </div>
+      </div>
+
+      <!-- CONNECTED CHANNEL (shown after connect) -->
+      <div id="ytChannelSection" style="display:none">
+        <div class="channel-card">
+          <div class="channel-avatar" id="channelAvatar">🏗️</div>
+          <div>
+            <div class="channel-name" id="channelName">My Channel</div>
+            <div class="channel-subs" id="channelSubs">0 subscribers</div>
+          </div>
+          <button onclick="disconnectYT()" style="margin-left:auto;background:none;border:1px solid var(--border);color:var(--mid);border-radius:6px;font-size:.72rem;padding:.28rem .65rem;cursor:pointer">Disconnect</button>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs">
+          <button class="tab-btn active" onclick="showTab('generate',this)">🤖 Generate</button>
+          <button class="tab-btn" onclick="showTab('queue',this)">📋 Queue</button>
+          <button class="tab-btn" onclick="showTab('schedule',this)">📅 Schedule</button>
+          <button class="tab-btn" onclick="showTab('analytics',this)">📊 Analytics</button>
+        </div>
+
+        <!-- GENERATE TAB -->
+        <div class="tab-pane active" id="tab-generate">
+          <div class="card">
+            <div class="card-title">🎯 Choose Topic</div>
+            <div class="topic-grid" id="topicGrid"></div>
+            <div class="fg">
+              <label>Or type your own topic</label>
+              <input id="customTopic" placeholder="e.g. How to install crown molding"/>
+            </div>
+            <button class="btn btn-primary" onclick="generateScript()" id="scriptBtn">
+              🤖 Generate AI Script
+            </button>
+          </div>
+
+          <div class="card" id="scriptCard" style="display:none">
+            <div class="card-title">📝 AI Script (30 seconds)</div>
+            <div class="progress-bar" id="scriptProgress" style="display:none"><div class="progress-fill" id="scriptFill"></div></div>
+            <textarea class="script-box" id="scriptText" oninput="updateWordCount()"></textarea>
+            <div class="word-count" id="wordCount">0 words · 0 seconds</div>
+            
+            <div class="fg">
+              <label>Video Title (YouTube SEO)</label>
+              <input id="videoYtTitle" placeholder="AI will suggest an SEO title"/>
+            </div>
+            <div class="fg">
+              <label>Description</label>
+              <textarea class="fg" id="videoDesc" rows="3" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:7px;color:var(--white);font-size:.82rem;padding:.55rem .8rem;font-family:inherit;resize:vertical;min-height:70px" placeholder="AI will generate SEO description with hashtags"></textarea>
+            </div>
+            <div class="fg">
+              <label>Voice Style</label>
+              <div class="voice-grid">
+                <button class="voice-btn on" onclick="setVoice('professional',this)">
+                  <div class="voice-btn-name">👔 Professional</div>
+                  <div class="voice-btn-desc">Clear & authoritative</div>
+                </button>
+                <button class="voice-btn" onclick="setVoice('friendly',this)">
+                  <div class="voice-btn-name">😊 Friendly</div>
+                  <div class="voice-btn-desc">Warm & conversational</div>
+                </button>
+                <button class="voice-btn" onclick="setVoice('energetic',this)">
+                  <div class="voice-btn-name">⚡ Energetic</div>
+                  <div class="voice-btn-desc">Fast & exciting</div>
+                </button>
+              </div>
+            </div>
+            <div style="display:flex;gap:.5rem">
+              <button class="btn btn-secondary" onclick="previewVoice()" style="flex:1">🔊 Preview Voice</button>
+              <button class="btn btn-primary" onclick="generateFullVideo()" id="genVideoBtn" style="flex:2">🎬 Generate Video</button>
+            </div>
+          </div>
+
+          <!-- VIDEO PREVIEW -->
+          <div class="card" id="videoPreviewCard" style="display:none">
+            <div class="card-title">🎬 Video Preview</div>
+            <div class="video-preview">
+              <canvas id="ytCanvas"></canvas>
+            </div>
+            <div class="progress-bar" id="genProgress" style="display:none"><div class="progress-fill" id="genFill"></div></div>
+            <div style="font-size:.8rem;color:var(--light);text-align:center;margin:.5rem 0" id="genStatus"></div>
+            <div style="display:flex;gap:.5rem" id="uploadActions" style="display:none">
+              <button class="btn btn-secondary" onclick="downloadYtVideo()" style="flex:1">⬇️ Download</button>
+              <button class="btn btn-yt btn-full" onclick="uploadToYouTube()" id="uploadBtn" style="flex:2">▶ Upload to YouTube</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUEUE TAB -->
+        <div class="tab-pane" id="tab-queue">
+          <div class="card">
+            <div class="card-title">📋 Upload Queue</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem">
+              <div style="font-size:.8rem;color:var(--light)"><span id="queueCount">0</span> videos in queue</div>
+              <button class="btn btn-primary" onclick="generateBatch()" id="batchBtn" style="font-size:.78rem;padding:.45rem .9rem">⚡ Generate 5 Videos</button>
+            </div>
+            <div id="queueList">
+              <div style="text-align:center;padding:2rem;color:var(--mid);font-size:.82rem">
+                No videos in queue. Generate some above!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCHEDULE TAB -->
+        <div class="tab-pane" id="tab-schedule">
+          <div class="card">
+            <div class="card-title">📅 Auto-Post Schedule</div>
+            <div style="font-size:.8rem;color:var(--light);margin-bottom:.85rem">
+              Choose which days to auto-post. AI generates and uploads videos automatically at your chosen times.
+            </div>
+            <div class="schedule-grid" id="scheduleGrid"></div>
+            <div class="fg" style="margin-top:.5rem">
+              <label>Post Time (your timezone)</label>
+              <select id="postTime">
+                <option value="08:00">8:00 AM</option>
+                <option value="09:00">9:00 AM</option>
+                <option value="10:00" selected>10:00 AM</option>
+                <option value="12:00">12:00 PM</option>
+                <option value="15:00">3:00 PM</option>
+                <option value="17:00">5:00 PM</option>
+                <option value="19:00">7:00 PM</option>
+                <option value="20:00">8:00 PM</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Videos Per Day</label>
+              <select id="videosPerDay">
+                <option value="1">1 video/day</option>
+                <option value="3">3 videos/day</option>
+                <option value="5" selected>5 videos/day (recommended)</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Content Mix</label>
+              <select id="contentMix">
+                <option value="auto">Auto (AI picks topics)</option>
+                <option value="tips">Construction Tips</option>
+                <option value="howto">How-To Guides</option>
+                <option value="costs">Cost Breakdowns</option>
+                <option value="tools">Tool Reviews</option>
+                <option value="mixed" selected>Mixed (all types)</option>
+              </select>
+            </div>
+            <div id="autoPostStatus" style="display:none;background:rgba(92,184,92,.08);border:1px solid rgba(92,184,92,.25);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;color:var(--green);margin-bottom:.75rem">
+              ✅ Auto-post active — next batch at <span id="nextPostTime">—</span>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="saveSchedule()" id="scheduleBtn">
+              ✅ Activate Auto-Post
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💡 Content Strategy</div>
+            <div style="font-size:.8rem;color:var(--light);line-height:1.85">
+              <strong style="color:var(--accent)">Monday</strong> — Before/After Reveal<br>
+              <strong style="color:var(--accent)">Tuesday</strong> — Construction Tip<br>
+              <strong style="color:var(--accent)">Wednesday</strong> — Cost Breakdown<br>
+              <strong style="color:var(--accent)">Thursday</strong> — How-To Guide<br>
+              <strong style="color:var(--accent)">Friday</strong> — Project Showcase<br>
+              <strong style="color:var(--accent)">Weekend</strong> — Tool Reviews
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div class="tab-pane" id="tab-analytics">
+          <div class="card">
+            <div class="card-title">📊 Channel Performance</div>
+            <div id="analyticsContent">
+              <div style="text-align:center;padding:2rem;color:var(--mid);font-size:.82rem">
+                Connect YouTube to see real analytics
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💰 Monetization Path</div>
+            <div style="font-size:.82rem;color:var(--light);line-height:2">
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:.4rem;margin-bottom:.4rem">
+                <span>🎯 Goal: YouTube Partner Program</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Subscribers needed</span>
+                <span style="color:var(--accent)">1,000 <span id="subProgress" style="color:var(--mid);font-size:.72rem"></span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Watch hours needed</span>
+                <span style="color:var(--accent)">4,000 hrs <span id="watchProgress" style="color:var(--mid);font-size:.72rem"></span></span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Estimated CPM (construction)</span>
+                <span style="color:var(--green)">$2–$8</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>5 videos/day × 30 days</span>
+                <span style="color:var(--accent)">150 videos/mo</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span>Estimated monthly earnings</span>
+                <span style="color:var(--green)">$50–$500+</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div>
+      <!-- HOW IT WORKS -->
+      <div class="card">
+        <div class="card-title">⚙️ How It Works</div>
+        <div style="font-size:.8rem;color:var(--light);line-height:1.9">
+          <div style="display:flex;gap:.6rem;margin-bottom:.5rem;align-items:flex-start">
+            <span style="background:var(--accent);color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem">1</span>
+            <span><strong style="color:var(--white)">AI picks a topic</strong> — trending construction keywords for maximum reach</span>
+          </div>
+          <div style="display:flex;gap:.6rem;margin-bottom:.5rem;align-items:flex-start">
+            <span style="background:var(--accent);color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem">2</span>
+            <span><strong style="color:var(--white)">Writes a 30-second script</strong> — SEO-optimized title and description</span>
+          </div>
+          <div style="display:flex;gap:.6rem;margin-bottom:.5rem;align-items:flex-start">
+            <span style="background:var(--accent);color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem">3</span>
+            <span><strong style="color:var(--white)">Records voiceover</strong> — browser TTS or ElevenLabs voice</span>
+          </div>
+          <div style="display:flex;gap:.6rem;margin-bottom:.5rem;align-items:flex-start">
+            <span style="background:var(--accent);color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem">4</span>
+            <span><strong style="color:var(--white)">Renders video</strong> — animated text on construction background images</span>
+          </div>
+          <div style="display:flex;gap:.6rem;align-items:flex-start">
+            <span style="background:var(--accent);color:#000;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;flex-shrink:0;margin-top:.1rem">5</span>
+            <span><strong style="color:var(--white)">Posts to YouTube</strong> — uploads automatically at scheduled times</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETUP CHECKLIST -->
+      <div class="card">
+        <div class="card-title">✅ Setup Checklist</div>
+        <div id="checklist" style="font-size:.8rem;color:var(--light);line-height:2.1"></div>
+      </div>
+
+      <!-- COMPANY INFO -->
+      <div class="card">
+        <div class="card-title">🏢 Your Brand</div>
+        <div class="fg">
+          <label>Company Name</label>
+          <input id="brandName" placeholder="Ali Signature Construction" value=""/>
+        </div>
+        <div class="fg">
+          <label>Tagline</label>
+          <input id="brandTagline" placeholder="Licensed · Insured · 5 Stars" value=""/>
+        </div>
+        <div class="fg">
+          <label>Service Area</label>
+          <input id="brandArea" placeholder="Wilmington, Delaware" value=""/>
+        </div>
+        <div class="fg">
+          <label>Phone</label>
+          <input id="brandPhone" placeholder="(302) 555-0000" value=""/>
+        </div>
+        <div class="fg">
+          <label>Specialty</label>
+          <select id="brandSpecialty">
+            <option value="general">General Contractor</option>
+            <option value="renovation">Home Renovation</option>
+            <option value="roofing">Roofing</option>
+            <option value="kitchen">Kitchen & Bath</option>
+            <option value="flooring">Flooring</option>
+            <option value="painting">Painting</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrical">Electrical</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary btn-full" onclick="saveBrand()">Save Brand Info</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="ytCanvas" style="display:none"></canvas>
+
+<script>
+var GEMINI_KEY  = localStorage.getItem("sc_gemini_key") || "AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8";
+var GEMINI_URL  = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+var OLLAMA_URL  = localStorage.getItem("sc_ollama_url") || "";
+var YT_TOKEN    = localStorage.getItem("yt_access_token") || "";
+var YT_CHANNEL  = JSON.parse(localStorage.getItem("yt_channel") || "null");
+var videoQueue  = JSON.parse(localStorage.getItem("yt_queue") || "[]");
+var selectedVoice = "professional";
+var selectedTopic = "";
+var currentVideoBlob = null;
+var currentVideoMeta = {};
+
+var TOPICS = [
+  {icon:"🔨",name:"How-To Guide",desc:"Step by step",key:"howto"},
+  {icon:"💰",name:"Cost Breakdown",desc:"Budget guide",key:"costs"},
+  {icon:"🏠",name:"Before/After",desc:"Transformation",key:"before_after"},
+  {icon:"🛠️",name:"Tool Review",desc:"Best tools",key:"tools"},
+  {icon:"💡",name:"Pro Tip",desc:"Expert advice",key:"tips"},
+  {icon:"🚨",name:"Common Mistake",desc:"What to avoid",key:"mistakes"},
+  {icon:"📐",name:"DIY vs Pro",desc:"When to hire",key:"diyvspro"},
+  {icon:"🏗️",name:"Project Showcase",desc:"Completed work",key:"showcase"},
+  {icon:"📋",name:"Permit Guide",desc:"What you need",key:"permits"},
+];
+
+var DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+var scheduleActive = JSON.parse(localStorage.getItem("yt_schedule") || "null");
+
+// ── INIT ──
+function init() {
+  renderTopics();
+  renderScheduleGrid();
+  renderChecklist();
+  loadBrand();
+  if (YT_TOKEN && YT_CHANNEL) {
+    showConnectedState();
+    loadStats();
+  }
+  renderQueue();
+}
+
+function renderTopics() {
+  var g = document.getElementById("topicGrid");
+  g.innerHTML = TOPICS.map(function(t) {
+    return "<div class=\"topic-card\" onclick=\"selectTopic('" + t.key + "',this)\">" +
+      "<div class=\"topic-card-icon\">" + t.icon + "</div>" +
+      "<div class=\"topic-card-name\">" + t.name + "</div>" +
+      "<div class=\"topic-card-desc\">" + t.desc + "</div></div>";
+  }).join("");
+}
+
+function selectTopic(key, el) {
+  selectedTopic = key;
+  document.querySelectorAll(".topic-card").forEach(function(c){ c.classList.remove("selected"); });
+  el.classList.add("selected");
+}
+
+function renderScheduleGrid() {
+  var saved = scheduleActive ? scheduleActive.days || [] : [];
+  var g = document.getElementById("scheduleGrid");
+  g.innerHTML = DAYS.map(function(d, i) {
+    var on = saved.indexOf(i) >= 0;
+    return "<div class=\"sched-day" + (on?" on":"") + "\" onclick=\"toggleDay(" + i + ",this)\">" +
+      "<div class=\"sched-day-name\">" + d + "</div>" +
+      "<div class=\"sched-day-time\">10:00 AM</div></div>";
+  }).join("");
+}
+
+function toggleDay(i, el) { el.classList.toggle("on"); }
+
+function renderChecklist() {
+  var items = [
+    [!!YT_TOKEN, "YouTube channel connected"],
+    [!!(localStorage.getItem("yt_brand_name")), "Brand info saved"],
+    [!!(scheduleActive), "Auto-post schedule set"],
+    [videoQueue.length >= 5, "5+ videos in queue"],
+    [!!(localStorage.getItem("sc_ollama_url")), "Local AI connected (faster generation)"],
+  ];
+  document.getElementById("checklist").innerHTML = items.map(function(item) {
+    return "<div>" + (item[0] ? "✅" : "⬜") + " " + item[1] + "</div>";
+  }).join("");
+}
+
+function loadBrand() {
+  var n = localStorage.getItem("yt_brand_name") || localStorage.getItem("asc_company") || "";
+  var t = localStorage.getItem("yt_brand_tagline") || "Licensed · Insured · Free Estimates";
+  var a = localStorage.getItem("yt_brand_area") || localStorage.getItem("sc_location") || "";
+  var p = localStorage.getItem("yt_brand_phone") || localStorage.getItem("sc_phone") || "";
+  if (n) document.getElementById("brandName").value = n;
+  if (t) document.getElementById("brandTagline").value = t;
+  if (a) document.getElementById("brandArea").value = a;
+  if (p) document.getElementById("brandPhone").value = p;
+}
+
+function saveBrand() {
+  localStorage.setItem("yt_brand_name",    document.getElementById("brandName").value);
+  localStorage.setItem("yt_brand_tagline", document.getElementById("brandTagline").value);
+  localStorage.setItem("yt_brand_area",    document.getElementById("brandArea").value);
+  localStorage.setItem("yt_brand_phone",   document.getElementById("brandPhone").value);
+  alert("Brand info saved!");
+  renderChecklist();
+}
+
+// ── YOUTUBE CONNECT ──
+async function connectYouTube() {
+  var CLIENT_ID = "919895770319-1tisp90f3llr31410lodevd8tdie6h0b.apps.googleusercontent.com";
+  var SCOPES    = "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly";
+
+  if (!window.google || !window.google.accounts) {
+    await new Promise(function(resolve, reject) {
+      var s = document.createElement("script");
+      s.src = "https://accounts.google.com/gsi/client";
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  var client = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope:     SCOPES,
+    callback:  async function(resp) {
+      if (resp.error) { alert("Error: " + resp.error); return; }
+      YT_TOKEN = resp.access_token;
+      localStorage.setItem("yt_access_token", YT_TOKEN);
+      await loadChannelInfo();
+      showConnectedState();
+      renderChecklist();
+    }
+  });
+  client.requestAccessToken({ prompt: "consent" });
+}
+
+async function loadChannelInfo() {
+  try {
+    var r = await fetch(
+      "https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true",
+      { headers: { "Authorization": "Bearer " + YT_TOKEN } }
+    );
+    var d = await r.json();
+    if (d.items && d.items.length) {
+      var ch = d.items[0];
+      YT_CHANNEL = {
+        id:       ch.id,
+        name:     ch.snippet.title,
+        subs:     parseInt(ch.statistics.subscriberCount || 0),
+        views:    parseInt(ch.statistics.viewCount || 0),
+        videos:   parseInt(ch.statistics.videoCount || 0),
+        avatar:   ch.snippet.thumbnails && ch.snippet.thumbnails.default ? ch.snippet.thumbnails.default.url : null,
+      };
+      localStorage.setItem("yt_channel", JSON.stringify(YT_CHANNEL));
+    }
+  } catch(e) { console.log("Channel load error:", e); }
+}
+
+function showConnectedState() {
+  document.getElementById("ytConnectSection").style.display = "none";
+  document.getElementById("ytChannelSection").style.display = "block";
+  if (YT_CHANNEL) {
+    document.getElementById("channelName").textContent = YT_CHANNEL.name || "My Channel";
+    document.getElementById("channelSubs").textContent = (YT_CHANNEL.subs || 0).toLocaleString() + " subscribers";
+    if (YT_CHANNEL.avatar) {
+      document.getElementById("channelAvatar").innerHTML = "<img src=\"" + YT_CHANNEL.avatar + "\" style=\"width:100%;height:100%;border-radius:50%;object-fit:cover\"/>";
+    }
+  }
+}
+
+function disconnectYT() {
+  if (!confirm("Disconnect YouTube channel?")) return;
+  localStorage.removeItem("yt_access_token");
+  localStorage.removeItem("yt_channel");
+  YT_TOKEN = ""; YT_CHANNEL = null;
+  document.getElementById("ytConnectSection").style.display = "block";
+  document.getElementById("ytChannelSection").style.display = "none";
+  renderChecklist();
+}
+
+function loadStats() {
+  if (!YT_CHANNEL) return;
+  document.getElementById("statVideos").textContent  = YT_CHANNEL.videos || 0;
+  document.getElementById("statViews").textContent   = (YT_CHANNEL.views||0) > 999 ? Math.round((YT_CHANNEL.views||0)/1000)+"K" : (YT_CHANNEL.views||0);
+  document.getElementById("statSubs").textContent    = (YT_CHANNEL.subs||0) > 999 ? Math.round((YT_CHANNEL.subs||0)/1000)+"K" : (YT_CHANNEL.subs||0);
+  var est = Math.round(((YT_CHANNEL.views||0) / 1000) * 3);
+  document.getElementById("statEarnings").textContent = "$" + est;
+  document.getElementById("subProgress").textContent  = "(" + Math.round(((YT_CHANNEL.subs||0)/1000)*100) + "% to goal)";
+}
+
+// ── SCRIPT GENERATION ──
+async function generateScript() {
+  var topic   = selectedTopic || "tips";
+  var custom  = document.getElementById("customTopic").value.trim();
+  var company = localStorage.getItem("yt_brand_name") || "our construction company";
+  var area    = localStorage.getItem("yt_brand_area") || "your area";
+  var btn     = document.getElementById("scriptBtn");
+
+  btn.disabled = true; btn.textContent = "Generating...";
+  document.getElementById("scriptCard").style.display = "block";
+  document.getElementById("scriptProgress").style.display = "block";
+  document.getElementById("scriptFill").style.width = "30%";
+
+  var topicLabels = {
+    howto:"how-to construction guide", costs:"construction cost breakdown",
+    before_after:"renovation before and after", tools:"construction tool review",
+    tips:"pro construction tip", mistakes:"common construction mistakes to avoid",
+    diyvspro:"DIY vs hiring a professional", showcase:"construction project showcase",
+    permits:"construction permit guide"
+  };
+  var topicLabel = custom || topicLabels[topic] || "construction tip";
+
+  var prompt = "You are writing content for a YouTube Short (30 seconds, ~80 words max) for " + company + " in " + area + ".\n\n" +
+    "Topic: " + topicLabel + "\n\n" +
+    "Write a compelling 30-second script that:\n" +
+    "- Opens with a strong hook in the first 3 seconds\n" +
+    "- Delivers real value (tip, fact, or insight)\n" +
+    "- Ends with a clear call to action mentioning " + company + "\n" +
+    "- Is conversational and energetic\n" +
+    "- Maximum 80 words\n\n" +
+    "Then on a new line write:\n" +
+    "TITLE: [SEO YouTube title with keyword, max 60 chars]\n" +
+    "DESCRIPTION: [2-3 sentences with hashtags like #construction #renovation #contractor]\n\n" +
+    "Return the script first, then TITLE and DESCRIPTION.";
+
+  document.getElementById("scriptFill").style.width = "60%";
+  var result = await callAI(prompt);
+  document.getElementById("scriptFill").style.width = "100%";
+  setTimeout(function(){ document.getElementById("scriptProgress").style.display = "none"; }, 500);
+
+  if (result) {
+    var parts = result.split("\nTITLE:");
+    var script = parts[0].trim();
+    var rest   = parts[1] ? parts[1] : "";
+    var titleMatch = rest.match(/^([^\n]+)/);
+    var descMatch  = rest.match(/DESCRIPTION:\s*([^]+)$/);
+
+    document.getElementById("scriptText").value = script;
+    if (titleMatch) document.getElementById("videoYtTitle").value = titleMatch[1].trim();
+    if (descMatch)  document.getElementById("videoDesc").value = descMatch[1].trim();
+    updateWordCount();
+  }
+
+  btn.disabled = false; btn.textContent = "🤖 Generate AI Script";
+}
+
+function updateWordCount() {
+  var txt   = document.getElementById("scriptText").value;
+  var words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+  var secs  = Math.round(words / 2.5); // ~2.5 words per second
+  document.getElementById("wordCount").textContent = words + " words · ~" + secs + " seconds";
+}
+
+function setVoice(v, btn) {
+  selectedVoice = v;
+  document.querySelectorAll(".voice-btn").forEach(function(b){ b.classList.remove("on"); });
+  btn.classList.add("on");
+}
+
+function previewVoice() {
+  var script = document.getElementById("scriptText").value;
+  if (!script) { alert("Generate a script first"); return; }
+  if (!window.speechSynthesis) { alert("Voice preview not supported in your browser"); return; }
+  window.speechSynthesis.cancel();
+  var utter = new SpeechSynthesisUtterance(script.slice(0,200));
+  var voices = window.speechSynthesis.getVoices();
+  var voiceMap = {
+    professional: function(v){ return v.lang.startsWith("en") && (v.name.includes("Male") || v.name.includes("Daniel") || v.name.includes("Alex")); },
+    friendly:     function(v){ return v.lang.startsWith("en") && (v.name.includes("Samantha") || v.name.includes("Female")); },
+    energetic:    function(v){ return v.lang.startsWith("en"); }
+  };
+  var match = voices.find(voiceMap[selectedVoice] || voiceMap.professional);
+  if (match) utter.voice = match;
+  utter.rate  = selectedVoice === "energetic" ? 1.2 : 1.0;
+  utter.pitch = selectedVoice === "friendly" ? 1.1 : 1.0;
+  window.speechSynthesis.speak(utter);
+}
+
+// ── VIDEO GENERATION ──
+async function generateFullVideo() {
+  var script  = document.getElementById("scriptText").value.trim();
+  var title   = document.getElementById("videoYtTitle").value.trim();
+  var desc    = document.getElementById("videoDesc").value.trim();
+  var company = localStorage.getItem("yt_brand_name") || "Ali Signature Construction";
+  var phone   = localStorage.getItem("yt_brand_phone") || "";
+  var area    = localStorage.getItem("yt_brand_area") || "";
+
+  if (!script) { alert("Generate a script first"); return; }
+
+  document.getElementById("videoPreviewCard").style.display = "block";
+  document.getElementById("genProgress").style.display = "block";
+  document.getElementById("genStatus").textContent = "Setting up...";
+  document.getElementById("uploadActions").style.display = "none";
+  document.getElementById("genVideoBtn").disabled = true;
+  document.getElementById("genVideoBtn").textContent = "Generating...";
+
+  var canvas = document.getElementById("ytCanvas");
+  canvas.style.display = "block";
+
+  // YouTube Shorts format: 9:16 vertical
+  var W = 1080, H = 1920;
+  canvas.width = W; canvas.height = H;
+  var ctx = canvas.getContext("2d", { alpha: false });
+
+  setGen("Loading assets...", 10);
+
+  // Generate background images using AI description
+  var bgImages = await loadBackgroundImages(selectedTopic);
+
+  setGen("Setting up audio...", 20);
+
+  // Setup speech synthesis recording via AudioContext
+  var audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+  var audioDest = audioCtx.createMediaStreamDestination();
+  var gainNode  = audioCtx.createGain();
+  gainNode.gain.value = 0.5;
+  gainNode.connect(audioDest);
+  addBackgroundMusic(audioCtx, gainNode, 30);
+
+  setGen("Starting recorder...", 25);
+
+  var canvasStream = canvas.captureStream(30);
+  audioDest.stream.getAudioTracks().forEach(function(t){ canvasStream.addTrack(t); });
+
+  var mimeType = ["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(function(m){
+    return MediaRecorder.isTypeSupported(m);
+  }) || "video/webm";
+
+  var chunks = [];
+  var rec = new MediaRecorder(canvasStream, { mimeType: mimeType, videoBitsPerSecond: 6000000 });
+  rec.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
+  rec.onstop = function() {
+    try{ audioCtx.close(); }catch(e){}
+    currentVideoBlob = new Blob(chunks, { type: mimeType });
+    currentVideoMeta = { title: title, description: desc, script: script };
+
+    // Show preview in the preview card canvas (convert to video)
+    var url = URL.createObjectURL(currentVideoBlob);
+    var previewCanvas = document.querySelector(".video-preview canvas");
+    if (previewCanvas) {
+      // Create video element instead
+      var vc = previewCanvas.parentElement;
+      vc.innerHTML = "<video controls playsinline style=\"width:100%;height:100%;object-fit:contain\"><source src=\"" + url + "\"/></video>";
+    }
+
+    document.getElementById("uploadActions").style.display = "flex";
+    document.getElementById("genProgress").style.display   = "none";
+    document.getElementById("genStatus").textContent       = "✅ Video ready to upload!";
+    document.getElementById("genVideoBtn").disabled        = false;
+    document.getElementById("genVideoBtn").textContent     = "🎬 Generate Video";
+
+    // Add to queue
+    addToQueue({ title: title, desc: desc, script: script, blob: currentVideoBlob, status: "ready", created: new Date().toISOString() });
+  };
+
+  rec.start(100);
+
+  // Render 30-second video
+  var fps      = 30;
+  var duration = 30;
+  var totalF   = fps * duration;
+  var phrases  = script.split(/[.!?]+/).filter(function(p){ return p.trim().length > 3; });
+  var fPerPhr  = Math.floor(totalF / Math.max(phrases.length, 1));
+
+  setGen("Rendering video...", 30);
+
+  // Color palette
+  var colors = {
+    bg1: "#0a0a0a", bg2: "#1a1507",
+    accent: "#c8a96e", white: "#f0ede8",
+    red: "#ff0000"
+  };
+
+  for (var f = 0; f < totalF; f++) {
+    var t       = f / totalF;          // 0→1
+    var phIdx   = Math.floor(f / fPerPhr);
+    var phProg  = (f % fPerPhr) / fPerPhr;
+    var phrase  = phrases[Math.min(phIdx, phrases.length-1)] || "";
+    var bg      = bgImages[Math.min(phIdx, bgImages.length-1)];
+
+    // Background
+    if (bg) {
+      coverDraw(ctx, bg, 0, 0, W, H);
+      ctx.fillStyle = "rgba(0,0,0,0.55)";
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      // Gradient background
+      var grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, "#0a0a0a");
+      grad.addColorStop(0.5, "#1a1507");
+      grad.addColorStop(1, "#0a0a0a");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // Animated accent bars
+    var barCount = 3;
+    for (var i = 0; i < barCount; i++) {
+      var bx = (f * 2 + i * 360) % (W + 200) - 100;
+      ctx.fillStyle = "rgba(200,169,110,0.04)";
+      ctx.fillRect(bx, 0, 80, H);
+    }
+
+    // Progress bar at top
+    ctx.fillStyle = "rgba(255,255,255,0.15)";
+    ctx.fillRect(0, 0, W, 6);
+    ctx.fillStyle = colors.accent;
+    ctx.fillRect(0, 0, W * t, 6);
+
+    // Company logo area (top)
+    ctx.save();
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(0, 0, W, H * 0.12);
+
+    // Logo
+    ctx.textAlign = "center";
+    ctx.fillStyle = colors.accent;
+    ctx.font = "bold " + Math.round(W*0.06) + "px 'Bebas Neue', sans-serif";
+    ctx.letterSpacing = "0.06em";
+    ctx.fillText(company.toUpperCase(), W/2, H * 0.075);
+    ctx.restore();
+
+    // Main content area - animated text
+    var textY = H * 0.42;
+    var alpha  = Math.min(1, phProg * 4) * (1 - Math.max(0, (phProg - 0.8) * 5));
+
+    ctx.save();
+    ctx.globalAlpha = Math.max(0.1, alpha);
+
+    // Text shadow
+    ctx.shadowColor = "rgba(0,0,0,0.9)";
+    ctx.shadowBlur  = 30;
+    ctx.textAlign   = "center";
+
+    // Main phrase text - large and bold
+    var fontSize = W * 0.072;
+    ctx.font     = "bold " + fontSize + "px 'DM Sans', sans-serif";
+    ctx.fillStyle = colors.white;
+    wrapText(ctx, phrase.trim(), W/2, textY, W * 0.85, fontSize * 1.35);
+
+    ctx.restore();
+
+    // Bottom brand section
+    ctx.save();
+    var grad2 = ctx.createLinearGradient(0, H*0.82, 0, H);
+    grad2.addColorStop(0, "rgba(0,0,0,0)");
+    grad2.addColorStop(1, "rgba(0,0,0,0.92)");
+    ctx.fillStyle = grad2;
+    ctx.fillRect(0, H*0.82, W, H*0.18);
+
+    ctx.shadowColor = "rgba(0,0,0,0.8)";
+    ctx.shadowBlur  = 15;
+    ctx.textAlign   = "center";
+
+    if (area) {
+      ctx.fillStyle = colors.accent;
+      ctx.font      = "600 " + Math.round(W*0.038) + "px 'DM Sans', sans-serif";
+      ctx.fillText("Serving " + area, W/2, H*0.87);
+    }
+    if (phone) {
+      ctx.fillStyle = colors.white;
+      ctx.font      = "bold " + Math.round(W*0.05) + "px 'DM Sans', sans-serif";
+      ctx.fillText(phone, W/2, H*0.93);
+    }
+
+    // Subscribe CTA (pulses)
+    var pulse = 1 + Math.sin(f * 0.15) * 0.03;
+    ctx.save();
+    ctx.translate(W/2, H*0.97);
+    ctx.scale(pulse, pulse);
+    ctx.translate(-W/2, -H*0.97);
+    ctx.fillStyle = "#ff0000";
+    roundRect(ctx, W*0.3, H*0.955, W*0.4, H*0.035, W*0.02);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font      = "bold " + Math.round(W*0.032) + "px 'DM Sans', sans-serif";
+    ctx.fillText("SUBSCRIBE NOW", W/2, H*0.975);
+    ctx.restore();
+
+    ctx.restore();
+
+    if (f % 30 === 0) {
+      var pct = 30 + Math.round((f/totalF)*65);
+      setGen("Rendering... " + Math.round((f/totalF)*100) + "%", pct);
+      await nextFrame();
+    } else {
+      await nextFrame();
+    }
+  }
+
+  setGen("Finalizing...", 96);
+  await sleep(200);
+  rec.stop();
+}
+
+// ── CANVAS HELPERS ──
+function coverDraw(ctx, img, x, y, w, h) {
+  if (!img) return;
+  var iw = img.naturalWidth||img.width, ih = img.naturalHeight||img.height;
+  var sc = Math.max(w/iw, h/ih);
+  ctx.drawImage(img, x+(w-iw*sc)/2, y+(h-ih*sc)/2, iw*sc, ih*sc);
+}
+
+function wrapText(ctx, text, x, y, maxW, lineH) {
+  var words = text.split(" ");
+  var line  = "";
+  var lines = [];
+  words.forEach(function(w) {
+    var test = line + w + " ";
+    if (ctx.measureText(test).width > maxW && line) {
+      lines.push(line.trim());
+      line = w + " ";
+    } else { line = test; }
+  });
+  if (line.trim()) lines.push(line.trim());
+  var startY = y - ((lines.length-1)*lineH)/2;
+  lines.forEach(function(l, i) { ctx.fillText(l, x, startY + i*lineH); });
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+async function loadBackgroundImages(topic) {
+  // Use Unsplash source (free, no API key)
+  var queries = {
+    howto:       ["construction workers","renovation work","building house"],
+    costs:       ["construction materials","building supplies","renovation"],
+    before_after:["home renovation","kitchen remodel","house transformation"],
+    tools:       ["construction tools","power tools","contractor equipment"],
+    tips:        ["construction site","building construction","contractor"],
+    mistakes:    ["construction site","building inspection","renovation"],
+    showcase:    ["finished renovation","modern interior","luxury home"],
+    permits:     ["building permit","construction plans","architect blueprints"],
+  };
+  var imgs = [];
+  var terms = queries[topic] || ["construction","renovation","contractor"];
+  for (var i = 0; i < Math.min(terms.length, 3); i++) {
+    try {
+      var img = new Image();
+      img.crossOrigin = "anonymous";
+      var W = 1080, H = 1920;
+      img.src = "https://source.unsplash.com/" + W + "x" + H + "/?" + encodeURIComponent(terms[i]);
+      await new Promise(function(res){ img.onload=res; img.onerror=res; setTimeout(res,3000); });
+      if (img.complete && img.naturalWidth > 0) imgs.push(img);
+    } catch(e) {}
+  }
+  return imgs;
+}
+
+function addBackgroundMusic(audioCtx, dest, duration) {
+  var notes = [261.63, 293.66, 329.63, 349.23, 392.0, 440.0];
+  var t = audioCtx.currentTime;
+  for (var i = 0; i < duration; i++) {
+    var osc  = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = notes[i % notes.length];
+    gain.gain.setValueAtTime(0, t+i);
+    gain.gain.linearRampToValueAtTime(0.04, t+i+0.05);
+    gain.gain.setValueAtTime(0.04, t+i+0.8);
+    gain.gain.linearRampToValueAtTime(0, t+i+1);
+    osc.connect(gain); gain.connect(dest);
+    osc.start(t+i); osc.stop(t+i+1);
+  }
+}
+
+function setGen(msg, pct) {
+  var s = document.getElementById("genStatus");
+  var f = document.getElementById("genFill");
+  if(s) s.textContent = msg;
+  if(f) f.style.width = pct + "%";
+}
+function nextFrame(){ return new Promise(function(r){ requestAnimationFrame(r); }); }
+function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+
+// ── UPLOAD TO YOUTUBE ──
+async function uploadToYouTube() {
+  if (!currentVideoBlob) { alert("Generate a video first"); return; }
+  if (!YT_TOKEN) { alert("Connect your YouTube channel first"); return; }
+
+  var btn = document.getElementById("uploadBtn");
+  btn.disabled = true; btn.textContent = "Uploading...";
+  setGen("Uploading to YouTube...", 50);
+
+  try {
+    // Step 1: Insert video metadata
+    var meta = {
+      snippet: {
+        title:       currentVideoMeta.title || "Construction Tips — " + new Date().toLocaleDateString(),
+        description: currentVideoMeta.description || currentVideoMeta.script || "",
+        tags:        ["construction","renovation","contractor","homeimprovement","DIY","remodeling"],
+        categoryId:  "26",  // Howto & Style
+        defaultLanguage: "en",
+      },
+      status: { privacyStatus: "public", selfDeclaredMadeForKids: false },
+    };
+
+    // Step 2: Upload video using resumable upload
+    var initResp = await fetch(
+      "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
+      {
+        method: "POST",
+        headers: {
+          "Authorization":  "Bearer " + YT_TOKEN,
+          "Content-Type":   "application/json",
+          "X-Upload-Content-Type": currentVideoBlob.type,
+          "X-Upload-Content-Length": currentVideoBlob.size,
+        },
+        body: JSON.stringify(meta),
+      }
+    );
+
+    if (!initResp.ok) {
+      var err = await initResp.json();
+      throw new Error(err.error ? err.error.message : "Upload init failed");
+    }
+
+    var uploadUrl = initResp.headers.get("Location");
+    if (!uploadUrl) throw new Error("No upload URL returned");
+
+    setGen("Uploading video file...", 70);
+
+    // Step 3: Upload the video file
+    var uploadResp = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type":   currentVideoBlob.type,
+        "Content-Length": currentVideoBlob.size,
+      },
+      body: currentVideoBlob,
+    });
+
+    if (!uploadResp.ok) throw new Error("Video upload failed: " + uploadResp.status);
+
+    var videoData = await uploadResp.json();
+    var videoId   = videoData.id;
+
+    setGen("✅ Uploaded! Video ID: " + videoId, 100);
+    btn.textContent = "✅ Uploaded!";
+
+    // Add to queue as live
+    addToQueue({
+      title:     currentVideoMeta.title,
+      videoId:   videoId,
+      ytUrl:     "https://youtube.com/watch?v=" + videoId,
+      status:    "live",
+      created:   new Date().toISOString(),
+    });
+
+    alert("Video uploaded to YouTube!\n\nView at:\nhttps://youtube.com/watch?v=" + videoId);
+
+  } catch(e) {
+    setGen("❌ Upload failed: " + e.message, 0);
+    btn.disabled = false; btn.textContent = "▶ Upload to YouTube";
+    console.error("Upload error:", e);
+  }
+}
+
+function downloadYtVideo() {
+  if (!currentVideoBlob) return;
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(currentVideoBlob);
+  a.download = "youtube-short-" + Date.now() + ".webm";
+  a.click();
+}
+
+// ── BATCH GENERATION ──
+async function generateBatch() {
+  var btn = document.getElementById("batchBtn");
+  btn.disabled = true; btn.textContent = "Generating...";
+
+  var company = localStorage.getItem("yt_brand_name") || "Ali Signature Construction";
+  var topics  = ["tips","howto","costs","before_after","tools","mistakes","diyvspro","showcase"];
+  var count   = parseInt(document.getElementById("videosPerDay").value) || 5;
+
+  for (var i = 0; i < count; i++) {
+    var topic = topics[i % topics.length];
+    btn.textContent = "Generating " + (i+1) + "/" + count + "...";
+
+    var prompt = "Write a 30-second YouTube Short script for " + company + " about " + topic + ". Max 75 words. Strong hook. End with call to action. Then: TITLE: [SEO title] DESCRIPTION: [description with hashtags]";
+    var result = await callAI(prompt);
+    if (result) {
+      var parts   = result.split("\nTITLE:");
+      var script2 = parts[0].trim();
+      var rest2   = parts[1] || "";
+      var tm      = rest2.match(/^([^\n]+)/);
+      var dm      = rest2.match(/DESCRIPTION:\s*([^]+)$/);
+      addToQueue({
+        title:   tm ? tm[1].trim() : topic + " tip #" + (i+1),
+        desc:    dm ? dm[1].trim() : "",
+        script:  script2,
+        status:  "draft",
+        topic:   topic,
+        created: new Date().toISOString(),
+      });
+    }
+    await sleep(500);
+  }
+
+  btn.disabled = false; btn.textContent = "⚡ Generate 5 Videos";
+  showTab("queue", document.querySelectorAll(".tab-btn")[1]);
+  renderChecklist();
+}
+
+// ── QUEUE ──
+function addToQueue(item) {
+  videoQueue.unshift(item);
+  if (videoQueue.length > 50) videoQueue = videoQueue.slice(0,50);
+  localStorage.setItem("yt_queue", JSON.stringify(videoQueue.map(function(q){
+    // Don't serialize blob
+    var copy = Object.assign({}, q);
+    delete copy.blob;
+    return copy;
+  })));
+  renderQueue();
+  document.getElementById("queueCount").textContent = videoQueue.length;
+  document.getElementById("statVideos").textContent  = videoQueue.filter(function(q){ return q.status==="live"; }).length;
+}
+
+function renderQueue() {
+  var list = document.getElementById("queueList");
+  if (!videoQueue.length) {
+    list.innerHTML = "<div style=\"text-align:center;padding:2rem;color:var(--mid);font-size:.82rem\">No videos in queue. Generate some above!</div>";
+    document.getElementById("queueCount").textContent = "0";
+    return;
+  }
+  document.getElementById("queueCount").textContent = videoQueue.length;
+  list.innerHTML = videoQueue.map(function(q, i) {
+    var statusClass = q.status || "draft";
+    return "<div class=\"queue-item\">" +
+      "<div class=\"qi-thumb\"><div class=\"qi-thumb-placeholder\">🎬</div></div>" +
+      "<div class=\"qi-info\">" +
+        "<div class=\"qi-title\">" + (q.title || "Untitled") + "</div>" +
+        "<div class=\"qi-meta\">" + new Date(q.created).toLocaleDateString() + (q.ytUrl ? " · <a href=\"" + q.ytUrl + "\" target=\"_blank\" style=\"color:var(--accent)\">View on YouTube</a>" : "") + "</div>" +
+      "</div>" +
+      "<span class=\"qi-status " + statusClass + "\">" + statusClass + "</span>" +
+      "</div>";
+  }).join("");
+}
+
+// ── SCHEDULE ──
+function saveSchedule() {
+  var activeDays = [];
+  document.querySelectorAll(".sched-day.on").forEach(function(d, i) {
+    var idx = Array.from(document.querySelectorAll(".sched-day")).indexOf(d);
+    activeDays.push(idx);
+  });
+  var sched = {
+    days:     activeDays,
+    time:     document.getElementById("postTime").value,
+    perDay:   document.getElementById("videosPerDay").value,
+    mix:      document.getElementById("contentMix").value,
+    active:   true,
+    saved:    new Date().toISOString(),
+  };
+  scheduleActive = sched;
+  localStorage.setItem("yt_schedule", JSON.stringify(sched));
+
+  var nextPost = new Date();
+  nextPost.setHours(parseInt(sched.time.split(":")[0]), parseInt(sched.time.split(":")[1]), 0);
+  if (nextPost < new Date()) nextPost.setDate(nextPost.getDate()+1);
+
+  document.getElementById("autoPostStatus").style.display = "flex";
+  document.getElementById("nextPostTime").textContent = nextPost.toLocaleString();
+  document.getElementById("scheduleBtn").textContent = "✅ Schedule Active";
+
+  renderChecklist();
+  alert("Schedule saved! " + activeDays.length + " days/week · " + sched.perDay + " videos/day\n\nNote: Videos generate automatically when you open this page at the scheduled time. For true background posting, run the SiteCommand desktop app.");
+}
+
+// ── TABS ──
+function showTab(id, btn) {
+  document.querySelectorAll(".tab-pane").forEach(function(p){ p.classList.remove("active"); });
+  document.querySelectorAll(".tab-btn").forEach(function(b){ b.classList.remove("active"); });
+  document.getElementById("tab-" + id).classList.add("active");
+  if (btn) btn.classList.add("active");
+}
+
+// ── AI ──
+async function callAI(prompt) {
+  if (OLLAMA_URL) {
+    try {
+      var r = await fetch(OLLAMA_URL + "/api/generate", {
+        method: "POST",
+        headers: {"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
+        body: JSON.stringify({ model: localStorage.getItem("sc_ollama_model")||"sitecommand", prompt: prompt, stream: false })
+      });
+      var d = await r.json();
+      if (d.response) return d.response;
+    } catch(e) {}
+  }
+  try {
+    var r2 = await fetch(GEMINI_URL + "?key=" + GEMINI_KEY, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ contents:[{role:"user",parts:[{text:prompt}]}], generationConfig:{temperature:0.8,maxOutputTokens:600} })
+    });
+    var d2 = await r2.json();
+    return d2.candidates[0].content.parts[0].text || "";
+  } catch(e) { return null; }
+}
+
+init();
+</script>
+</body>
+</html>
