@@ -89,3 +89,14 @@ test('dashboard tool menus dismiss on outside click and Escape', () => {
   assert.match(dashboard, /closeMenus\(menu\)/);
   assert.match(dashboard, /menu\.open = false/);
 });
+
+test('all customer-facing feature pages have real HTML and mobile viewport', () => {
+  const pages = ['platform.html','ai-assistant.html','email-ai.html','lead-finder.html','social-media.html','video-gen.html','youtube-studio.html','permits.html','real-estate.html','siteeditor.html','client-portal.html','signup.html','checkout.html'];
+  for (const page of pages) {
+    const html = read(page);
+    assert.ok(html.length > 1000, page + ' is empty or incomplete');
+    assert.match(html, /<!doctype html|<html\b/i, page + ' is not HTML');
+    assert.match(html, /name=["']viewport["']/i, page + ' lacks mobile viewport');
+    assert.match(html, /<title\b/i, page + ' lacks page title');
+  }
+});
