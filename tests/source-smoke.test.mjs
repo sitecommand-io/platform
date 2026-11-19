@@ -71,3 +71,15 @@ test('dashboard navigation groups tools and preserves all destinations', () => {
     assert.ok(dashboard.includes('href="' + name + '"'), 'Missing tool: ' + name);
   }
 });
+
+test('document intelligence is linked and keeps files local', () => {
+  const page = read('document-ai.html');
+  const dashboard = read('platform.html');
+  assert.match(dashboard, /href="document-ai\.html"/);
+  assert.match(page, /id="files"/);
+  assert.match(page, /id="askform"/);
+  assert.match(page, /Sources:/);
+  assert.match(page, /getDocument/);
+  assert.match(page, /extractRawText/);
+  assert.doesNotMatch(page, /firebase|firestore|localStorage|indexedDB|fetch\(/i);
+});
