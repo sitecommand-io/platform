@@ -15,4 +15,4 @@ jobs:
         with:
           node-version: '22'
       - name: Run source smoke checks (no customer data)
-        run: node --test tests/source-smoke.test.mjs
+        run: node --test tests/*.test.mjs
