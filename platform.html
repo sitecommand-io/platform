@@ -184,6 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=1"></script>
 </head>
 <body>
 
@@ -279,7 +280,18 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
         <p id="welcomeSub">Your SiteCommand dashboard</p>
       </div>
 
-      <!-- Phone number setup banner -->
+      <!-- Business performance overview (user-entered figures only) -->
+<div class="sc-finance-kpis" aria-label="Business finance summary">
+<div class="sc-finance-kpi"><span>Total Revenue</span><strong id="sc-revenue">$0</strong><small>Recorded income</small></div>
+<div class="sc-finance-kpi"><span>Total Expenses</span><strong id="sc-expenses">$0</strong><small>Recorded spending</small></div>
+<div class="sc-finance-kpi"><span>Net Profit</span><strong id="sc-profit">$0</strong><small>Revenue minus expenses</small></div>
+<div class="sc-finance-kpi"><span>Outstanding Payments</span><strong id="sc-outstanding">$0</strong><small>Unpaid invoices entered</small></div>
+</div>
+<div class="sc-finance-grid">
+<div class="sc-finance-panel"><h3>Your business at a glance</h3><p>Track income, expenses, outstanding invoices and profitability in one place. Your existing leads, projects, and team statistics appear below.</p><button class="sc-finance-action" id="sc-finance-open" type="button">Open Finances →</button></div>
+<div class="sc-finance-panel"><h3>Financial data status</h3><p id="sc-fin-count">0 recorded transactions</p><p class="sc-finance-note">Figures reflect only transactions you add or import. No bank, accounting, or billing account is connected. Data is stored in this browser for the signed-in account, not synced across devices.</p></div>
+</div>
+<!-- Phone number setup banner -->
       <div id="phoneSetupBanner" class="phone-setup" style="margin-bottom:1.5rem;display:none">
         <div class="phone-setup-icon">📞</div>
         <div>
@@ -512,7 +524,40 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
       </div>
     </div>
 
-    <!-- SETTINGS -->
+    <!-- FINANCES -->
+<div class="p-section" id="sec-finance">
+<h2 style="font-size:27px;color:#233b5b;margin-bottom:9px">Business Finances</h2>
+<p class="sc-finance-note">Enter income, expenses and unpaid invoices or import a CSV. Figures are local to this browser and account; export backups regularly. This is not a bank integration or accounting system.</p>
+<div class="sc-finance-kpis">
+<div class="sc-finance-kpi"><span>Revenue</span><strong id="sc-fin-revenue">$0</strong></div>
+<div class="sc-finance-kpi"><span>Expenses</span><strong id="sc-fin-expenses">$0</strong></div>
+<div class="sc-finance-kpi"><span>Net Profit</span><strong id="sc-fin-profit">$0</strong></div>
+<div class="sc-finance-kpi"><span>Outstanding</span><strong id="sc-fin-outstanding">$0</strong></div>
+</div>
+<div class="sc-finance-panel" style="margin-bottom:18px">
+<h3>Add a transaction</h3>
+<form id="sc-fin-form" class="sc-finance-form">
+<label>Date<input id="sc-fin-date" type="date" name="date" required></label>
+<label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
+<label>Amount ($)<input type="number" name="amount" min="0" max="1000000000000" step=".01" required></label>
+<label>Category<input name="category" maxlength="100" placeholder="Materials, labor, sales"></label>
+<label style="grid-column:span 2">Description<input name="description" maxlength="200" placeholder="Project or transaction details"></label>
+<div><button type="submit" class="sc-finance-action">Save transaction</button></div>
+</form>
+</div>
+<div class="sc-finance-panel">
+<h3>Import or export financial records</h3>
+<p>CSV format: date, type, amount, category, description. Dates use YYYY-MM-DD; type must be income, expense, or receivable. Importing adds rows; it does not automatically detect duplicates.</p>
+<div class="sc-finance-actions">
+<label class="sc-finance-action" style="cursor:pointer">Upload CSV<input id="sc-fin-import" type="file" accept=".csv,text/csv" style="display:none"></label>
+<button id="sc-fin-template" type="button" class="sc-finance-action secondary">Download template</button>
+<button id="sc-fin-export" type="button" class="sc-finance-action secondary">Export backup</button>
+</div>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="sc-fin-rows"></tbody></table></div>
+<p id="sc-fin-empty" class="sc-finance-empty">No transactions recorded yet. Add one above or upload a CSV.</p>
+</div>
+</div>
+<!-- SETTINGS -->
     <div class="p-section" id="sec-settings">
       <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.04em;margin-bottom:1.25rem">Company Settings</h2>
       <div class="panel">
@@ -598,10 +643,11 @@ const DEFAULT_QUESTIONS = [
 
 // ── AUTH STATE ──
 onAuthStateChanged(auth, async user => {
-  if (!user) { showAuth(); return; }
+  if (!user) { window.dispatchEvent(new Event('sc-account-signed-out')); showAuth(); return; }
   currentUser = user;
   await loadUserData(user.uid);
   showPlatform();
+  window.dispatchEvent(new CustomEvent('sc-account-ready', {detail:{uid:user.uid}}));
 });
 
 async function loadUserData(uid) {
