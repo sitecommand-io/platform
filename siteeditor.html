@@ -340,6 +340,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
@@ -357,6 +358,7 @@ const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemi
 const app  = initializeApp(FB);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+const storage = getStorage(app);
 
 let userData  = null;
 let userUID   = null;
@@ -407,7 +409,7 @@ function populateFields() {
   document.getElementById('eAbout').value    = d.about        || '';
   document.getElementById('ePhone').value    = d.bizPhone     || '';
   document.getElementById('eEmail').value    = d.email        || '';
-  document.getElementById('eLocation').value = d.location     || (d.city+', '+d.state) || '';
+  document.getElementById('eLocation').value = d.location || [d.city,d.state].filter(Boolean).join(', ');
   document.getElementById('eHeroPhoto').value= d.heroPhoto    || '';
   selectedColor = d.color || '#c8a96e';
   document.querySelectorAll('.cswatch').forEach(s => {
@@ -415,7 +417,7 @@ function populateFields() {
   });
   document.getElementById('colorPicker').value = selectedColor;
   document.getElementById('colorHex').value   = selectedColor;
-  projectPhotos = d.projectPhotos || [];
+  projectPhotos = Array.isArray(d.projectPhotos) ? d.projectPhotos.filter(x=>typeof x==='string'&&!x.startsWith('data:')) : [];
   (d.projectPhotoUrls||[]).forEach((url,i) => {
     const inp = document.getElementById('photoUrl'+i);
     if (inp) inp.value = url;
@@ -463,16 +465,29 @@ function renderPhotoGrid() {
     </div>`;
   }).join('');
 }
-window.uploadPhoto = (i, input) => {
-  if (!input.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    projectPhotos[i] = e.target.result;
+window.uploadPhoto = async (i, input) => {
+  const file=input.files?.[0];
+  if(!file)return;
+  if(!userUID){showEditorNotice('Sign in before uploading photos.');return}
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){
+    showEditorNotice('Please select a JPG, PNG or WebP photo under 10 MB.');return;
+  }
+  const msg=document.getElementById('saveMsg');
+  msg.textContent='Uploading photo…';
+  input.disabled=true;
+  try{
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
+    const fileRef=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-'+safeName);
+    await uploadBytes(fileRef,file,{contentType:file.type});
+    const url=await getDownloadURL(fileRef);
+    projectPhotos[i]=url;
+    await saveChanges();
     renderPhotoGrid();
-    scheduleSave();
     updatePreview();
-  };
-  reader.readAsDataURL(input.files[0]);
+    msg.textContent='Photo uploaded and saved';
+  }catch(error){
+    showEditorNotice('Photo upload failed: '+error.message+'. Check Firebase Storage rules and permissions.');
+  }finally{input.disabled=false}
 };
 window.removePhoto = (i, e) => {
   e.preventDefault(); e.stopPropagation();
@@ -482,7 +497,7 @@ window.removePhoto = (i, e) => {
 };
 window.updatePhotoUrl = i => {
   const url = document.getElementById('photoUrl'+i)?.value.trim();
-  if (url) { projectPhotos[i] = url; updatePreview(); scheduleSave(); }
+  if (url && /^https:\/\//i.test(url)) { projectPhotos[i] = url; renderPhotoGrid(); updatePreview(); scheduleSave(); }
 };
 
 // ── LOGO GENERATION ───────────────────────────────────────────
@@ -631,10 +646,12 @@ function updatePreview() {
   if (!slug) {
     const frame=document.getElementById('previewFrame');
     if(frame)frame.src='about:blank';
+    window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
     return;
   }
   const frame = document.getElementById('previewFrame');
   frame.src = 'https://'+slug+'.sitecommand.net'+previewPage+'?preview='+Date.now();
+  window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
 }
 
 window.setPreviewPage = (page, btn) => {
@@ -666,7 +683,7 @@ window.saveChanges = async () => {
     heroPhoto:       document.getElementById('eHeroPhoto').value.trim(),
     color:           selectedColor,
     services:        userData?.services || [],
-    projectPhotos:   projectPhotos.filter(Boolean),
+    projectPhotos:   projectPhotos.filter(x=>typeof x==='string'&&/^https:\/\//i.test(x)),
     projectPhotoUrls:[...Array(6)].map((_,i)=>document.getElementById('photoUrl'+i)?.value.trim()||'').filter(Boolean),
     updatedAt:       serverTimestamp(),
   };
@@ -676,7 +693,8 @@ window.saveChanges = async () => {
   try {
     await setDoc(doc(db,'contractors',userUID), updates, {merge:true});
     Object.assign(userData, updates);
-    msg.textContent = '✅ Saved!';
+    msg.textContent = '✅ Saved to your account';
+    window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
     setTimeout(()=>msg.textContent='',3000);
   } catch(e) {
     msg.style.color='#e08080'; msg.textContent='Error: '+e.message;
