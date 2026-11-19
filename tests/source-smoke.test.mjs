@@ -37,7 +37,7 @@ test('deployment guide remains available', () => {
 
 test('redesigned preview has one hero, pricing section, and safe links', () => {
   const preview = read('preview-v2.html');
-  assert.equal((preview.match(/<h1\\b/g) || []).length, 1);
+  assert.equal((preview.match(/<h1\b/g) || []).length, 1);
   assert.equal((preview.match(/id="pricing"/g) || []).length, 1);
   assert.match(preview, /href="signup.html"/);
   assert.match(preview, /href="platform.html"/);
