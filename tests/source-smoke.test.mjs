@@ -2,7 +2,7 @@
 // No Firebase, Cloudflare, Stripe, or customer data is accessed.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
@@ -42,4 +42,22 @@ test('redesigned preview has one hero, pricing section, and safe links', () => {
   assert.match(preview, /href="signup.html"/);
   assert.match(preview, /href="platform.html"/);
   assert.doesNotMatch(preview, /firebase|deleteDoc|localStorage/i);
+});
+
+test('local HTML navigation links resolve to existing pages', () => {
+  const pages = readdirSync(root).filter(name => name.endsWith('.html'));
+  const missing = [];
+  for (const page of pages) {
+    const html = read(page);
+    for (const match of html.matchAll(/href=["']([^"']+)["']/g)) {
+      const href = match[1].trim();
+      if (!href || href.startsWith('#') || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) continue;
+      const target = href.split(/[?#]/, 1)[0];
+      if (!target || target.startsWith('/') || target.includes('${')) continue;
+      if (target.endsWith('.html') && !existsSync(resolve(root, target))) {
+        missing.push(`${page} -> ${target}`);
+      }
+    }
+  }
+  assert.deepEqual(missing, [], 'Broken local HTML links');
 });
