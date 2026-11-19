@@ -80,3 +80,12 @@ test('premium dashboard uses responsive full-width light layout', () => {
   assert.match(dashboard, /prefers-reduced-motion:reduce/);
   assert.doesNotMatch(dashboard, /<br>\s*\.p-logo span/);
 });
+
+test('dashboard tool menus dismiss on outside click and Escape', () => {
+  const dashboard = read('platform.html');
+  assert.match(dashboard, /id="sc-menu-behavior"/);
+  assert.match(dashboard, /pointerdown/);
+  assert.match(dashboard, /event\.key === 'Escape'/);
+  assert.match(dashboard, /closeMenus\(menu\)/);
+  assert.match(dashboard, /menu\.open = false/);
+});
