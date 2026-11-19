@@ -608,16 +608,30 @@ window.selectLogo = (i, svgEncoded) => {
   scheduleSave();
 };
 
-window.uploadLogo = inp => {
-  if (!inp.files[0]) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    userData.logoUrl = e.target.result;
-    const slot = document.getElementById('logoUploadSlot');
-    slot.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:contain;padding:.5rem"/>`;
-    scheduleSave();
-  };
-  reader.readAsDataURL(inp.files[0]);
+window.uploadLogo = async inp => {
+  const file=inp.files?.[0];
+  if(!file)return;
+  if(!userUID){showEditorNotice('Sign in before uploading a logo.');return;}
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){
+    showEditorNotice('Choose a JPG, PNG or WebP logo smaller than 10 MB.');return;
+  }
+  const msg=document.getElementById('saveMsg');
+  msg.textContent='Uploading logo to secure storage…';
+  inp.disabled=true;
+  try{
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
+    const logoRef=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-logo-'+safeName);
+    await uploadBytes(logoRef,file,{contentType:file.type});
+    const url=await getDownloadURL(logoRef);
+    const previous=userData.logoUrl;
+    userData.logoUrl=url;
+    const saved=await saveChanges();
+    if(!saved){userData.logoUrl=previous;throw new Error('Logo uploaded but database save failed.');}
+    const slot=document.getElementById('logoUploadSlot');
+    slot.innerHTML='<img src="'+url+'" alt="Uploaded logo" style="width:100%;height:100%;object-fit:contain;padding:.5rem"/>';
+    msg.textContent='Logo uploaded and saved';
+  }catch(error){showEditorNotice('Logo upload failed: '+error.message);}
+  finally{inp.disabled=false;}
 };
 
 // ── COLORS ────────────────────────────────────────────────────
@@ -698,8 +712,9 @@ window.saveChanges = async () => {
     projectPhotoUrls:[...Array(6)].map((_,i)=>document.getElementById('photoUrl'+i)?.value.trim()||'').filter(Boolean),
     updatedAt:       serverTimestamp(),
   };
-  if (selectedLogo) updates.logoSvg = selectedLogo;
-  if (userData?.logoUrl) updates.logoUrl = userData.logoUrl;
+  if (selectedLogo && new Blob([selectedLogo]).size < 200000) updates.logoSvg = selectedLogo;
+  // Never write base64 image data to Firestore: the per-field limit is ~1 MiB.
+  if (typeof userData?.logoUrl === 'string' && /^https:\/\//i.test(userData.logoUrl)) updates.logoUrl = userData.logoUrl;
 
   try {
     await setDoc(doc(db,'contractors',userUID), updates, {merge:true});
