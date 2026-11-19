@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
+const editor=readFileSync(new URL('../siteeditor.html',import.meta.url),'utf8');
+const templates=readFileSync(new URL('../sitecommand-templates.js',import.meta.url),'utf8');
+test('photos upload as binary files to Firebase Storage',()=>{assert.match(editor,/firebase-storage\.js/);assert.match(editor,/await uploadBytes\(fileRef,file,\{contentType:file\.type\}\)/);assert.match(editor,/await getDownloadURL\(fileRef\)/);assert.match(editor,/file\.size>10\*1024\*1024/);assert.match(editor,/await saveChanges\(\)/);});
+test('Firestore receives URLs rather than base64 uploads',()=>{assert.match(editor,/projectPhotos:\s+projectPhotos\.filter\(x=>typeof x==='string'&&\/\^https:/);assert.doesNotMatch(editor,/readAsDataURL\(input\.files\[0\]\)/);});
+test('draft preview updates when business information changes',()=>{assert.match(editor,/sc-editor-local-preview/);assert.match(templates,/window\.addEventListener\('sc-editor-local-preview'/);assert.match(templates,/No published website yet\. Showing your editable draft preview/);assert.match(templates,/gallery\.append\(img\)/);});
+test('auth and six template selection are retained',()=>{assert.match(editor,/initializeApp\(FB\)/);assert.match(editor,/id="tab-templates"/);assert.match(templates,/id:'classic'/);assert.match(templates,/id:'craft'/);});
