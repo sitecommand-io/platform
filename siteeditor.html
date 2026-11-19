@@ -201,6 +201,10 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
   <!-- EDITOR PANEL -->
   <div class="editor-panel">
     <div id="sc-editor-notice" role="alert" hidden style="padding:15px;margin:12px;border:1px solid #e3b0b0;background:#fff1f1;color:#9a3434;border-radius:10px;font-size:13px;line-height:1.6"></div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--border)">
+      <button id="saveBtn" type="button" class="save-btn" onclick="saveChanges()">Save Changes</button>
+      <span id="saveMsg" role="status" aria-live="polite" style="font-size:.78rem;color:var(--green);overflow-wrap:anywhere">Ready to save</span>
+    </div>
     <div class="tab-bar">
       <button class="tab on" onclick="showTab('content',this)">Content</button>
       <button class="tab" onclick="showTab('design',this)">Design</button>
@@ -475,6 +479,7 @@ window.uploadPhoto = async (i, input) => {
     showEditorNotice('Please select a JPG, PNG or WebP photo under 10 MB.');return;
   }
   const msg=document.getElementById('saveMsg');
+  msg.style.color='var(--light)';
   msg.textContent='Uploading photo…';
   input.disabled=true;
   try{
@@ -675,6 +680,8 @@ window.saveChanges = async () => {
   if(saveTimeout){clearTimeout(saveTimeout);saveTimeout=null;}
   const btn = document.getElementById('saveBtn');
   const msg = document.getElementById('saveMsg');
+  msg.style.color='var(--light)';
+  msg.textContent='Saving to Firebase…';
   btn.disabled = true; btn.textContent = 'Saving...';
   
   const updates = {
