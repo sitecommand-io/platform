@@ -200,6 +200,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 
   <!-- EDITOR PANEL -->
   <div class="editor-panel">
+    <div id="sc-editor-notice" role="alert" hidden style="padding:15px;margin:12px;border:1px solid #e3b0b0;background:#fff1f1;color:#9a3434;border-radius:10px;font-size:13px;line-height:1.6"></div>
     <div class="tab-bar">
       <button class="tab on" onclick="showTab('content',this)">Content</button>
       <button class="tab" onclick="showTab('design',this)">Design</button>
@@ -365,6 +366,8 @@ let selectedLogo  = null;
 let saveTimeout   = null;
 
 function showEditorNotice(message) {
+  const notice=document.getElementById('sc-editor-notice');
+  if(notice){notice.hidden=false;notice.textContent=message;}
   const el=document.getElementById('saveMsg');
   if(el){el.style.color='#d14f4f';el.textContent=message;el.style.maxWidth='420px';}
   const frame=document.getElementById('previewFrame');
