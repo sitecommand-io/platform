@@ -33,7 +33,8 @@
     /* ── PLATFORM SHELL ── */
     #platform{display:none}
     .p-header{height:58px;background:rgba(10,10,10,.97);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.5rem;gap:.75rem;position:sticky;top:0;z-index:100}
-    .p-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}<br>    .p-logo span{color:var(--accent)}
+    .p-logo{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em}
+    .p-logo span{color:var(--accent)}
     .p-company{font-size:.82rem;font-weight:600;padding:.2rem .75rem;background:rgba(200,169,110,.1);border:1px solid rgba(200,169,110,.25);border-radius:99px;color:var(--accent)}
     .p-nav{display:flex;gap:.15rem;margin-left:.5rem}
     .p-nav-btn{background:none;border:none;color:var(--mid);font-size:.8rem;font-weight:500;padding:.38rem .9rem;border-radius:5px;cursor:pointer;transition:all .15s}
@@ -131,6 +132,55 @@
 .sc-tool-items a:hover,.sc-tool-items a:focus-visible{background:#2a3546;color:#fff}
 #sc-tools-bar a:focus-visible,#sc-tools-bar summary:focus-visible{outline:2px solid #c8a96e;outline-offset:2px}
 @media(max-width:640px){#sc-tools-bar{gap:.4rem}.sc-tool-menu summary,.sc-tool-direct{font-size:.72rem;padding:.55rem .6rem}.sc-tool-items{width:min(225px,85vw)}}
+</style>
+<style id="sc-premium-light">
+/* Premium dashboard refresh: presentation only, no application logic changes */
+#platform{
+--black:#f3f6fc;--dark:#ffffff;--surface:#f1f5fb;--card:#ffffff;--border:#dce5f1;
+--mid:#5e6f88;--light:#435570;--white:#16243a;--accent:#365ff2;--accent2:#2548d6;
+--green:#167b59;--red:#c83b53;--blue:#365ff2;--orange:#b8741d;
+color:var(--white);background:radial-gradient(ellipse at 85% 0%,#e3eaff 0%,transparent 44%),#f3f6fc;
+min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
+#platform .p-header{background:#ffffffed;border-color:#e0e7f1;box-shadow:0 5px 25px #203d6610;height:auto;min-height:76px;gap:1rem;padding:12px clamp(18px,3vw,50px);flex-wrap:wrap;backdrop-filter:blur(16px)}
+#platform .p-logo{font-family:'DM Sans',sans-serif;font-weight:800;letter-spacing:-.06em;font-size:1.35rem;color:#15233d}
+#platform .p-company{background:#edf2ff;border-color:#d6e1ff;color:#365ff2}
+#platform .p-nav{gap:.35rem;flex-wrap:wrap;margin-left:0}
+#platform .p-nav-btn{font-size:.87rem;color:#5b6c85;padding:.62rem .9rem;border-radius:10px}
+#platform .p-nav-btn.active,#platform .p-nav-btn:hover{background:#eaf0ff;color:#274ed5}
+#platform .phone-pill{background:#eaf9f2;border-color:#bce9d2;color:#187c58}
+#platform .logout-btn{border-color:#d5dfec;color:#50617a;border-radius:9px;padding:.55rem .85rem}
+#platform #sc-tools-bar{background:#fff;border:1px solid #e0e8f4;border-radius:15px;box-shadow:0 9px 35px #2b4b8010;gap:.65rem;padding:.7rem .9rem;z-index:50}
+#platform .sc-tool-menu summary,#platform .sc-tool-direct{background:#f3f6ff;border-color:#dce5f4;color:#253e65;font-size:.84rem;border-radius:10px;padding:.72rem 1rem}
+#platform .sc-tool-menu summary:hover,#platform .sc-tool-direct:hover,#platform .sc-tool-menu[open] summary{background:#e7efff;border-color:#a8bdf9}
+#platform .sc-tool-items{background:white;border-color:#dce5f4;box-shadow:0 20px 45px #1a2c4a24}
+#platform .sc-tool-items a{color:#243954}
+#platform .sc-tool-items a:hover,#platform .sc-tool-items a:focus-visible{background:#edf3ff;color:#274ed5}
+#platform .p-body{max-width:1480px;padding:clamp(22px,3vw,46px) clamp(18px,3vw,50px)}
+#platform .welcome-bar{margin-bottom:1.7rem}
+#platform .welcome-bar h2{font:800 clamp(1.8rem,3vw,2.7rem)/1.1 'DM Sans',sans-serif;letter-spacing:-.055em;color:#142440}
+#platform .welcome-bar p{font-size:.98rem;color:#62748f;margin-top:.55rem}
+#platform .stat-row{gap:1.1rem;margin-bottom:1.6rem}
+#platform .stat-mini{background:linear-gradient(145deg,#fff,#f8faff);border:1px solid #dfe7f4;border-radius:18px;padding:1.45rem;box-shadow:0 10px 30px #1e3c6810;min-height:130px}
+#platform .sm-label{font-size:.76rem;color:#5d6e88;letter-spacing:.065em}
+#platform .sm-value{font:800 2.35rem 'DM Sans',sans-serif;letter-spacing:-.07em;color:#233e82}
+#platform .dash-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:1.15rem}
+#platform .dash-card{background:#fff;border:1px solid #e0e7f1;border-radius:20px;padding:1.7rem;min-height:208px;box-shadow:0 10px 32px #1b376410;transform:translateZ(0);transition:transform .22s,box-shadow .22s,border-color .22s}
+#platform .dash-card:hover{transform:translateY(-5px) perspective(700px) rotateX(1deg);box-shadow:0 22px 48px #1d3c6725;border-color:#b5c7fb}
+#platform .dc-icon{font-size:1.85rem;margin-bottom:1rem}
+#platform .dc-title{font-size:1.08rem;color:#1b2e4a}
+#platform .dc-desc{font-size:.88rem;line-height:1.65;color:#60728d}
+#platform .dc-arrow{font-size:.85rem;color:#315ce3;margin-top:1rem}
+#platform .panel,#platform .link-item{background:#fff;border:1px solid #e0e7f1;border-radius:18px;box-shadow:0 8px 26px #203b6010}
+#platform .phone-setup{background:linear-gradient(110deg,#e9f2ff,#eafcf5)!important;border:1px solid #c9dfef!important;border-radius:18px!important;color:#1a3351!important;padding:1.5rem!important}
+#platform .phone-setup h3{color:#1b3150}
+#platform .phone-setup p{color:#526d86}
+#platform .buy-phone-btn{background:#315ce3!important;color:white!important;border-radius:10px!important}
+#platform .p-section input,#platform .p-section select,#platform .p-section textarea{color:#16243a}
+#platform .p-section input::placeholder,#platform .p-section textarea::placeholder{color:#7787a0}
+#platform .p-section a:focus-visible,#platform .p-section button:focus-visible,#platform .p-nav-btn:focus-visible{outline:3px solid #365ff2;outline-offset:3px}
+@media(max-width:1050px){#platform .p-header{position:relative}#platform .p-right{margin-left:0}#platform .dash-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){#platform .p-body{padding:20px 14px}#platform .p-header{padding:12px 15px}#platform .stat-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}#platform .stat-mini{padding:1rem;min-height:110px}#platform .dash-grid{grid-template-columns:1fr}#platform .dash-card{min-height:auto}#platform .p-nav{overflow-x:auto;max-width:100%}#platform .p-right{width:100%;justify-content:space-between}}
+@media(prefers-reduced-motion:reduce){#platform .dash-card{transition:none}#platform .dash-card:hover{transform:none}}
 </style>
 </head>
 <body>
