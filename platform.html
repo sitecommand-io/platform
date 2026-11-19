@@ -977,5 +977,35 @@ function updateSubdomainDisplay() {
   }
 }
 </script>
+<script id="sc-menu-behavior">
+document.addEventListener('DOMContentLoaded', () => {
+  const nav = document.getElementById('sc-tools-bar');
+  if (!nav) return;
+  const menus = Array.from(nav.querySelectorAll('details.sc-tool-menu'));
+  const closeMenus = (except = null) => {
+    for (const menu of menus) if (menu !== except) menu.open = false;
+  };
+  for (const menu of menus) {
+    menu.addEventListener('toggle', () => {
+      if (menu.open) closeMenus(menu);
+    });
+  }
+  document.addEventListener('pointerdown', (event) => {
+    if (!nav.contains(event.target)) closeMenus();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      const openMenu = menus.find(menu => menu.open);
+      if (openMenu) {
+        closeMenus();
+        openMenu.querySelector('summary')?.focus();
+      }
+    }
+  });
+  nav.addEventListener('click', (event) => {
+    if (event.target.closest('a')) closeMenus();
+  });
+});
+</script>
 </body>
 </html>
