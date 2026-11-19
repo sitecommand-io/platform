@@ -290,12 +290,19 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
         <div class="ed-section-title">Project Photos</div>
         <p style="font-size:.78rem;color:var(--mid);margin-bottom:.85rem;line-height:1.6">Upload photos of your completed projects. They appear in your website gallery and project pages automatically.</p>
         <div class="photo-grid" id="photoGrid"></div>
+        <button type="button" class="save-btn" style="margin-top:1rem;width:100%;padding:.85rem" onclick="saveChanges()">Save Photos to My Account</button>
+        <p style="font-size:.75rem;color:var(--mid);margin-top:.6rem">Photos upload to your account first. Save Photos confirms the latest gallery is stored.</p>
         <p style="font-size:.72rem;color:var(--mid);margin-top:.6rem">Tap any slot to upload. JPG or PNG, max 10MB.</p>
       </div>
       <div class="ed-section">
         <div class="ed-section-title">Photo URLs (alternative)</div>
         <p style="font-size:.78rem;color:var(--mid);margin-bottom:.65rem">Paste photo URLs if you have them hosted elsewhere.</p>
-        ${[0,1,2,3,4,5].map(i => `<div class="fg" style="margin-bottom:.5rem"><label>Photo ${i+1}</label><input id="photoUrl${i}" oninput="updatePhotoUrl(${i})" placeholder="https://..."/></div>`).join('')}
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 1</label><input id="photoUrl0" oninput="updatePhotoUrl(0)" placeholder="https://..."/></div>
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 2</label><input id="photoUrl1" oninput="updatePhotoUrl(1)" placeholder="https://..."/></div>
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 3</label><input id="photoUrl2" oninput="updatePhotoUrl(2)" placeholder="https://..."/></div>
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 4</label><input id="photoUrl3" oninput="updatePhotoUrl(3)" placeholder="https://..."/></div>
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 5</label><input id="photoUrl4" oninput="updatePhotoUrl(4)" placeholder="https://..."/></div>
+        <div class="fg" style="margin-bottom:.5rem"><label>Photo 6</label><input id="photoUrl5" oninput="updatePhotoUrl(5)" placeholder="https://..."/></div>
       </div>
     </div>
 
