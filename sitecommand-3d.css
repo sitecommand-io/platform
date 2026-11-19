@@ -1,0 +1,22 @@
+/* SiteCommand premium dimensional design system — presentation only. */
+:root{--sc3-gold:#d7b879;--sc3-blue:#7ea9ff;--sc3-radius:18px;--sc3-ease:cubic-bezier(.2,.7,.2,1)}
+html{scroll-behavior:smooth}
+body{background-image:radial-gradient(ellipse 58vw 36vw at 94% 0%,rgba(98,123,216,.075),transparent 75%),radial-gradient(ellipse 46vw 30vw at 4% 60%,rgba(215,184,121,.045),transparent 75%);background-attachment:fixed}
+button,a,input,select,textarea{transition:background-color .22s var(--sc3-ease),border-color .22s var(--sc3-ease),box-shadow .22s var(--sc3-ease),transform .22s var(--sc3-ease),color .22s var(--sc3-ease)}
+button:not(:disabled),a[href]{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--sc3-blue);outline-offset:3px}
+:is(.sc-bar,.sc-header,.p-header,.topbar,.nav){box-shadow:0 8px 30px rgba(0,0,0,.15);isolation:isolate}
+:is(.sc-bar,.sc-header) :is(.sc-nav a,.sc-logo,.sc-pg){position:relative}
+:is(.sc-bar,.sc-header) .sc-nav a:hover{transform:translateY(-2px)}
+:is(.wiz-card,.ai-box,.stat-box,.connected-badge,.platform-card,.panel,.card,.feature-card,.auth-box,.dashboard,.kpi,.floatcard,.boxinfo,.task,.sc-tool-menu,.reply-box,.email-item,.highlight-box){border-radius:var(--sc3-radius);box-shadow:0 12px 32px rgba(0,0,0,.09),inset 0 1px 0 rgba(255,255,255,.07);transform:translateZ(0);backface-visibility:hidden}
+:is(.wiz-card,.platform-card,.panel,.card,.feature-card,.dashboard,.kpi,.floatcard,.boxinfo,.task):hover{box-shadow:0 22px 54px rgba(0,0,0,.16),0 0 0 1px rgba(215,184,121,.12),inset 0 1px 0 rgba(255,255,255,.09);transform:translate3d(0,-3px,0)}
+:is(.btn-main,.btn-outline,.auth-btn,.primary,.secondary,.pill,.send-btn,.draft-btn,.sc-tool-direct,.p-nav-btn):not(:disabled):hover{transform:translate3d(0,-2px,0);filter:brightness(1.06);box-shadow:0 9px 24px rgba(0,0,0,.16)}
+:is(.btn-main,.auth-btn,.primary,.send-btn):not(:disabled):active{transform:translate3d(0,1px,0)}
+:is(.wiz-title,.hero h1,.section-head h2,.platforms-title){text-wrap:balance}
+#setupWizard{position:relative;isolation:isolate}
+#setupWizard::before{content:"";position:absolute;z-index:-1;top:-55px;right:-45px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(215,184,121,.13),transparent 72%);pointer-events:none}
+.wiz-card{border-color:rgba(215,184,121,.22);background-image:linear-gradient(145deg,rgba(255,255,255,.035),transparent 55%)}
+.steps-progress .sp{height:4px}
+@media(min-width:1000px){#setupWizard{margin-top:4.5rem}.wiz-title{font-size:clamp(2.2rem,3vw,3rem)}.wiz-card{padding:2.6rem}}
+@media(max-width:760px){:is(.wiz-card,.panel,.card,.feature-card){border-radius:14px}#setupWizard{margin:1.5rem auto;padding:0 1rem}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
