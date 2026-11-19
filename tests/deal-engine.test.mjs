@@ -12,7 +12,7 @@ test('CSV parser preserves quoted commas and doubled quote characters',()=>{
 test('CSV parser rejects invalid unterminated quote',()=>assert.throws(()=>parseCSV('ADDRESS\n"open'),/unmatched/));
 test('Redfin-style CSV fields normalize safely and reject untrusted links',()=>{
  const row=normalizeListing({'ADDRESS':'123 Main','ZIP OR POSTAL CODE':'19805','SALE PRICE':'$225,000','SQUARE FEET':'1,500','BEDS':'3','STATUS':'sold','SOLD DATE':'2026-10-01','URL':'javascript:alert(1)'});
- assert.equal(row.price,225000);assert.equal(row.sqft,1500);assert.equal(row.zip,'');assert.equal(row.url,'');assert.equal(row.beds,3);assert.ok(isSold(row));
+ assert.equal(row.price,225000);assert.equal(row.sqft,1500);assert.equal(row.zip,'19805');assert.equal(row.url,'');assert.equal(row.beds,3);assert.ok(isSold(row));
 });
 test('Comps only include sold in ZIP with adequate size and dates',()=>{
  const subject={address:'5 Center',zip:'19805',sqft:1000,beds:3};
