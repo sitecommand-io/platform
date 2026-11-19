@@ -7,6 +7,8 @@ const filename=location.pathname.split('/').pop()||'platform.html';
 const selected=pages.find(p=>p[0]===filename);
 if(!selected)return;
 function init(){
+const auth=document.getElementById(filename==='platform.html'?'authWrap':filename==='client-portal.html'?'authScreen':'__no_auth__');
+if(auth && getComputedStyle(auth).display!=='none'){document.body.classList.add('sc-auth-navy');return;}
 if(document.querySelector('.sc-sidebar'))return;
 document.body.classList.add('sc-workspace');
 const sidebar=document.createElement('aside');
@@ -35,5 +37,6 @@ document.body.prepend(top);document.body.prepend(sidebar);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('sc-menu-open');toggle.setAttribute('aria-expanded','false')}});
 document.addEventListener('click',e=>{if(document.body.classList.contains('sc-menu-open')&&!sidebar.contains(e.target)&&!toggle.contains(e.target)){document.body.classList.remove('sc-menu-open');toggle.setAttribute('aria-expanded','false')}});
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+function boot(){init();if(filename==='platform.html'||filename==='client-portal.html'){const auth=document.getElementById(filename==='platform.html'?'authWrap':'authScreen');if(auth){const observer=new MutationObserver(()=>{if(getComputedStyle(auth).display==='none'){document.body.classList.remove('sc-auth-navy');init()}else{document.body.classList.remove('sc-workspace');document.body.classList.add('sc-auth-navy');document.querySelector('.sc-sidebar')?.remove();document.querySelector('.sc-workspace-top')?.remove()}});observer.observe(auth,{attributes:true,attributeFilter:['style','class']})}}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
