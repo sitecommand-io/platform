@@ -61,3 +61,13 @@ test('local HTML navigation links resolve to existing pages', () => {
   }
   assert.deepEqual(missing, [], 'Broken local HTML links');
 });
+
+test('dashboard navigation groups tools and preserves all destinations', () => {
+  const dashboard = read('platform.html');
+  assert.match(dashboard, /aria-label="SiteCommand tools"/);
+  assert.match(dashboard, /<summary>✦ AI & Marketing<\/summary>/);
+  assert.match(dashboard, /<summary>▤ Operations<\/summary>/);
+  for (const name of ['email-ai.html', 'lead-finder.html', 'social-media.html', 'video-gen.html', 'youtube-studio.html', 'ai-assistant.html', 'permits.html', 'real-estate.html', 'siteeditor.html']) {
+    assert.ok(dashboard.includes('href="' + name + '"'), 'Missing tool: ' + name);
+  }
+});
