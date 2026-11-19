@@ -353,7 +353,8 @@ const FB = {
 const GEMINI_KEY = localStorage.getItem('sc_gemini_key') || 'AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
-const app  = initializeApp(FB,'editor');
+// Reuse the default Firebase app so Auth shares the dashboard's persisted session.
+const app  = initializeApp(FB);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
@@ -377,7 +378,7 @@ function showEditorNotice(message) {
 // ── LOAD DATA ──────────────────────────────────────────────────
 onAuthStateChanged(auth, async user => {
   if (!user) {
-    showEditorNotice('Sign in to SiteCommand to open the Website Editor. Your existing website data has not been changed.');
+    showEditorNotice('Your SiteCommand session is not available in this tab. Open the dashboard and sign in, then return to Website Editor.');
     return;
   }
   userUID = user.uid;
@@ -394,7 +395,9 @@ onAuthStateChanged(auth, async user => {
   window.dispatchEvent(new CustomEvent('sc-template-data',{detail:{uid:user.uid,templateId:userData.websiteTemplate||'classic'}}));
   updatePreview();
   const slug = userData.slug || '';
-  document.getElementById('previewLink').href = 'https://'+slug+'.sitecommand.net';
+  const previewLink=document.getElementById('previewLink');
+  if(previewLink){previewLink.href=slug?'https://'+slug+'.sitecommand.net':'#';previewLink.setAttribute('aria-disabled',String(!slug));}
+  window.dispatchEvent(new CustomEvent('sc-editor-site-url',{detail:{url:slug?'https://'+slug+'.sitecommand.net':'',slug}}));
 });
 
 function populateFields() {
@@ -625,7 +628,11 @@ window.liveUpdate = liveUpdate;
 
 function updatePreview() {
   const slug = userData?.slug || '';
-  if (!slug) return;
+  if (!slug) {
+    const frame=document.getElementById('previewFrame');
+    if(frame)frame.src='about:blank';
+    return;
+  }
   const frame = document.getElementById('previewFrame');
   frame.src = 'https://'+slug+'.sitecommand.net'+previewPage+'?preview='+Date.now();
 }
