@@ -39,3 +39,11 @@ body.sc-auth-navy{background:#09111f!important;background-image:radial-gradient(
 body.sc-auth-navy :is(.auth-box,.auth-card){background:#14243a!important;border-color:#2b4568!important;color:#edf4ff!important}
 body.sc-workspace :is(.mrr-card,.stat-card,.queue-item,.tab-pane,.tool-card){background:#14243a!important;border-color:#29415f!important;color:#e9f2ff!important}
 body.sc-workspace :is(.main,.body,.content){margin-left:auto;margin-right:auto}
+
+/* Public pages share the same navy/blue brand without workspace navigation. */
+body.sc-public-navy{background:#09111f!important;background-image:radial-gradient(ellipse 80% 50% at 80% 0%,rgba(48,110,220,.2),transparent 75%)!important;color:#e9f2ff!important}
+body.sc-public-navy :is(.nav,.topbar,.header){background:#111f34!important;border-color:#2b4260!important}
+body.sc-public-navy :is(.hero,.section,.shell){border-color:#29415f}
+body.sc-public-navy :is(.card,.feature-card,.dashboard,.kpi,.panel,.auth-box){background:#14243a!important;border-color:#29415f!important;color:#f4f8ff!important}
+body.sc-public-navy :is(.primary,.pill.primary,.auth-btn){background:#367df1!important;color:#fff!important;border-color:#367df1!important}
+body.sc-public-navy :is(h1,h2,h3){color:#f4f8ff}
