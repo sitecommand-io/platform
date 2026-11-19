@@ -200,6 +200,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 
   <!-- EDITOR PANEL -->
   <div class="editor-panel">
+    <div id="sc-editor-notice" role="alert" hidden style="padding:15px;margin:12px;border:1px solid #e3b0b0;background:#fff1f1;color:#9a3434;border-radius:10px;font-size:13px;line-height:1.6"></div>
     <div class="tab-bar">
       <button class="tab on" onclick="showTab('content',this)">Content</button>
       <button class="tab" onclick="showTab('design',this)">Design</button>
@@ -339,7 +340,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
   apiKey:'AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8',
@@ -364,13 +365,31 @@ let projectPhotos = [];
 let selectedLogo  = null;
 let saveTimeout   = null;
 
+function showEditorNotice(message) {
+  const notice=document.getElementById('sc-editor-notice');
+  if(notice){notice.hidden=false;notice.textContent=message;}
+  const el=document.getElementById('saveMsg');
+  if(el){el.style.color='#d14f4f';el.textContent=message;el.style.maxWidth='420px';}
+  const frame=document.getElementById('previewFrame');
+  if(frame)frame.src='about:blank';
+}
+
 // ── LOAD DATA ──────────────────────────────────────────────────
 onAuthStateChanged(auth, async user => {
-  if (!user) { window.location.href='platform.html'; return; }
+  if (!user) {
+    showEditorNotice('Sign in to SiteCommand to open the Website Editor. Your existing website data has not been changed.');
+    return;
+  }
   userUID = user.uid;
-  const snap = await getDoc(doc(db,'contractors',user.uid));
-  if (!snap.exists()) { window.location.href='platform.html'; return; }
-  userData = snap.data();
+  try {
+    const snap = await getDoc(doc(db,'contractors',user.uid));
+    // The platform supports accounts before a contractor profile is created.
+    // Do not redirect those customers away from the editor.
+    userData = snap.exists() ? snap.data() : {companyName:user.displayName||'',email:user.email||'',services:[]};
+  } catch(error) {
+    showEditorNotice('Unable to load your website settings. Please retry. '+error.message);
+    return;
+  }
   populateFields();
   window.dispatchEvent(new CustomEvent('sc-template-data',{detail:{uid:user.uid,templateId:userData.websiteTemplate||'classic'}}));
   updatePreview();
@@ -648,7 +667,7 @@ window.saveChanges = async () => {
   if (userData?.logoUrl) updates.logoUrl = userData.logoUrl;
 
   try {
-    await updateDoc(doc(db,'contractors',userUID), updates);
+    await setDoc(doc(db,'contractors',userUID), updates, {merge:true});
     Object.assign(userData, updates);
     msg.textContent = '✅ Saved!';
     setTimeout(()=>msg.textContent='',3000);
@@ -674,7 +693,7 @@ window.addEventListener('sc-template-save-request',async event=>{
   const templateId=event.detail?.templateId;
   if(!userUID||!['classic','modern','bold','studio','editorial','craft'].includes(templateId))return;
   try{
-    await updateDoc(doc(db,'contractors',userUID),{websiteTemplate:templateId,updatedAt:serverTimestamp()});
+    await setDoc(doc(db,'contractors',userUID),{websiteTemplate:templateId,updatedAt:serverTimestamp()},{merge:true});
     userData.websiteTemplate=templateId;
     window.dispatchEvent(new CustomEvent('sc-template-save-result',{detail:{success:true}}));
   }catch(error){window.dispatchEvent(new CustomEvent('sc-template-save-result',{detail:{success:false,message:error.message}}))}

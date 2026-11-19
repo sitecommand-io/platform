@@ -17,7 +17,7 @@ test('six distinct selectable layouts exist',()=>{
   assert.match(css,/\.sc-template-site\[data-template=studio\]/);
 });
 test('template save writes only selected template and timestamp',()=>{
-  assert.match(html,/updateDoc\(doc\(db,'contractors',userUID\),\{websiteTemplate:templateId,updatedAt:serverTimestamp\(\)\}\)/);
+  assert.match(html,/setDoc\(doc\(db,'contractors',userUID\),\{websiteTemplate:templateId,updatedAt:serverTimestamp\(\)\},\{merge:true\}\)/);
   assert.match(js,/textContent=name/);
   assert.doesNotMatch(js,/innerHTML\s*=\s*[^;]*\b(name|tag|about|phone)\b/);
 });
