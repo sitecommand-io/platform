@@ -20,6 +20,7 @@ brand.append(mark,document.createTextNode('SiteCommand'));sidebar.append(brand);
 const nav=document.createElement('nav');nav.className='sc-side-nav';nav.setAttribute('aria-label','SiteCommand tools');
 const label=document.createElement('div');label.className='sc-side-label';label.textContent='Workspace';nav.append(label);
 pages.forEach(([href,name,icon],i)=>{
+if(filename==='platform.html'&&href==='platform.html')return;
 if(i===1||i===7||i===11){const section=document.createElement('div');section.className='sc-side-label';section.textContent=i===1?'AI tools':i===7?'Real estate':'Management';nav.append(section)}
 const a=document.createElement('a');a.className='sc-side-link';a.href=href;if(href===filename)a.setAttribute('aria-current','page');
 const ico=document.createElement('span');ico.className='sc-side-icon';ico.textContent=icon;a.append(ico,document.createTextNode(name));nav.append(a)
