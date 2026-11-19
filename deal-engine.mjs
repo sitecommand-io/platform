@@ -39,14 +39,15 @@ const numberOrNull=value=>{const n=moneyNumber(value);return Number.isFinite(n)?
 export function normalizeListing(row){
   const address=get(row,'address','street address','property address','full address','location','street');
   const city=get(row,'city');
-  const state=get(row,'state');
-  const zip=String(get(row,'zip','zip code','zipcode','postal code')).match(/\d{5}/)?.[0]||'';
+  const state=get(row,'state','state or province');
+  const zip=String(get(row,'zip','zip code','zipcode','postal code','zip or postal code')).match(/\d{5}/)?.[0]||'';
   const price=numberOrNull(get(row,'sale price','sold price','closing price','last sale price','price','list price','listing price','asking price'));
   const sqft=numberOrNull(get(row,'sqft','square feet','square footage','living area','living area sqft','approx sqft','approx square feet','sq. ft.','size'));
   const beds=numberOrNull(get(row,'beds','bedrooms','number of bedrooms','bed'));
   const baths=numberOrNull(get(row,'baths','bathrooms','number of bathrooms','bath'));
-  const status=String(get(row,'status','listing status','property status','sale status','type')).toLowerCase();
   const date=String(get(row,'sale date','sold date','closing date','date sold','last sale date'));
+  const rawStatus=String(get(row,'status','listing status','property status','sale status','type','sale type')).toLowerCase();
+  const status=(date||/past sale|sold|closed/.test(rawStatus))?'sold':rawStatus;
   const url=String(get(row,'url','redfin url','listing url','property url','link'));
   const safeURL=/^https:\/\/(?:www\.)?redfin\.com\//i.test(url)?url:'';
   return {address,city,state,zip,price,sqft,beds,baths,status,date,url:safeURL,source:'User-imported CSV'};
