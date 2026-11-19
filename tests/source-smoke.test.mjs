@@ -71,3 +71,12 @@ test('dashboard navigation groups tools and preserves all destinations', () => {
     assert.ok(dashboard.includes('href="' + name + '"'), 'Missing tool: ' + name);
   }
 });
+
+test('premium dashboard uses responsive full-width light layout', () => {
+  const dashboard = read('platform.html');
+  assert.match(dashboard, /id="sc-premium-light"/);
+  assert.match(dashboard, /max-width:1480px/);
+  assert.match(dashboard, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(dashboard, /prefers-reduced-motion:reduce/);
+  assert.doesNotMatch(dashboard, /<br>\s*\.p-logo span/);
+});
