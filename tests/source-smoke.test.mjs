@@ -105,9 +105,9 @@ test('critical customer pages have exactly one HTML document and no raw CSS afte
   const pages = ['email-ai.html','permits.html','siteeditor.html','signup.html','video-gen.html','lead-finder.html','social-media.html','youtube-studio.html','real-estate.html','platform.html'];
   for (const page of pages) {
     const html = read(page);
-    assert.equal((html.match(/<body(?:\\s|>)/gi) || []).length, 1, page + ': unexpected body count');
-    assert.equal((html.match(/<\\/html\\s*>/gi) || []).length, 1, page + ': duplicated HTML document');
-    assert.match(html.trimEnd(), /<\\/html>$/i, page + ': content after closing HTML');
-    assert.equal((html.match(/<style(?:\\s|>)/gi) || []).length, (html.match(/<\\/style>/gi) || []).length, page + ': unclosed style');
+    assert.equal((html.match(/<body(?:\s|>)/gi) || []).length, 1, page + ': unexpected body count');
+    assert.equal((html.match(/<\/html\s*>/gi) || []).length, 1, page + ': duplicated HTML document');
+    assert.match(html.trimEnd(), /<\/html>$/i, page + ': content after closing HTML');
+    assert.equal((html.match(/<style(?:\s|>)/gi) || []).length, (html.match(/<\/style>/gi) || []).length, page + ': unclosed style');
   }
 });
