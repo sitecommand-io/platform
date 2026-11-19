@@ -80,3 +80,15 @@ test('premium dashboard uses responsive full-width light layout', () => {
   assert.match(dashboard, /prefers-reduced-motion:reduce/);
   assert.doesNotMatch(dashboard, /<br>\s*\.p-logo span/);
 });
+
+test('document intelligence is linked and offers local source-grounded search', () => {
+  const page = read('document-ai.html');
+  const dashboard = read('platform.html');
+  assert.match(dashboard, /href="document-ai\.html"/);
+  assert.match(page, /id="files"/);
+  assert.match(page, /id="askform"/);
+  assert.match(page, /Sources:/);
+  assert.match(page, /getDocument/);
+  assert.match(page, /extractRawText/);
+  assert.doesNotMatch(page, /firebase|firestore|localStorage|indexedDB/i);
+});
