@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#eef3ff">
+<meta name="description" content="Find potential real estate deals, review neighborhood comps, and calculate flip and rental returns with SiteCommand.">
+<title>Deal Finder · SiteCommand</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#182845;background:#f2f5fc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#e0ecff 0%,transparent 48%),#f3f6fd;font-size:15px}
+a{color:#315cde}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.6}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #3464ff;outline-offset:3px}
+.shell{max-width:1440px;margin:auto;padding:0 28px}.topbar{background:#ffffffd9;border-bottom:1px solid #dae3f2;backdrop-filter:blur(14px)}
+.topbar .shell{display:flex;align-items:center;justify-content:space-between;min-height:72px;gap:14px;flex-wrap:wrap}
+.brand{font-size:1.22rem;letter-spacing:-.06em;font-weight:850;color:#162948;text-decoration:none}.brand span{color:#315fe9}
+.toplinks{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.toplinks a{text-decoration:none;font-size:.86rem;color:#526582;font-weight:650}
+.eyebrow{font-size:.75rem;font-weight:850;letter-spacing:.14em;color:#315fe9;text-transform:uppercase}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:52px 0 35px}
+.hero h1{font-size:clamp(2.45rem,4.7vw,4.5rem);letter-spacing:-.065em;line-height:1.08;margin:12px 0 15px}
+.hero h1 span{color:#315fe9}.hero p{max-width:680px;color:#5d6f8a;line-height:1.7;font-size:1rem}
+.hero-art{height:180px;width:265px;flex-shrink:0;display:grid;place-items:center;perspective:700px}
+.hero-art .object{height:140px;width:180px;display:grid;place-items:center;font-size:4.5rem;border-radius:25px;border:1px solid #b0c6ff;background:linear-gradient(145deg,#fff,#c8d9ff);box-shadow:22px 28px 50px #3167ac29;transform:rotateY(-17deg) rotateX(8deg)}
+.smallprint{font-size:.79rem;color:#61738e;line-height:1.6}
+.panel{background:#fff;border:1px solid #dce4f1;border-radius:20px;padding:25px;box-shadow:0 15px 35px #18376c0c;min-width:0}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;margin-bottom:20px}
+.span4{grid-column:span 4}.span5{grid-column:span 5}.span6{grid-column:span 6}.span7{grid-column:span 7}.span8{grid-column:span 8}.span12{grid-column:span 12}
+h2{font-size:1.26rem;letter-spacing:-.04em;margin:0 0 10px}h3{font-size:1.02rem;margin:0 0 8px}
+label{display:block;font-weight:700;font-size:.78rem;color:#4c5d78;margin-bottom:6px}
+.field{min-width:0}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:18px 0}
+input,select,textarea{width:100%;border:1px solid #ccd8e9;border-radius:11px;background:#f9fbff;color:#193153;padding:11px 12px;min-height:45px}
+input[type=file]{padding:10px;background:#f3f7ff}input[type=checkbox]{width:auto;min-height:0}
+input:focus,select:focus,textarea:focus{border-color:#6e94ff;outline:2px solid #c8d8ff}
+button.primary,.primary-link{display:inline-flex;justify-content:center;align-items:center;border:0;background:#315fe9;color:white;font-weight:750;border-radius:11px;padding:12px 17px;text-decoration:none;gap:8px}
+button.secondary,.secondary-link{display:inline-flex;justify-content:center;align-items:center;border:1px solid #cbd9ed;background:#fff;color:#24406b;font-weight:700;border-radius:11px;padding:11px 16px;text-decoration:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.boxinfo{background:#eef4ff;color:#3a5479;padding:12px 15px;border-radius:12px;font-size:.82rem;line-height:1.6}
+.warning{background:#fff6e6;border-left:3px solid #d99a30;padding:12px 15px;border-radius:6px 10px 10px 6px;color:#825a1e;font-size:.84rem;line-height:1.6}
+.good{color:#107b59}.bad{color:#bf3157}.muted{color:#647793}.metric{padding:17px;background:#f5f8ff;border:1px solid #e3eaf6;border-radius:13px}
+.metric small{display:block;color:#667a95;font-size:.77rem;font-weight:650}.metric strong{display:block;font-size:1.55rem;letter-spacing:-.04em;margin-top:5px}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.pill{font-size:.78rem;font-weight:750;color:#284ec3;background:#e8eeff;display:inline-flex;border-radius:30px;padding:5px 11px}
+.pill.warn{color:#885517;background:#fff2d4}
+.tablebox{overflow-x:auto;border:1px solid #dfE6f1;border-radius:12px;margin-top:14px}
+table{border-collapse:collapse;width:100%;font-size:.83rem}th,td{text-align:left;padding:12px;border-bottom:1px solid #e9eef6;white-space:nowrap}th{background:#f4f7fd;color:#405575;font-size:.76rem}tr:last-child td{border-bottom:0}
+td button{padding:7px 9px;background:#e9efff;border:1px solid #c3d3ff;color:#244ec0;border-radius:7px}
+td a{font-size:.77rem}.tablebox p{padding:14px;color:#657794}
+.sectionline{border:0;border-top:1px solid #e5ebf4;margin:22px 0}.footer{padding:24px 0 50px;color:#667993;font-size:.8rem}
+.source{font-size:.8rem;color:#6a7c96}.bigNumber{font-size:1.8rem;letter-spacing:-.06em;font-weight:800}.badge{display:inline-block;border-radius:9px;padding:8px 12px;background:#e8f0ff;font-size:.84rem;font-weight:800;color:#244ccd}
+.goodbg{background:#e8f8ef;color:#08764c}.badbg{background:#fff0f1;color:#bb3e52}
+@media(max-width:1020px){.span4,.span5,.span6,.span7,.span8{grid-column:span 12}.hero-art{display:none}}
+@media(max-width:620px){.shell{padding:0 14px}.hero{padding:35px 0 22px}.panel{padding:19px}.fields,.metrics{grid-template-columns:1fr 1fr}.metric{padding:12px}.metric strong{font-size:1.21rem}.topbar .shell{padding-top:12px;padding-bottom:12px}}
+@media(max-width:440px){.fields,.metrics{grid-template-columns:1fr}.hero h1{font-size:2.45rem}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="shell"><a class="brand" href="platform.html">SITE<span>COMMAND</span></a><nav class="toplinks" aria-label="Deal Finder navigation"><a href="real-estate.html">Real Estate Tools</a><a href="platform.html">Dashboard</a><a href="https://www.redfin.com/" target="_blank" rel="noopener noreferrer">Open Redfin ↗</a></nav></div></header>
+<div class="shell">
+<section class="hero"><div><div class="eyebrow">Investment Intelligence • Deal Finder</div><h1>Find the deal.<br><span>Know your numbers.</span></h1><p>Import properties, compare sold homes in the same ZIP code, and see realistic flip or rental scenarios before making an offer. No invented listings or valuations.</p><span class="pill">Local-first · Your files stay in your browser tab</span></div><div class="hero-art" aria-hidden="true"><div class="object">⌂</div></div></section>
+<div class="warning" style="margin-bottom:19px">Data policy: This release does <strong>not</strong> scrape or automatically pull live listings from Redfin. You can enter a listing manually or import a CSV you are authorized to use. RedfinPlus documents unofficial endpoints; connecting them for automated commercial use requires permission. CSV data and valuations are unverified until you confirm their source and dates.</div>
+<div class="grid">
+<section class="panel span5"><div class="eyebrow">01 · Build a neighborhood dataset</div><h2>Import listings and sold comps</h2><p class="smallprint">Use a Redfin-exported CSV only where your permitted use allows it, or import a spreadsheet from another authorized provider. Typical columns: ADDRESS, ZIP, PRICE, BEDS, BATHS, SQUARE FEET, STATUS, SOLD DATE, URL.</p>
+<div class="field"><label for="csv">Property CSV</label><input id="csv" type="file" accept=".csv,text/csv"></div>
+<div class="toolbar"><button class="secondary" id="template" type="button">Download CSV template</button><button class="secondary" id="clear" type="button">Clear data</button></div>
+<div id="importStatus" class="boxinfo" role="status" aria-live="polite">No listings imported. Start with a CSV or manually enter the property below.</div>
+<hr class="sectionline">
+<div class="eyebrow">Optional comp</div><h3>Add a sold comparison</h3>
+<form id="manualComp"><div class="fields">
+<div class="field"><label for="compAddress">Street address</label><input id="compAddress" placeholder="123 Market St" required></div>
+<div class="field"><label for="compZip">ZIP code</label><input id="compZip" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="19805" required></div>
+<div class="field"><label for="compPrice">Verified sale price ($)</label><input id="compPrice" type="number" min="1" step="1" required placeholder="225000"></div>
+<div class="field"><label for="compSqft">Living area (sq ft)</label><input id="compSqft" type="number" min="1" step="1" required placeholder="1450"></div>
+<div class="field"><label for="compBeds">Bedrooms</label><input id="compBeds" type="number" min="0" step=".5" placeholder="3"></div>
+<div class="field"><label for="compDate">Sold date</label><input id="compDate" type="date"></div>
+</div><button class="primary" type="submit">Add sold comp +</button></form>
+</section>
+<section class="panel span7"><div class="eyebrow">02 · Find opportunities</div><h2>Neighborhood Deal Radar</h2><p class="smallprint">Potential deals use listing prices compared with median $/sq ft of imported sold comps in the same ZIP. Comparables are limited by size and bedroom count. This is screening, not a certified appraisal.</p>
+<div class="fields">
+<div class="field"><label for="radarZip">Filter ZIP</label><input id="radarZip" maxlength="5" inputmode="numeric" placeholder="19805"></div>
+<div class="field"><label for="radarBudget">Maximum asking price ($)</label><input id="radarBudget" type="number" min="0" step="1000" placeholder="250000"></div>
+</div><div class="toolbar"><button class="primary" id="scan" type="button">Scan imported deals ↗</button><span id="radarStatus" class="source" role="status"></span></div>
+<div class="tablebox"><table><thead><tr><th>Property</th><th>Ask</th><th>Nearby sold comps</th><th>Estimated resale</th><th>Margin before costs</th><th></th></tr></thead><tbody id="radarResults"><tr><td colspan="6">Import active listings and sold comps to begin.</td></tr></tbody></table></div>
+<p class="smallprint">Missing, old, or unmatched comps will not produce a resale estimate. Use verified recent closed sales before making an offer.</p>
+</section>
+<section class="panel span6" id="subject"><div class="eyebrow">03 · Analyze a house</div><h2>Property and investment assumptions</h2>
+<div class="fields">
+<div class="field"><label for="address">Property address</label><input id="address" placeholder="Street, city, state" autocomplete="street-address"></div>
+<div class="field"><label for="zip">ZIP code</label><input id="zip" maxlength="5" inputmode="numeric" placeholder="19805"></div>
+<div class="field"><label for="sqft">Living area (sq ft)</label><input id="sqft" type="number" min="0" placeholder="1500"></div>
+<div class="field"><label for="beds">Bedrooms</label><input id="beds" type="number" min="0" step=".5" placeholder="3"></div>
+<div class="field"><label for="purchase">Purchase / asking price ($)</label><input id="purchase" type="number" min="0" step="500" value="125000"></div>
+<div class="field"><label for="arv">After-repair resale value ($)</label><input id="arv" type="number" min="0" step="1000" placeholder="Enter verified estimate"></div>
+</div>
+<div class="toolbar"><button id="estimate" class="secondary" type="button">Estimate ARV from sold comps</button><span id="compStatus" class="smallprint" role="status">Enter a ZIP and square footage to match comps.</span></div>
+<div class="fields">
+<div class="field"><label for="rehab">Renovation budget ($)</label><input id="rehab" type="number" min="0" value="50000"></div>
+<div class="field"><label for="contingency">Renovation contingency (%)</label><input id="contingency" type="number" min="0" max="100" value="10"></div>
+<div class="field"><label for="buyerClosing">Buyer closing costs (%)</label><input id="buyerClosing" type="number" min="0" max="100" value="3"></div>
+<div class="field"><label for="sellingCosts">Resale costs / commission (%)</label><input id="sellingCosts" type="number" min="0" max="100" value="7.5"></div>
+<div class="field"><label for="months">Months held</label><input id="months" type="number" min="0" value="5"></div>
+<div class="field"><label for="monthlyHolding">Monthly carrying costs ($)</label><input id="monthlyHolding" type="number" min="0" value="1000"></div>
+<div class="field"><label for="otherCosts">Other fixed costs ($)</label><input id="otherCosts" type="number" min="0" value="0"></div>
+<div class="field"><label for="targetProfit">Required minimum profit ($)</label><input id="targetProfit" type="number" min="0" value="25000"></div>
+</div>
+<div class="toolbar"><button id="analyze" type="button" class="primary">Run flip analysis →</button><button id="report" type="button" class="secondary">Print / Save report</button></div>
+</section>
+<section class="panel span6" aria-label="Investment results"><div class="eyebrow">04 · Investment decision support</div><h2>Flip analysis</h2>
+<div id="decision" class="badge">Enter a resale value to calculate</div>
+<div class="metrics">
+<div class="metric"><small>Projected net profit</small><strong id="profit">—</strong></div>
+<div class="metric"><small>Total project costs</small><strong id="total">—</strong></div>
+<div class="metric"><small>Maximum offer</small><strong id="maxOffer">—</strong></div>
+<div class="metric"><small>Return on cost</small><strong id="roi">—</strong></div>
+<div class="metric"><small>Net sale proceeds</small><strong id="proceeds">—</strong></div>
+<div class="metric"><small>Holding + contingency</small><strong id="riskCosts">—</strong></div>
+</div>
+<h3>Resale sensitivity (sale price changes)</h3><div class="tablebox"><table><thead><tr><th>Scenario</th><th>Gross sale</th><th>Profit after costs</th></tr></thead><tbody id="scenarios"><tr><td colspan="3">Enter an ARV to see scenarios.</td></tr></tbody></table></div>
+<p class="smallprint">Maximum offer is calculated to meet the profit target, assuming the resale value and cost assumptions are accurate. It is not a guaranteed market-clearing price.</p>
+<div id="warnings" class="warning" style="margin-top:15px">No comps or income verification is available until you enter or import supporting data.</div>
+</section>
+<section class="panel span6"><div class="eyebrow">05 · Buy and hold</div><h2>Rental cash-flow analysis</h2><p class="smallprint">Use the purchase price and renovation from above. Set rent, financing and operating expenses independently.</p>
+<div class="fields">
+<div class="field"><label for="rent">Monthly market rent ($)</label><input id="rent" type="number" min="0" value="1800"></div>
+<div class="field"><label for="downPercent">Down payment (%)</label><input id="downPercent" type="number" min="0" max="100" value="25"></div>
+<div class="field"><label for="interest">Interest rate APR (%)</label><input id="interest" type="number" min="0" value="7" step=".1"></div>
+<div class="field"><label for="years">Loan term (years)</label><input id="years" type="number" min="1" value="30"></div>
+<div class="field"><label for="vacancy">Vacancy allowance (%)</label><input id="vacancy" type="number" min="0" max="100" value="7"></div>
+<div class="field"><label for="management">Property management (%)</label><input id="management" type="number" min="0" max="100" value="8"></div>
+<div class="field"><label for="annualTax">Annual property taxes ($)</label><input id="annualTax" type="number" min="0" value="2500"></div>
+<div class="field"><label for="insurance">Annual insurance ($)</label><input id="insurance" type="number" min="0" value="1500"></div>
+<div class="field"><label for="maintenance">Annual maintenance ($)</label><input id="maintenance" type="number" min="0" value="2000"></div>
+<div class="field"><label for="utilities">Annual owner utilities / other ($)</label><input id="utilities" type="number" min="0" value="0"></div>
+</div>
+<div class="toolbar"><button class="primary" id="rentalAnalyze" type="button">Calculate rental return →</button></div><div class="metrics">
+<div class="metric"><small>Monthly cash flow</small><strong id="rentalCash">—</strong></div>
+<div class="metric"><small>Cash-on-cash return</small><strong id="cashReturn">—</strong></div>
+<div class="metric"><small>Debt coverage ratio</small><strong id="dscr">—</strong></div>
+</div><p class="smallprint">Rent, expenses and financing terms must be confirmed with local comparables, your lender and a property inspection.</p>
+</section>
+<section class="panel span6"><div class="eyebrow">06 · Evidence</div><h2>Comparable sales used</h2><p class="smallprint">Sold properties are compared by ZIP, living area and beds, with older dated sales excluded. Imported entries with missing sold dates can be included but are less reliable.</p>
+<div class="tablebox"><table><thead><tr><th>Address</th><th>Sale price</th><th>Sq ft</th><th>$/sq ft</th><th>Sale date</th></tr></thead><tbody id="comps"><tr><td colspan="5">No comps selected.</td></tr></tbody></table></div>
+<div style="margin-top:14px" class="boxinfo">Data source: Imported CSV or manual entry. No live MLS, Redfin or RedfinPlus connection has been verified or enabled. Do not treat the screening verdict as a professional appraisal or investment recommendation.</div>
+</section>
+</div>
+<footer class="footer"><strong>SiteCommand Deal Finder</strong> · Screening calculations only · <a href="real-estate.html">Existing Real Estate tools</a> · <a href="https://github.com/AlienTechSoftware/RedfinPlus/blob/master/docs/REDFIN.md" target="_blank" rel="noopener noreferrer">RedfinPlus reference</a></footer>
+</div>
+<script type="module">
+import {parseCSV,normalizeListing,selectComps,estimateARV,analyzeFlip,analyzeRental,isSold} from './deal-engine.mjs';
+const $=id=>document.getElementById(id);
+const read=id=>Number($(id).value)||0;
+const usd=n=>Number.isFinite(n)?new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n):'—';
+const percent=n=>Number.isFinite(n)?(n*100).toFixed(1)+'%':'—';
+const number=n=>Number.isFinite(n)?new Intl.NumberFormat('en-US',{maximumFractionDigits:0}).format(n):'—';
+const rows=[];
+const text=(id,value)=>$(id).textContent=value;
+const el=(tag,value)=>{const x=document.createElement(tag);x.textContent=value??'';return x};
+const appendCells=(tr,values)=>{for(const v of values)tr.appendChild(el('td',v))};
+function status(){text('importStatus',rows.length+' property row(s) loaded locally · '+rows.filter(isSold).length+' labeled sold. Not independently verified.');}
+function subject(){return {address:$('address').value,zip:$('zip').value.trim(),sqft:read('sqft'),beds:$('beds').value===''?null:read('beds')}}
+function matchedComps(){return selectComps(rows,subject(),{requireSold:true})}
+function renderComps(comps){const body=$('comps');body.replaceChildren();if(!comps.length){const row=el('tr');const cell=el('td','No matching sold comparables');cell.colSpan=5;row.appendChild(cell);body.appendChild(row);return}for(const c of comps){const tr=el('tr');appendCells(tr,[c.address||'Address unavailable',usd(c.price),number(c.sqft),usd(c.pricePerSqft),c.date||'Date missing']);body.appendChild(tr)}}
+function flip(){const x=analyzeFlip({purchase:read('purchase'),arv:read('arv'),rehab:read('rehab'),contingencyPercent:read('contingency'),buyerClosingPercent:read('buyerClosing'),sellingPercent:read('sellingCosts'),monthlyHolding:read('monthlyHolding'),holdMonths:read('months'),otherCosts:read('otherCosts'),targetProfit:read('targetProfit')});const hasARV=read('arv')>0;text('profit',hasARV?usd(x.profit):'—');text('total',usd(x.totalCost));text('maxOffer',hasARV?usd(x.maxOffer):'—');text('roi',hasARV?percent(x.roi):'—');text('proceeds',hasARV?usd(x.proceeds):'—');text('riskCosts',usd(x.holding+x.rehabWithContingency-read('rehab')));text('decision',x.verdict);
+$('decision').className='badge '+(hasARV?(x.profit>=read('targetProfit')?'goodbg':'badbg'):'');
+const table=$('scenarios');table.replaceChildren();if(hasARV)for(const s of x.scenarios){const tr=el('tr');appendCells(tr,[s.change===0?'Base':s.change<0?'Downside '+s.change+'%':'Upside +'+s.change+'%',usd(s.price),usd(s.profit)]);table.appendChild(tr)}
+const comps=matchedComps();renderComps(comps);text('warnings',comps.length<3?'Fewer than 3 recent neighborhood sold comps matched. ARV and buy/pass assessment have low confidence; verify the condition and price of local sales.':'Estimate uses uploaded/entered data only. Verify sold dates, renovation scope, liens, taxes, insurance and local market activity before bidding.');}
+function rental(){const x=analyzeRental({purchase:read('purchase'),rehab:read('rehab'),monthlyRent:read('rent'),downPercent:read('downPercent'),interestPercent:read('interest'),loanYears:read('years'),vacancyPercent:read('vacancy'),managementPercent:read('management'),annualTax:read('annualTax'),annualInsurance:read('insurance'),annualMaintenance:read('maintenance'),annualUtilities:read('utilities'),buyerClosingPercent:read('buyerClosing')});text('rentalCash',usd(x.monthlyCashFlow));text('cashReturn',percent(x.cashOnCash));text('dscr',x.dscr===null?'—':x.dscr.toFixed(2)+'×')}
+$('csv').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(file.size>5_000_000){text('importStatus','CSV exceeds 5 MB. Please use a smaller file.');return}try{const parsed=parseCSV(await file.text()).slice(0,5000).map(normalizeListing).filter(r=>r.address||r.price);if(!parsed.length)throw Error('No recognizable listings');rows.push(...parsed);status();text('radarStatus','Ready to scan imported listings');}catch(err){text('importStatus','Could not read CSV: '+err.message)}finally{e.target.value=''}});
+$('template').addEventListener('click',()=>{const template='ADDRESS,ZIP,PRICE,SQUARE FEET,BEDS,BATHS,STATUS,SOLD DATE,URL\n';const blob=new Blob([template],{type:'text/csv'});const url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='sitecommand-property-template.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)});
+$('clear').addEventListener('click',()=>{rows.length=0;status();text('radarStatus','');$('radarResults').replaceChildren();renderComps([])});
+$('manualComp').addEventListener('submit',e=>{e.preventDefault();rows.push({address:$('compAddress').value.trim(),city:'',state:'',zip:$('compZip').value.trim(),price:read('compPrice'),sqft:read('compSqft'),beds:$('compBeds').value===''?null:read('compBeds'),baths:null,status:'sold',date:$('compDate').value,url:'',source:'Manually entered'});status();$('manualComp').reset();flip()});
+function renderRadar(){
+  const zip=$('radarZip').value.trim(),budget=$('radarBudget').value===''?Infinity:read('radarBudget');
+  const active=rows.filter(r=>!isSold(r)&&r.price>0&&r.sqft>0&&(!zip||r.zip===zip)&&r.price<=budget);
+  const ranked=active.map(r=>{
+    const comps=selectComps(rows,r,{requireSold:true});
+    const arv=estimateARV(comps,r.sqft);
+    return {listing:r,comps,arv,spread:arv?arv.value-r.price:null};
+  }).sort((a,b)=>(b.spread??-Infinity)-(a.spread??-Infinity)).slice(0,40);
+  const body=$('radarResults');body.replaceChildren();
+  if(!ranked.length){const tr=el('tr'),td=el('td','No eligible active listings found. Import CSV rows with status active and sold comps, or remove filters.');td.colSpan=6;tr.appendChild(td);body.appendChild(tr);}
+  for(const item of ranked){const r=item.listing,tr=el('tr');appendCells(tr,[r.address||'Address missing',usd(r.price),String(item.comps.length),item.arv?usd(item.arv.value):'Not enough evidence',item.spread===null?'—':usd(item.spread)]);
+    const action=el('td'),btn=el('button','Analyze');btn.type='button';btn.addEventListener('click',()=>{text('address',r.address);$('address').value=r.address;$('zip').value=r.zip;$('sqft').value=r.sqft;$('beds').value=r.beds??'';$('purchase').value=r.price;$('arv').value=item.arv?Math.round(item.arv.value):'';flip();$('subject').scrollIntoView({behavior:'smooth'});});action.appendChild(btn);
+    if(r.url){const link=el('a',' Source ↗');link.href=r.url;link.target='_blank';link.rel='noopener noreferrer';action.appendChild(link);}tr.appendChild(action);body.appendChild(tr)}
+  text('radarStatus',ranked.length+' candidates shown. Estimated spread excludes all transaction, repair and holding costs.');}
+$('scan').addEventListener('click',renderRadar);
+$('estimate').addEventListener('click',()=>{const comps=matchedComps(),estimate=estimateARV(comps,read('sqft'));renderComps(comps);if(!estimate){text('compStatus','No comparable sold listings matched. Enter an ARV supported by verified sales.');return}
+$('arv').value=Math.round(estimate.value);text('compStatus',comps.length+' sold comps · Median '+usd(estimate.medianPpsf)+'/sq ft. Estimate is not a verified appraisal.');flip()});
+$('analyze').addEventListener('click',flip);
+$('rentalAnalyze').addEventListener('click',rental);
+$('report').addEventListener('click',()=>window.print());
+flip();rental();
+</script>
+</body></html>
