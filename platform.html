@@ -122,6 +122,16 @@
 @media(max-width:760px){body{padding-bottom:20px}}
 @media(max-width:820px){body{padding-bottom:calc(60px + env(safe-area-inset-bottom))}}
 </style>
+<style id="sc-nav-refresh">
+#sc-tools-bar{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;padding:.6rem .85rem;background:#10151d;border-bottom:1px solid #2b3645;position:relative;z-index:40}
+.sc-tool-menu{position:relative}.sc-tool-menu summary,.sc-tool-direct{display:inline-flex;align-items:center;gap:.4rem;border:1px solid #344052;border-radius:9px;padding:.58rem .85rem;color:#e5eaf3;background:#1a2330;font:600 .79rem 'DM Sans',sans-serif;text-decoration:none;cursor:pointer;list-style:none}
+.sc-tool-menu summary::-webkit-details-marker{display:none}.sc-tool-menu summary:after{content:"⌄";color:#c8a96e;margin-left:.5rem}.sc-tool-menu[open] summary,.sc-tool-menu summary:hover,.sc-tool-direct:hover{border-color:#c8a96e;background:#263040}
+.sc-tool-items{position:absolute;left:0;top:calc(100% + 7px);width:225px;background:#141c27;border:1px solid #394558;border-radius:12px;box-shadow:0 18px 45px #000b;padding:.4rem;display:grid;gap:2px;z-index:60}
+.sc-tool-items a{display:block;padding:.7rem .8rem;border-radius:7px;color:#d8e0ee;font:500 .82rem 'DM Sans',sans-serif;text-decoration:none}
+.sc-tool-items a:hover,.sc-tool-items a:focus-visible{background:#2a3546;color:#fff}
+#sc-tools-bar a:focus-visible,#sc-tools-bar summary:focus-visible{outline:2px solid #c8a96e;outline-offset:2px}
+@media(max-width:640px){#sc-tools-bar{gap:.4rem}.sc-tool-menu summary,.sc-tool-direct{font-size:.72rem;padding:.55rem .6rem}.sc-tool-items{width:min(225px,85vw)}}
+</style>
 </head>
 <body>
 
@@ -181,18 +191,18 @@
 <div id="platform">
   <div class="p-header">
     <div class="p-logo"><span>Site</span>Command</div>
-  <!-- ── TOOLS QUICK NAV ── -->
-  <div id="sc-tools-bar" style="display:flex;gap:.35rem;padding:.55rem .85rem;background:rgba(10,10,10,.95);border-bottom:1px solid #252525;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:0;z-index:400">
-    <a href="email-ai.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">📧 Email</a>
-    <a href="lead-finder.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🔍 Leads</a>
-    <a href="social-media.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">📱 Social</a>
-    <a href="permits.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🏛 Permits</a>
-    <a href="video-gen.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🎬 Video</a>
-    <a href="youtube-studio.html" style="display:flex;align-items:center;gap:.3rem;background:rgba(255,0,0,.08);border:1px solid rgba(255,0,0,.2);border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#ff7070;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">▶️ YouTube</a>
-    <a href="real-estate.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🏡 RE Law</a>
-    <a href="ai-assistant.html" style="display:flex;align-items:center;gap:.3rem;background:rgba(200,169,110,.08);border:1px solid rgba(200,169,110,.25);border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#c8a96e;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">🤖 AI Chat</a>
-    <a href="siteeditor.html" style="display:flex;align-items:center;gap:.3rem;background:#181818;border:1px solid #252525;border-radius:7px;padding:.3rem .7rem;text-decoration:none;color:#a0a0a0;font-size:.72rem;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif">✏️ Editor</a>
-  </div>
+  <!-- ── SIMPLIFIED TOOLS NAV: semantic links, no data changes ── -->
+  <nav id="sc-tools-bar" aria-label="SiteCommand tools">
+    <details class="sc-tool-menu"><summary>✦ AI & Marketing</summary><div class="sc-tool-items">
+      <a href="email-ai.html">📧 Email AI</a><a href="lead-finder.html">🔍 Lead Finder</a>
+      <a href="social-media.html">📱 Social Media</a><a href="video-gen.html">🎬 Video Studio</a>
+      <a href="youtube-studio.html">▶ YouTube Studio</a><a href="ai-assistant.html">🤖 AI Assistant</a>
+    </div></details>
+    <details class="sc-tool-menu"><summary>▤ Operations</summary><div class="sc-tool-items">
+      <a href="permits.html">🏛 Permits</a><a href="real-estate.html">🏡 Real Estate</a>
+    </div></details>
+    <a class="sc-tool-direct" href="siteeditor.html">✏️ Website Editor</a>
+  </nav>
 
       <div class="p-company" id="headerCompany"></div>
     <div class="p-nav">
