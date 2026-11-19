@@ -271,15 +271,10 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
         <div class="ed-section-title">Hero Background Photo</div>
         <div class="fg"><label>Or enter a photo URL</label><input id="eHeroPhoto" oninput="liveUpdate()" placeholder="https://images.unsplash.com/..."/></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem">
-          ${[
-            'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&q=70',
-            'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70',
-            'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=400&q=70',
-            'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&q=70',
-          ].map((url,i) => `
-          <div onclick="setHeroPhoto('${url.replace('w=400','w=1400')}')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='transparent'">
-            <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
-          </div>`).join('')}
+          <div onclick="setHeroPhoto('https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=70')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent"><img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&q=70" alt="Sample project image" style="width:100%;height:100%;object-fit:cover"/></div>
+          <div onclick="setHeroPhoto('https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=70')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=70" alt="Sample project image" style="width:100%;height:100%;object-fit:cover"/></div>
+          <div onclick="setHeroPhoto('https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=1400&q=70')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent"><img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=400&q=70" alt="Sample project image" style="width:100%;height:100%;object-fit:cover"/></div>
+          <div onclick="setHeroPhoto('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1400&q=70')" style="aspect-ratio:16/9;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent"><img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400&q=70" alt="Sample project image" style="width:100%;height:100%;object-fit:cover"/></div>
         </div>
       </div>
     </div>
