@@ -341,7 +341,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, getDocFromServer, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
   apiKey:'AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8',
@@ -694,7 +694,7 @@ window.saveChanges = async () => {
 
   try {
     await setDoc(doc(db,'contractors',userUID), updates, {merge:true});
-    const verified = await getDoc(doc(db,'contractors',userUID));
+    const verified = await getDocFromServer(doc(db,'contractors',userUID));
     if(!verified.exists())throw new Error('Saved record could not be reloaded');
     const persisted=verified.data();
     const expected=updates.projectPhotos;
