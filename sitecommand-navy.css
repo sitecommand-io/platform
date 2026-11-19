@@ -32,3 +32,10 @@ body.sc-workspace :is(.body,.main,.container,.content){max-width:1500px}
 body.sc-workspace .sc-mobile-toggle{display:none}
 @media(max-width:950px){body.sc-workspace{padding-left:0!important}body.sc-workspace .sc-sidebar{transform:translateX(-105%);transition:transform .24s ease}body.sc-workspace.sc-menu-open .sc-sidebar{transform:translateX(0)}body.sc-workspace .sc-workspace-top{padding:0 18px;height:68px}body.sc-workspace .sc-mobile-toggle{display:inline-flex;align-items:center;justify-content:center;background:#1a3150;color:#fff;border:1px solid #385779;border-radius:10px;width:39px;height:39px;cursor:pointer}body.sc-workspace #setupWizard{padding:0 16px!important;margin:28px auto!important}.sc-workspace-status{display:none}}
 @media(prefers-reduced-motion:reduce){.sc-side-link,.sc-sidebar{transition:none!important}}
+
+/* Preserve dashboard account controls and login screens. */
+body.sc-workspace .p-header{display:flex!important;position:relative!important;top:auto!important;z-index:1!important;background:#101f34!important;border-bottom:1px solid #2b4260!important;box-shadow:none!important}
+body.sc-auth-navy{background:#09111f!important;background-image:radial-gradient(ellipse 60% 40% at 50% 0%,#173b70,transparent 75%)!important;color:#f4f8ff!important}
+body.sc-auth-navy :is(.auth-box,.auth-card){background:#14243a!important;border-color:#2b4568!important;color:#edf4ff!important}
+body.sc-workspace :is(.mrr-card,.stat-card,.queue-item,.tab-pane,.tool-card){background:#14243a!important;border-color:#29415f!important;color:#e9f2ff!important}
+body.sc-workspace :is(.main,.body,.content){margin-left:auto;margin-right:auto}
