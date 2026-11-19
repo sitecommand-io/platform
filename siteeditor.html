@@ -341,7 +341,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, getDocFromServer, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const FB = {
   apiKey:'AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8',
@@ -481,17 +481,18 @@ window.uploadPhoto = async (i, input) => {
     await uploadBytes(fileRef,file,{contentType:file.type});
     const url=await getDownloadURL(fileRef);
     projectPhotos[i]=url;
-    await saveChanges();
+    const saved = await saveChanges();
+    if(!saved)throw new Error('Photo uploaded but the database did not confirm saving its URL.');
     renderPhotoGrid();
     updatePreview();
-    msg.textContent='Photo uploaded and saved';
+    msg.textContent='Photo uploaded and verified in your account';
   }catch(error){
     showEditorNotice('Photo upload failed: '+error.message+'. Check Firebase Storage rules and permissions.');
   }finally{input.disabled=false}
 };
 window.removePhoto = (i, e) => {
   e.preventDefault(); e.stopPropagation();
-  projectPhotos.splice(i,1);
+  projectPhotos[i]='';
   renderPhotoGrid();
   scheduleSave();
 };
@@ -668,7 +669,8 @@ function scheduleSave() {
 }
 
 window.saveChanges = async () => {
-  if (!userUID) return;
+  if (!userUID) {showEditorNotice('Sign in to save changes.');return false;}
+  if(saveTimeout){clearTimeout(saveTimeout);saveTimeout=null;}
   const btn = document.getElementById('saveBtn');
   const msg = document.getElementById('saveMsg');
   btn.disabled = true; btn.textContent = 'Saving...';
@@ -692,15 +694,24 @@ window.saveChanges = async () => {
 
   try {
     await setDoc(doc(db,'contractors',userUID), updates, {merge:true});
+    const verified = await getDocFromServer(doc(db,'contractors',userUID));
+    if(!verified.exists())throw new Error('Saved record could not be reloaded');
+    const persisted=verified.data();
+    const expected=updates.projectPhotos;
+    if(!Array.isArray(persisted.projectPhotos)||JSON.stringify(persisted.projectPhotos)!==JSON.stringify(expected))throw new Error('Saved photos could not be verified. Please retry.');
     Object.assign(userData, updates);
-    msg.textContent = '✅ Saved to your account';
+    msg.style.color='var(--green)';
+    msg.textContent = '✅ Saved and verified in your account';
     window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
     setTimeout(()=>msg.textContent='',3000);
+    btn.disabled=false;btn.textContent='Save Changes';
+    return true;
   } catch(e) {
     msg.style.color='#e08080'; msg.textContent='Error: '+e.message;
-    setTimeout(()=>{msg.textContent='';msg.style.color='var(--green)'},4000);
+    showEditorNotice('Unable to save your changes: '+e.message);
+    btn.disabled=false;btn.textContent='Save Changes';
+    return false;
   }
-  btn.disabled=false; btn.textContent='Save Changes';
 };
 
 // ── TABS ─────────────────────────────────────────────────────
