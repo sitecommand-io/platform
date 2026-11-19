@@ -47,3 +47,43 @@ body.sc-public-navy :is(.hero,.section,.shell){border-color:#29415f}
 body.sc-public-navy :is(.card,.feature-card,.dashboard,.kpi,.panel,.auth-box){background:#14243a!important;border-color:#29415f!important;color:#f4f8ff!important}
 body.sc-public-navy :is(.primary,.pill.primary,.auth-btn){background:#367df1!important;color:#fff!important;border-color:#367df1!important}
 body.sc-public-navy :is(h1,h2,h3){color:#f4f8ff}
+
+
+/* Unified SiteCommand platform visual system — same layout and cards on every page. */
+:root{--black:#f1f5fc;--dark:#fff;--surface:#f8faff;--card:#fff;--border:#dce5f2;--mid:#6e819d;--light:#435a79;--white:#1c3151;--accent:#386aff;--accent2:#2759e8;--blue:#386aff;--sc3-gold:#386aff;--sc3-blue:#386aff;--green:#138c74;--red:#ce4762}
+html{color-scheme:light}
+body.sc-workspace{background:#f1f5fc!important;background-image:radial-gradient(ellipse 80% 50% at 90% -20%,#dce9ff,transparent 75%)!important;color:#213755!important;font-family:Inter,'DM Sans',system-ui,sans-serif}
+body.sc-workspace .sc-sidebar{background:#fff!important;border-right:1px solid #e0e7f3!important;box-shadow:6px 0 26px #233e6710!important}
+body.sc-workspace .sc-sidebrand{color:#203653!important}
+body.sc-workspace .sc-sidebrand-mark{background:#386aff!important;box-shadow:0 5px 14px #386aff33!important}
+body.sc-workspace .sc-side-label{color:#8999af!important}
+body.sc-workspace .sc-side-link{color:#61738f!important}
+body.sc-workspace .sc-side-link:hover{background:#edf3ff!important;border-color:#dce6ff!important;color:#3156a2!important}
+body.sc-workspace .sc-side-link[aria-current=page]{background:#eaf0ff!important;color:#285af2!important;border-color:#cbd9ff!important;box-shadow:none!important}
+body.sc-workspace .sc-side-footer{color:#8799b0!important;border-top-color:#e3eaf4!important}
+body.sc-workspace .sc-workspace-top{background:#fff!important;border-bottom:1px solid #e0e8f4!important;box-shadow:0 3px 15px #23406d0a!important}
+body.sc-workspace .sc-workspace-eyebrow{color:#4d76d7!important}
+body.sc-workspace .sc-workspace-title{color:#233b5b!important}
+body.sc-workspace .sc-workspace-status{background:#eef8f5!important;border-color:#d1ebe2!important;color:#26876f!important}
+body.sc-workspace .sc-mobile-toggle{background:#eef3ff!important;color:#315bce!important;border-color:#d3e0f9!important}
+body.sc-workspace :is(.wiz-card,.panel,.card,.platform-card,.feature-card,.kpi,.dashboard,.auth-box,.stat-box,.ai-box,.boxinfo,.task,.mrr-card,.stat-card,.queue-item,.tab-pane,.tool-card,.reply-box,.email-item,.highlight-box){background:#fff!important;background-image:none!important;color:#233b5b!important;border:1px solid #dce5f2!important;border-radius:20px!important;box-shadow:0 14px 35px #29456d12!important}
+body.sc-workspace :is(.wiz-card,.panel,.card,.platform-card,.feature-card,.kpi,.dashboard,.stat-box,.ai-box,.mrr-card,.stat-card):hover{border-color:#afc5ff!important;box-shadow:0 18px 42px #29456d1d!important;transform:translateY(-2px)}
+body.sc-workspace :is(h1,h2,h3,.wiz-title,.platforms-title,.page-title,.section-title){color:#213858!important}
+body.sc-workspace :is(.wiz-sub,.wiz-step-desc,.smallprint,.muted,.subtext){color:#7386a2!important}
+body.sc-workspace :is(input,textarea,select){background:#f8faff!important;color:#203653!important;border:1px solid #d9e3f0!important;border-radius:10px}
+body.sc-workspace :is(input,textarea,select):focus{border-color:#386aff!important;outline:2px solid #386aff22!important}
+body.sc-workspace :is(.btn-main,.auth-btn,.primary,.send-btn){background:#386aff!important;color:#fff!important;border-color:#386aff!important;box-shadow:0 8px 18px #386aff28!important}
+body.sc-workspace :is(.sp.active,.sp.done){background:#386aff!important}
+body.sc-workspace :is(a){accent-color:#386aff}
+body.sc-workspace :is(.main,.body,.content,.container,#setupWizard){max-width:1400px;margin-left:auto;margin-right:auto}
+body.sc-workspace #setupWizard{max-width:1000px!important;margin:36px auto!important}
+body.sc-workspace .wiz-card{max-width:none}
+body.sc-workspace :is(.sc-tool-menu,.dropdown-menu){background:#fff!important;border-color:#dce5f2!important;color:#233b5b!important}
+body.sc-workspace .p-header{background:#fff!important;border-color:#e0e8f4!important}
+body.sc-auth-navy,body.sc-public-navy{background:#f1f5fc!important;background-image:radial-gradient(ellipse 80% 50% at 90% -20%,#e2ecff,transparent 75%)!important;color:#213755!important}
+body.sc-auth-navy :is(.auth-box,.auth-card),body.sc-public-navy :is(.auth-box,.auth-card,.card,.feature-card,.dashboard,.kpi,.panel){background:#fff!important;border:1px solid #dce5f2!important;color:#233b5b!important;box-shadow:0 14px 35px #29456d12!important}
+body.sc-public-navy :is(.nav,.topbar,.header){background:#fff!important;border-color:#e0e8f4!important}
+body.sc-public-navy :is(h1,h2,h3){color:#213858!important}
+body.sc-public-navy :is(.primary,.pill.primary,.auth-btn){background:#386aff!important;border-color:#386aff!important;color:#fff!important}
+@media(max-width:950px){body.sc-workspace .sc-workspace-top{padding:0 18px!important}body.sc-workspace #setupWizard{padding:0 18px!important}}
+@media(prefers-reduced-motion:reduce){body.sc-workspace *{scroll-behavior:auto!important}}
