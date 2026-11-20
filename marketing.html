@@ -5,6 +5,10 @@
 :root{font-family:Inter,system-ui,sans-serif;color:#17191d;background:#f6f5f1}*{box-sizing:border-box}body{margin:0}header{background:#17191d;color:white;padding:22px max(24px,calc((100vw - 1050px)/2));display:flex;justify-content:space-between;align-items:center}header a{color:white;text-decoration:none}main{max-width:1050px;margin:auto;padding:38px 24px 90px}h1{font-size:clamp(32px,5vw,48px);letter-spacing:-.04em;margin:0}h2{margin:0 0 10px;font-size:22px}p{line-height:1.6;color:#555b62}section{background:#fff;border:1px solid #e4e1da;border-radius:16px;padding:26px;margin-top:20px}label{display:block;font-weight:650;font-size:14px;margin:16px 0 6px}input,textarea{width:100%;font:inherit;padding:12px;border:1px solid #cbc9c3;border-radius:8px}textarea{min-height:95px}button,.action{display:inline-block;border:0;border-radius:8px;padding:13px 20px;background:#c8562b;color:white;font:inherit;font-weight:700;text-decoration:none;cursor:pointer;margin:12px 8px 0 0}.action.secondary{background:#17191d}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.note{font-size:13px;color:#666}.status{font-weight:700}a{color:#ae4827}@media(max-width:720px){.grid{grid-template-columns:1fr}header{padding:18px 24px}}
 </style></head><body><header><strong>SiteCommand · Marketing Center</strong><a href="/platform.html">Dashboard ↗</a></header><main>
 <p class="note">SITECOMMAND / CONTRACTOR MARKETING</p><h1>Get found. Win trust. Grow.</h1><p>Manage your website SEO and Google review link. All saved details belong to your contractor account.</p><p class="status" id="status" role="status">Checking your account…</p>
+<section><h2>Import your business from Google</h2><p>Find your business on Google Maps, review its details, and choose what to add to your SiteCommand account. Your existing information will not be overwritten without confirmation.</p>
+<label for="googleQuery">Business name and city, or Google Place ID</label><input id="googleQuery" maxlength="160" placeholder="e.g. WCJ Construction Wilmington Delaware">
+<label for="googleShareLink">Google Maps share link (optional)</label><input id="googleShareLink" type="url" placeholder="https://share.google/...">
+<button id="searchGoogle" type="button">Find my business</button><p class="note" id="googleHelp">Short share.google links cannot always identify a listing directly. If your link cannot be resolved, enter the business name and city above.</p><div id="googleResults" aria-live="polite"></div></section>
 <div class="grid"><section><h2>Search engine optimization</h2><p>Customize how your homepage appears in Google Search.</p><label for="seoTitle">Homepage SEO title</label><input id="seoTitle" maxlength="150" placeholder="Company | Services in City"><label for="seoDescription">Search description</label><textarea id="seoDescription" maxlength="260" placeholder="Describe your business, services and area"></textarea><button id="saveSeo">Save SEO settings</button></section>
 <section><h2>Google Business Profile</h2><p>Claim or manage your actual business listing. Verification is completed with Google by the business owner.</p><a class="action secondary" href="https://business.google.com/" target="_blank" rel="noopener noreferrer">Manage Google listing ↗</a><p class="note">Use the same business name, service area, phone number and website URL on Google and SiteCommand.</p><p><strong>Your website:</strong> <a id="siteLink" target="_blank" rel="noopener noreferrer">Not configured</a></p><p><strong>Your sitemap:</strong> <a id="sitemapLink" target="_blank" rel="noopener noreferrer">Not configured</a></p></section></div>
 <div class="grid"><section><h2>Real customer reviews</h2><p>Paste the direct Google review link for your own business. Never invent testimonials or reward customers for positive ratings.</p><label for="reviewsUrl">Google review link</label><input id="reviewsUrl" type="url" placeholder="https://g.page/r/.../review"><button id="saveReviews">Save review link</button><p><a id="viewReviews" target="_blank" rel="noopener noreferrer" hidden>Open review link ↗</a></p></section>
@@ -22,6 +26,38 @@ function validReviewLink(value){try{const u=new URL(value);return u.protocol==='
 function refreshReviewLink(){const v=$('reviewsUrl').value.trim();$('viewReviews').hidden=!validReviewLink(v);if(validReviewLink(v))$('viewReviews').href=v;}
 onAuthStateChanged(auth,async user=>{if(!user){status.textContent='Sign in to SiteCommand to use Marketing Center.';return}uid=user.uid;try{const snap=await getDoc(doc(db,'contractors',uid));if(!snap.exists())throw Error('Contractor profile not found');contractor=snap.data();$('seoTitle').value=contractor.seoTitle||'';$('seoDescription').value=contractor.seoDescription||'';$('reviewsUrl').value=contractor.reviewsUrl||'';refreshReviewLink();if(contractor.slug&&/^[a-z0-9-]+$/i.test(contractor.slug)){const url='https://'+contractor.slug+'.sitecommand.net';$('siteLink').href=url;$('siteLink').textContent=url;$('sitemapLink').href=url+'/sitemap.xml';$('sitemapLink').textContent='View sitemap.xml'}status.textContent='Signed in · '+(contractor.companyName||'Your business')}catch(e){status.textContent='Unable to load your contractor profile: '+e.message}});
 async function save(fields){if(!uid){status.textContent='Please sign in first.';return}status.textContent='Saving…';try{await setDoc(doc(db,'contractors',uid),fields,{merge:true});Object.assign(contractor,fields);status.textContent='Settings saved successfully.'}catch(e){status.textContent='Save failed: '+e.message}}
+
+const googleResults=$('googleResults');
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let googleCandidates=[];
+$('searchGoogle').onclick=async()=>{
+  if(!uid){status.textContent='Sign in first.';return}
+  let query=$('googleQuery').value.trim(),placeId='';
+  const shared=$('googleShareLink').value.trim();
+  if(shared){try{const u=new URL(shared);if(!/^(share\\.google|google\\.[a-z.]+|maps\\.app\\.goo\\.gl)$/.test(u.hostname))throw Error('Unsupported Google URL');placeId=u.searchParams.get('query_place_id')||u.searchParams.get('place_id')||'';if(!placeId&&u.searchParams.get('q')&&!query)query=u.searchParams.get('q');}catch{status.textContent='Enter a valid Google Maps link or search by business name.';return}}
+  if(!query&&!placeId){status.textContent='Enter a business name and city. Short share.google links alone cannot always identify a business.';return}
+  googleResults.textContent='Searching Google…';
+  try{const params=new URLSearchParams(placeId?{placeId}:{query});const response=await fetch('/api/google-business-import?'+params);const data=await response.json();if(!response.ok)throw Error(data.error||'Lookup failed');googleCandidates=data.places||[];
+  if(!googleCandidates.length){googleResults.textContent='No matches. Try a more specific business name and city.';return}
+  googleResults.innerHTML=googleCandidates.map((p,i)=>'<div style="border:1px solid #e4e1da;border-radius:10px;padding:14px;margin-top:12px"><strong>'+esc(p.companyName)+'</strong><p class="note">'+esc(p.address)+' · '+esc(p.phone)+'</p><button type="button" data-import-index="'+i+'">Review & import this business</button></div>').join('');
+  }catch(e){googleResults.textContent=e.message}
+};
+googleResults.addEventListener('click',async event=>{
+ const button=event.target.closest('[data-import-index]');if(!button)return;
+ const p=googleCandidates[Number(button.dataset.importIndex)];if(!p||!uid)return;
+ const details=['Business: '+p.companyName,'Address: '+p.address,'Phone: '+p.phone,'Website: '+p.website,'Category: '+p.category,'Google listing: '+p.googleMapsUrl].join('\\n');
+ if(!confirm('Import these details into your contractor account? Existing non-empty fields will be preserved.\\n\\n'+details))return;
+ const fields={googlePlaceId:p.placeId,googleMapsUrl:p.googleMapsUrl};
+ if(!contractor.companyName&&p.companyName)fields.companyName=p.companyName;
+ if(!contractor.bizPhone&&p.phone)fields.bizPhone=p.phone;
+ if(!contractor.address&&p.address)fields.address=p.address;
+ if(!contractor.website&&p.website)fields.website=p.website;
+ if(!contractor.primaryTrade&&p.category)fields.googleCategory=p.category;
+ if(!contractor.seoTitle&&p.companyName){fields.seoTitle=(p.companyName+' | '+(p.category||'Local Services')).slice(0,150);$('seoTitle').value=fields.seoTitle}
+ if(!contractor.seoDescription&&p.companyName){fields.seoDescription=(p.companyName+' provides '+(p.category||'professional services')+(p.address?' near '+p.address:'')+'.').slice(0,260);$('seoDescription').value=fields.seoDescription}
+ await save(fields);
+});
+
 $('saveSeo').onclick=()=>save({seoTitle:$('seoTitle').value.trim().slice(0,150),seoDescription:$('seoDescription').value.trim().slice(0,260)});
 $('saveReviews').onclick=()=>{const v=$('reviewsUrl').value.trim();if(v&&!validReviewLink(v)){status.textContent='Please enter a valid Google review URL.';return}save({reviewsUrl:v});refreshReviewLink()};
 $('requestReview').onclick=()=>{const email=$('customerEmail').value.trim(),link=$('reviewsUrl').value.trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){status.textContent='Enter a valid customer email.';return}if(!validReviewLink(link)){status.textContent='Save your Google review link first.';return}const subject='Thank you for choosing '+(contractor.companyName||'our company');const body='Thank you for trusting us with your project. If you would like to share your honest experience, you can leave a Google review here:\n\n'+link+'\n\nWe appreciate your feedback.';window.location.href='mailto:'+encodeURIComponent(email)+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)};
