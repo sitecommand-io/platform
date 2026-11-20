@@ -100,10 +100,11 @@
 </div>
 
 <script type="module">
-import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, onAuthStateChanged, getIdTokenResult } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, collection, getDocs, updateDoc, doc, orderBy, query } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const app = initializeApp({
+const app = getApps()[0] || initializeApp({
   apiKey:"AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8",
   authDomain:"sitecommand-saas.firebaseapp.com",
   projectId:"sitecommand-saas",
@@ -112,6 +113,14 @@ const app = initializeApp({
   appId:"1:309552233436:web:c1dcecb5ed8b9373862d19"
 });
 const db = getFirestore(app);
+const auth = getAuth(app);
+let adminAuthorized = false;
+const accessBanner = document.createElement('div');
+accessBanner.id = 'admin-access-status';
+accessBanner.setAttribute('role','status');
+accessBanner.style.cssText = 'padding:16px;background:#fff4e8;color:#7c3d0a;text-align:center';
+accessBanner.textContent = 'Verifying administrator access…';
+document.body.prepend(accessBanner);
 
 // Clock
 setInterval(() => {
@@ -119,6 +128,7 @@ setInterval(() => {
 }, 1000);
 
 async function loadSignups() {
+  if (!adminAuthorized) return;
   try {
     const snap = await getDocs(collection(db, 'saasSignups'));
     const signups = [];
@@ -233,7 +243,20 @@ window.sendWelcomeEmail = (email, name, company, plan) => {
   window.open('mailto:' + email + '?subject=' + subject + '&body=' + body);
 };
 
-loadSignups();
+onAuthStateChanged(auth, async user => {
+  adminAuthorized = false;
+  if (!user) { accessBanner.textContent='Administrator sign-in required. Open the dashboard to sign in.'; return; }
+  try {
+    const token = await getIdTokenResult(user, true);
+    if (token.claims.supportAdmin !== true && token.claims.sitecommandAdmin !== true) {
+      accessBanner.textContent='Access denied: this account has no administrator claim.';
+      return;
+    }
+    adminAuthorized = true;
+    accessBanner.textContent='Administrator session verified.';
+    await loadSignups();
+  } catch (error) { accessBanner.textContent='Administrator verification failed: '+error.message; }
+});
 </script>
 </body>
 </html>
