@@ -148,7 +148,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
-<link rel="stylesheet" href="sitecommand-templates.css?v=20261120-luxury"><script defer src="sitecommand-templates.js?v=20261120-inline-preview"></script>
+<link rel="stylesheet" href="sitecommand-templates.css?v=20261120-luxury"><script defer src="sitecommand-templates.js?v=20261120-layout-save-fix"></script>
 <style>
 /* Visual builder: preview-first workspace */
 .sc-builder-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#f4f7fc;border-bottom:1px solid #dbe3f0}
@@ -950,7 +950,8 @@ window.addEventListener('sc-builder-edit',event=>{
 // Layout selection persists only a template identifier; no other fields are overwritten.
 window.addEventListener('sc-template-save-request',async event=>{
   const templateId=event.detail?.templateId;
-  if(!userUID||!['classic','modern','bold','studio','editorial','craft'].includes(templateId))return;
+  if(!userUID){window.dispatchEvent(new CustomEvent('sc-template-save-result',{detail:{success:false,message:'Please sign in to save your layout.'}}));return;}
+  if(!['classic','modern','bold','studio','editorial','architectural-premium','craft'].includes(templateId)){window.dispatchEvent(new CustomEvent('sc-template-save-result',{detail:{success:false,message:'This layout is not recognized. Refresh and try again.'}}));return;}
   try{
     await setDoc(doc(db,'contractors',userUID),{websiteTemplate:templateId,updatedAt:serverTimestamp()},{merge:true});
     userData.websiteTemplate=templateId;

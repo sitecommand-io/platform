@@ -21,3 +21,12 @@ test('template save writes only selected template and timestamp',()=>{
   assert.match(js,/textContent=name/);
   assert.doesNotMatch(js,/innerHTML\s*=\s*[^;]*\b(name|tag|about|phone)\b/);
 });
+
+test('every displayed layout is accepted by the save handler and failures are reported',()=>{
+  const ids=[...js.matchAll(/\{id:'([^']+)'/g)].map(m=>m[1]);
+  const handler=html.slice(html.indexOf("window.addEventListener('sc-template-save-request'"));
+  assert.equal(ids.length,7);
+  for(const id of ids)assert.ok(handler.includes("'"+id+"'"),'save handler rejects '+id);
+  assert.match(handler,/sc-template-save-result/);
+  assert.match(handler,/Please sign in to save your layout/);
+});
