@@ -148,7 +148,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
-<link rel="stylesheet" href="sitecommand-templates.css?v=20261120-luxury"><script defer src="sitecommand-templates.js?v=20261120-luxury"></script>
+<link rel="stylesheet" href="sitecommand-templates.css?v=20261120-luxury"><script defer src="sitecommand-templates.js?v=20261120-inline-preview"></script>
 <style>
 /* Visual builder: preview-first workspace */
 .sc-builder-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#f4f7fc;border-bottom:1px solid #dbe3f0}
@@ -162,6 +162,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 .preview-panel.sc-builder-mobile .ts-services{grid-template-columns:1fr}
 .preview-panel.sc-builder-mobile .ts-links{display:none}
 @media(min-width:900px){.layout.sc-builder-layout{display:grid;grid-template-columns:minmax(290px,360px) minmax(0,1fr)}.layout.sc-builder-layout .preview-panel{min-width:0}}
+ .sc-inline-mobile .sc-template-site{max-width:390px;margin:auto}.sc-inline-mobile .ts-links{display:none}.sc-inline-mobile .ts-services{grid-template-columns:1fr!important}.sc-inline-mobile .ts-hero{min-height:400px!important}.sc-inline-mobile .sc-arch-stats{grid-template-columns:1fr!important}
 </style>
 <style>.sc-account-actions{display:flex;gap:9px;align-items:center;margin-left:auto;font-size:12px}.sc-account-actions a,.sc-account-actions button{padding:8px 12px;background:#1d2939;border:1px solid #4d6382;color:#fff;border-radius:7px;cursor:pointer;text-decoration:none}.sc-account-actions [hidden]{display:none!important}@media(max-width:800px){.sc-account-actions{margin-left:auto}.sc-account-actions #sc-account-label{display:none}}</style></head>
 <body>
@@ -276,7 +277,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
         <p class="sc-template-info">Selected: <strong id="sc-template-selected">Classic Business</strong></p>
         <div class="sc-template-actions"><button id="sc-template-preview" type="button">Preview Layout</button><button id="sc-template-save" type="button" class="primary">Save Layout</button><button id="sc-template-site" type="button">View Current Website</button></div>
         <p class="sc-template-info" id="sc-template-status" role="status">Choose a layout to preview.</p>
-        <p class="sc-template-info">Preview Layout shows an editable design concept. The main preview shows your actual published website. Save your layout to compare the real result.</p>
+        <div id="sc-inline-preview" style="margin-top:20px;background:#e9eef7;padding:10px;border-radius:12px;overflow:hidden"><div style="font-weight:700;font-size:12px;color:#24364e;margin:4px 4px 12px">Live layout preview — updates when you select a design</div><div id="sc-inline-preview-content" style="overflow:hidden"></div></div><p class="sc-template-info">Preview Layout shows an editable design concept. The main preview shows your actual published website. Save your layout to compare the real result.</p>
       </div>
     </div>
 
@@ -932,6 +933,8 @@ window.showTab = (id, btn) => {
 window.setBuilderDevice=device=>{
  const panel=document.querySelector('.preview-panel');
  panel?.classList.toggle('sc-builder-mobile',device==='mobile');
+ document.getElementById('sc-inline-preview')?.classList.toggle('sc-inline-mobile',device==='mobile');
+ document.getElementById('sc-inline-preview-content')?.classList.toggle('sc-inline-mobile',device==='mobile');
  document.getElementById('sc-builder-desktop').setAttribute('aria-pressed',String(device!=='mobile'));
  document.getElementById('sc-builder-mobile').setAttribute('aria-pressed',String(device==='mobile'));
 };
