@@ -548,16 +548,27 @@ async function generateVideo() {
   var canvasStream = canvas.captureStream(30);
   audioTracks.forEach(function(t){ canvasStream.addTrack(t); });
 
-  var mimeType = ["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(function(m){
+  if (!window.MediaRecorder || !canvas.captureStream) {
+    setProgress("This browser cannot record canvas video. Try current Chrome or Edge on desktop.",0);
+    btn.disabled=false;btn.textContent="🎬 Generate Video";return;
+  }
+  var mimeType = ["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(function(m){
     return MediaRecorder.isTypeSupported(m);
-  }) || "video/webm";
+  });
+  if(!mimeType){
+    setProgress("Video export is not supported in this browser. Try Chrome or Edge.",0);
+    btn.disabled=false;btn.textContent="🎬 Generate Video";return;
+  }
 
   var chunks = [];
-  recorder = new MediaRecorder(canvasStream, { mimeType: mimeType, videoBitsPerSecond: 8000000 });
+  try {recorder = new MediaRecorder(canvasStream, { mimeType: mimeType, videoBitsPerSecond: 8000000 });}
+  catch(error){setProgress("Could not start video recording: "+error.message,0);btn.disabled=false;btn.textContent="🎬 Generate Video";return;}
+  recorder.onerror=function(event){setProgress("Recording failed. Try fewer photos or a smaller resolution.",0);btn.disabled=false;btn.textContent="🎬 Generate Video";};
   recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
   recorder.onstop = function() {
     if (audioSource) try{ audioSource.stop(); }catch(e){}
     if (audioCtx) try{ audioCtx.close(); }catch(e){}
+    if(!chunks.length){setProgress("No video was recorded. Try Chrome or Edge.",0);btn.disabled=false;btn.textContent="🎬 Generate Video";return;}
     videoBlob = new Blob(chunks, { type: mimeType });
     var url   = URL.createObjectURL(videoBlob);
     document.getElementById("videoOutput").src = url;
