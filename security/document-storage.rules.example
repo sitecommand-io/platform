@@ -1,0 +1,15 @@
+// Merge these clauses into existing Firebase Storage rules; do not replace unrelated rules.
+// Deploy and verify against the Firebase project before enabling customer uploads.
+rules_version = '2';
+service firebase.storage {
+ match /b/{bucket}/o {
+  match /contractors/{uid}/documents/{fileId}/{fileName} {
+   allow read, delete: if request.auth != null && request.auth.uid == uid;
+   allow create: if request.auth != null && request.auth.uid == uid
+     && request.resource.size <= 10 * 1024 * 1024
+     && (fileName.matches('.*[.](pdf|docx|txt|md)$'));
+   allow update: if false;
+  }
+  // Existing project photo/logo rules must be retained in the deployed ruleset.
+ }
+}
