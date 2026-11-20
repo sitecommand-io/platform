@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 const templates=[
+{id:'contractor-pro',name:'Contractor Pro · Featured',description:'WCJ-inspired charcoal, white and burnt-orange contractor website with a photo slideshow',bg:'#faf9f6',main:'#15171b',accent:'#c8562b',card:'#ffffff',text:'#15171b',btn:'#c8562b',btnText:'#fff'},
 {id:'classic',name:'Classic Business',description:'Traditional services and contact-first layout',bg:'#fff',main:'#183554',accent:'#35699a',card:'#f0f5fa',text:'#1d3149',btn:'#fff',btnText:'#173554'},
 {id:'modern',name:'Modern Blue',description:'Bright, clean cards with a contemporary hero',bg:'#f5f8ff',main:'#2757b7',accent:'#7baeff',card:'#e7efff',text:'#193660',btn:'#fff',btnText:'#234caa'},
 {id:'bold',name:'Bold Contractor',description:'High-impact headlines for trades and construction',bg:'#121c28',main:'#192c3f',accent:'#db7e31',card:'#23384b',text:'#f7f8fb',btn:'#f0a14b',btnText:'#171b20'},
@@ -12,7 +13,7 @@ const templates=[
 ];
 const byId=id=>templates.find(t=>t.id===id)||templates[0];
 const $=id=>document.getElementById(id);
-let selected='classic', saved='classic', user=null, active=false, liveSiteUrl='';
+let selected='contractor-pro', saved='contractor-pro', user=null, active=false, liveSiteUrl='';
 function vars(t){return '--t-bg:'+t.bg+';--t-main:'+t.main+';--t-accent:'+t.accent+';--t-card:'+t.card+';--t-text:'+t.text+';--t-btn:'+t.btn+';--t-btn-text:'+t.btnText+';--t-hero-text:'+(t.id==='editorial'?'#242a2c':'#fff')}
 function field(id,fallback){return $(id)?.value.trim()||fallback}
 function render(){const grid=$('sc-template-grid');if(!grid)return;grid.replaceChildren();templates.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='sc-template-option';b.setAttribute('aria-pressed',String(selected===t.id));b.setAttribute('aria-label','Preview '+t.name);const thumb=document.createElement('div');thumb.className='sc-template-thumb';thumb.style.cssText=vars(t);thumb.innerHTML='<div class="t-head"></div><div class="t-hero"></div><div class="t-row"><i></i><i></i><i></i></div>';const strong=document.createElement('strong');strong.textContent=t.name;const small=document.createElement('small');small.textContent=t.description;b.append(thumb,strong,small);b.addEventListener('click',()=>{selected=t.id;render();activate();$('sc-template-status').textContent=selected===saved?'Currently saved layout':'Preview only — click Save Layout to apply'});grid.append(b)});$('sc-template-selected').textContent=byId(selected).name}
