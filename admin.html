@@ -216,6 +216,7 @@ async function loadSignups() {
 }
 
 window.markStatus = async (id, status, btn) => {
+  if (!adminAuthorized) { accessBanner.textContent='Administrator access required.'; return; }
   btn.textContent = 'Saving...'; btn.disabled = true;
   try {
     await updateDoc(doc(db, 'saasSignups', id), { status });
@@ -224,6 +225,7 @@ window.markStatus = async (id, status, btn) => {
 };
 
 window.sendWelcomeEmail = (email, name, company, plan) => {
+  if (!adminAuthorized) return;
   const subject = encodeURIComponent('Your SiteCommand System Is Ready!');
   const body    = encodeURIComponent(
     'Hi ' + (name||'there') + ',\n\n' +
