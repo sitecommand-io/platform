@@ -10,9 +10,9 @@ test('website editor provides layouts tab, preview, save and current site',()=>{
   assert.match(html,/websiteTemplate:templateId/);
   assert.match(html,/sc-template-data/);
 });
-test('six distinct selectable layouts exist',()=>{
-  for(const id of ['classic','modern','bold','studio','editorial','craft'])assert.match(js,new RegExp("id:'"+id+"'"));
-  assert.equal((js.match(/\{id:'/g)||[]).length,6);
+test('seven distinct selectable layouts exist',()=>{
+  for(const id of ['classic','modern','bold','studio','editorial','craft','architectural-premium'])assert.match(js,new RegExp("id:'"+id+"'"));
+  assert.equal((js.match(/\{id:'/g)||[]).length,7);
   assert.match(css,/\.sc-template-site\[data-template=bold\]/);
   assert.match(css,/\.sc-template-site\[data-template=studio\]/);
 });
