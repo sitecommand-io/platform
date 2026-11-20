@@ -437,9 +437,9 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 </div>
 
 <script>
-var GEMINI_KEY = localStorage.getItem("sc_gemini_key") || "AIzaSyDf_FzblrxmPK-2zBno4uOYjNJ8AYHC3c8";
+var GEMINI_KEY = ""; // Never embed provider credentials in client code; AI requires a secure backend.
 var GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
-var OLLAMA_URL = localStorage.getItem("sc_ollama_url") || "";
+var OLLAMA_URL = ""; // Remote AI endpoints must be configured on the authenticated backend.
 var askHistory = [];
 
 // ── TABS ──
@@ -785,6 +785,7 @@ function downloadTemplate() {
 
 // ── AI ──
 async function callAI(prompt) {
+  if (!GEMINI_KEY && !OLLAMA_URL) return null;
   if (OLLAMA_URL) {
     try {
       var r = await fetch(OLLAMA_URL + "/api/generate", {
@@ -810,6 +811,7 @@ async function callAI(prompt) {
 }
 
 async function callGeminiPDF(base64, prompt) {
+  if (!GEMINI_KEY) return null;
   try {
     var r = await fetch(GEMINI_URL + "?key=" + GEMINI_KEY, {
       method:"POST", headers:{"Content-Type":"application/json"},
