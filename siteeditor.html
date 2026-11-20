@@ -237,7 +237,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
     </div>
 
     <!-- CONTENT TAB -->
-    <div id="tab-content">
+    <div id="tab-content"><div class="ed-section"><div class="ed-section-title">Homepage Sections</div><p>Drag to reorder sections. Save Website to apply changes.</p><div id="sc-section-list"></div></div>
       <div class="ed-section">
         <div class="ed-section-title">Business Info</div>
         <div class="fg"><label>Company Name</label><input id="eCoName" oninput="liveUpdate()" placeholder="Smith Roofing LLC"/></div>
@@ -410,6 +410,8 @@ let selectedColor = '#c8a96e';
 let projectPhotos = [];
 let heroSlides = [];
 let mediaLibrary = [];
+const defaultSections=['hero','services','trust','contact'];
+let sectionOrder=[...defaultSections];
 let selectedLogo  = null;
 let saveTimeout   = null;
 
@@ -462,6 +464,7 @@ function populateFields() {
   });
   document.getElementById('colorPicker').value = selectedColor;
   document.getElementById('colorHex').value   = selectedColor;
+  sectionOrder=normalizeSectionOrder(d.sectionOrder);renderSectionManager();
   heroSlides = Array.isArray(d.heroSlides) ? d.heroSlides.filter(x=>typeof x==='string'&&x.startsWith('https://')) : [];
   renderSlideshow();
   projectPhotos = Array.isArray(d.projectPhotos) ? d.projectPhotos.filter(x=>typeof x==='string'&&!x.startsWith('data:')) : [];
@@ -576,6 +579,30 @@ function renderMediaLibrary(){
   });grid.append(card);
  });
 }
+function normalizeSectionOrder(value){
+ const known=Array.isArray(value)?[...new Set(value.filter(x=>defaultSections.includes(x)))]:[];
+ return [...known,...defaultSections.filter(x=>!known.includes(x))];
+}
+function renderSectionManager(){
+ const root=document.getElementById('sc-section-list');if(!root)return;root.replaceChildren();
+ const labels={hero:'Homepage Slideshow',services:'Services',trust:'Why Choose Us',contact:'Contact'};
+ sectionOrder.forEach((id,i)=>{
+  const row=document.createElement('div');row.draggable=true;row.style.cssText='display:flex;align-items:center;gap:8px;padding:12px;margin:6px 0;border:1px solid #ccd6e4;border-radius:8px';
+  const label=document.createElement('strong');label.textContent='⠿ '+labels[id];label.style.flex='1';row.append(label);
+  for(const [txt,d] of [['↑',-1],['↓',1]]){const btn=document.createElement('button');btn.type='button';btn.textContent=txt;btn.disabled=i+d<0||i+d>=sectionOrder.length;btn.onclick=()=>moveHomepageSection(i,i+d);row.append(btn)}
+  row.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',id));
+  row.addEventListener('dragover',e=>e.preventDefault());
+  row.addEventListener('drop',e=>{e.preventDefault();moveHomepageSection(sectionOrder.indexOf(e.dataTransfer.getData('text/plain')),i)});
+  root.append(row);
+ });
+}
+function moveHomepageSection(from,to){
+ if(from<0||to<0||from>=sectionOrder.length||to>=sectionOrder.length||from===to)return;
+ const [item]=sectionOrder.splice(from,1);sectionOrder.splice(to,0,item);
+ renderSectionManager();scheduleSave();
+ window.dispatchEvent(new CustomEvent('sc-builder-sections',{detail:{order:[...sectionOrder]}}));
+}
+window.moveHomepageSection=moveHomepageSection;
 function renderSlideshow(){
  const grid=document.getElementById('sc-slides-grid'),status=document.getElementById('sc-slides-status');
  if(!grid||!status)return;
@@ -813,6 +840,7 @@ window.saveChanges = async () => {
     heroPhoto:       document.getElementById('eHeroPhoto').value.trim(),
     color:           selectedColor,
     services:        userData?.services || [],
+    sectionOrder:    normalizeSectionOrder(sectionOrder),
     mediaLibrary:    [...new Set(mediaLibrary.filter(isValidMediaUrl))].slice(0,100),
     heroSlides:      heroSlides.filter(x=>typeof x==='string'&&x.startsWith('https://')),
     projectPhotos:   projectPhotos.filter(x=>typeof x==='string'&&/^https:\/\//i.test(x)),
@@ -828,6 +856,7 @@ window.saveChanges = async () => {
     const verified = await getDocFromServer(doc(db,'contractors',userUID));
     if(!verified.exists())throw new Error('Saved record could not be reloaded');
     const persisted=verified.data();
+    if(JSON.stringify(normalizeSectionOrder(persisted.sectionOrder))!==JSON.stringify(updates.sectionOrder))throw new Error('Homepage section order was not verified on the server.');
     if(JSON.stringify(persisted.mediaLibrary||[])!==JSON.stringify(updates.mediaLibrary))throw new Error('Photo library was not verified on the server.');
     if(JSON.stringify(persisted.heroSlides||[])!==JSON.stringify(updates.heroSlides))throw new Error('Slideshow was not verified on the server.');
     const expected=updates.projectPhotos;
