@@ -34,7 +34,7 @@ $('searchGoogle').onclick=async()=>{
   if(!uid){status.textContent='Sign in first.';return}
   let query=$('googleQuery').value.trim(),placeId='';
   const shared=$('googleShareLink').value.trim();
-  if(shared){try{const u=new URL(shared);if(!/^(share\\.google|google\\.[a-z.]+|maps\\.app\\.goo\\.gl)$/.test(u.hostname))throw Error('Unsupported Google URL');placeId=u.searchParams.get('query_place_id')||u.searchParams.get('place_id')||'';if(!placeId&&u.searchParams.get('q')&&!query)query=u.searchParams.get('q');}catch{status.textContent='Enter a valid Google Maps link or search by business name.';return}}
+  if(shared){try{const u=new URL(shared);if(!/^(share\.google|google\.[a-z.]+|maps\.app\.goo\.gl)$/.test(u.hostname))throw Error('Unsupported Google URL');placeId=u.searchParams.get('query_place_id')||u.searchParams.get('place_id')||'';if(!placeId&&u.searchParams.get('q')&&!query)query=u.searchParams.get('q');}catch{status.textContent='Enter a valid Google Maps link or search by business name.';return}}
   if(!query&&!placeId){status.textContent='Enter a business name and city. Short share.google links alone cannot always identify a business.';return}
   googleResults.textContent='Searching Google…';
   try{const params=new URLSearchParams(placeId?{placeId}:{query});const response=await fetch('/api/google-business-import?'+params);const data=await response.json();if(!response.ok)throw Error(data.error||'Lookup failed');googleCandidates=data.places||[];
@@ -45,7 +45,7 @@ $('searchGoogle').onclick=async()=>{
 googleResults.addEventListener('click',async event=>{
  const button=event.target.closest('[data-import-index]');if(!button)return;
  const p=googleCandidates[Number(button.dataset.importIndex)];if(!p||!uid)return;
- const details=['Business: '+p.companyName,'Address: '+p.address,'Phone: '+p.phone,'Website: '+p.website,'Category: '+p.category,'Google listing: '+p.googleMapsUrl].join('\\n');
+ const details=['Business: '+p.companyName,'Address: '+p.address,'Phone: '+p.phone,'Website: '+p.website,'Category: '+p.category,'Google listing: '+p.googleMapsUrl].join('\n');
  if(!confirm('Import these details into your contractor account? Existing non-empty fields will be preserved.\\n\\n'+details))return;
  const fields={googlePlaceId:p.placeId,googleMapsUrl:p.googleMapsUrl};
  if(!contractor.companyName&&p.companyName)fields.companyName=p.companyName;
