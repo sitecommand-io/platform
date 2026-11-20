@@ -148,7 +148,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
-<link rel="stylesheet" href="sitecommand-templates.css?v=1"><script defer src="sitecommand-templates.js?v=3"></script>
+<link rel="stylesheet" href="sitecommand-templates.css?v=20261120-luxury"><script defer src="sitecommand-templates.js?v=20261120-luxury"></script>
 <style>
 /* Visual builder: preview-first workspace */
 .sc-builder-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#f4f7fc;border-bottom:1px solid #dbe3f0}
@@ -229,15 +229,15 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
       <span id="saveMsg" role="status" aria-live="polite" style="font-size:.78rem;color:var(--green);overflow-wrap:anywhere">Ready to save</span>
     </div>
     <div class="tab-bar">
-      <button class="tab on" onclick="showTab('content',this)">Content</button>
+      <button class="tab" onclick="showTab('content',this)">Content</button>
       <button class="tab" onclick="showTab('design',this)">Design</button>
-      <button class="tab" onclick="showTab('templates',this)">Layouts</button>
+      <button class="tab on" onclick="showTab('templates',this)">Layouts</button>
       <button class="tab" onclick="showTab('photos',this)">Photos</button>
       <button class="tab" onclick="showTab('logo',this)">Logo</button>
     </div>
 
     <!-- CONTENT TAB -->
-    <div id="tab-content"><div class="ed-section"><div class="ed-section-title">Homepage Sections</div><p>Drag to reorder sections. Save Website to apply changes.</p><div id="sc-section-list"></div></div>
+    <div id="tab-content" style="display:none"><div class="ed-section"><div class="ed-section-title">Homepage Sections</div><p>Drag to reorder sections. Save Website to apply changes.</p><div id="sc-section-list"></div></div>
       <div class="ed-section">
         <div class="ed-section-title">Business Info</div>
         <div class="fg"><label for="eTrade">Primary trade — choose the website content that fits your business</label>
@@ -267,16 +267,16 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
       </div>
     </div>
 
-    <!-- SIX WEBSITE LAYOUTS -->
-    <div id="tab-templates" style="display:none">
+    <!-- SEVEN WEBSITE LAYOUTS -->
+    <div id="tab-templates">
       <div class="ed-section">
-        <div class="ed-section-title">Choose Your Website Layout</div>
-        <p style="font-size:12px;line-height:1.6;color:#71839b;margin-bottom:14px">Select from six professionally designed layouts. Preview before saving. Your business information and existing photos stay unchanged.</p>
+        <div class="ed-section-title">Choose Your Website Layout</div><div class="sc-luxury-feature" style="padding:18px;margin:14px 0 20px;background:#1e2923;color:#fff;border-radius:12px"><div style="font-size:11px;letter-spacing:.18em;color:#dfcbb2;margin-bottom:8px">FEATURED LUXURY LAYOUT</div><strong style="font-size:22px;letter-spacing:-.04em">Architectural Premium</strong><p style="font-size:13px;line-height:1.6;color:#dce2db;margin:8px 0 14px">The full cinematic architecture website: photo hero, editorial projects, forest-green services and luxury contact page.</p><button type="button" id="sc-luxury-select" style="background:#f2eee6;color:#1b2820;border:0;padding:12px 16px;border-radius:4px;font-weight:700;cursor:pointer">Preview Architectural Premium →</button></div>
+        <p style="font-size:12px;line-height:1.6;color:#71839b;margin-bottom:14px">Select from seven professionally designed layouts, including Architectural Premium. Preview before saving. Your business information and existing photos stay unchanged.</p>
         <div id="sc-template-grid" class="sc-template-grid" role="group" aria-label="Website layouts"></div>
         <p class="sc-template-info">Selected: <strong id="sc-template-selected">Classic Business</strong></p>
         <div class="sc-template-actions"><button id="sc-template-preview" type="button">Preview Layout</button><button id="sc-template-save" type="button" class="primary">Save Layout</button><button id="sc-template-site" type="button">View Current Website</button></div>
         <p class="sc-template-info" id="sc-template-status" role="status">Choose a layout to preview.</p>
-        <p class="sc-template-info">Preview Layout shows a sample concept only. The main preview shows your actual published website. Save your layout to compare the real result.</p>
+        <p class="sc-template-info">Preview Layout shows an editable design concept. The main preview shows your actual published website. Save your layout to compare the real result.</p>
       </div>
     </div>
 
@@ -955,5 +955,5 @@ window.addEventListener('sc-template-save-request',async event=>{
   }catch(error){window.dispatchEvent(new CustomEvent('sc-template-save-result',{detail:{success:false,message:error.message}}))}
 });
 </script>
-</body>
+<script>document.getElementById("sc-luxury-select")?.addEventListener("click",()=>{document.querySelector(".sc-template-option[aria-label=\"Preview Architectural Premium\"]")?.click();document.getElementById("sc-template-stage")?.scrollIntoView({behavior:"smooth",block:"start"})});</script></body>
 </html>
