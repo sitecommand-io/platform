@@ -1,0 +1,25 @@
+// Merge with existing rules; these are scoped additions, not a complete replacement.
+match /contractors/{uid}/documents/{documentId} {
+ allow read, delete: if request.auth != null && request.auth.uid == uid;
+ allow create: if request.auth != null && request.auth.uid == uid
+   && request.resource.data.keys().hasOnly(['name','path','contentType','size','searchableText','createdAt'])
+   && request.resource.data.path.matches('contractors/' + uid + '/documents/.*')
+   && request.resource.data.name is string
+   && request.resource.data.name.size() <= 255
+   && request.resource.data.searchableText is string
+   && request.resource.data.searchableText.size() <= 100000
+   && request.resource.data.size is int
+   && request.resource.data.size <= 10485760;
+ allow update: if false;
+}
+match /supportRequests/{ticketId} {
+ allow create: if request.auth != null
+   && request.resource.data.ownerUid == request.auth.uid
+   && request.resource.data.message is string
+   && request.resource.data.message.size() <= 2000
+   && request.resource.data.keys().hasOnly(['ownerUid','ownerEmail','message','createdAt','status'])
+   && request.resource.data.status == 'open';
+ allow read: if request.auth != null &&
+   (resource.data.ownerUid == request.auth.uid || request.auth.token.supportAdmin == true);
+ allow update, delete: if request.auth != null && request.auth.token.supportAdmin == true;
+}
