@@ -149,6 +149,20 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
 <link rel="stylesheet" href="sitecommand-templates.css?v=1"><script defer src="sitecommand-templates.js?v=1"></script>
+<style>
+/* Visual builder: preview-first workspace */
+.sc-builder-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:#f4f7fc;border-bottom:1px solid #dbe3f0}
+.sc-builder-top strong{font-size:15px;color:#233a5c}.sc-builder-top small{color:#667b9b}
+.sc-builder-top button{border:1px solid #cdd9ed;border-radius:8px;background:white;padding:9px 12px;cursor:pointer;color:#23456f;font-weight:600}
+.sc-builder-top button[aria-pressed=true]{background:#2464ff;color:white}
+.sc-builder-help{font-size:12px;color:#567094;padding:9px 16px;background:#edf4ff}
+.sc-builder-editable{cursor:pointer;outline-offset:5px}
+.sc-builder-editable:hover,.sc-builder-editable:focus-visible{outline:3px solid #3174ff!important}
+.preview-panel.sc-builder-mobile .sc-template-site{max-width:390px;margin:auto;min-height:600px}
+.preview-panel.sc-builder-mobile .ts-services{grid-template-columns:1fr}
+.preview-panel.sc-builder-mobile .ts-links{display:none}
+@media(min-width:900px){.layout.sc-builder-layout{display:grid;grid-template-columns:minmax(290px,360px) minmax(0,1fr)}.layout.sc-builder-layout .preview-panel{min-width:0}}
+</style>
 </head>
 <body>
 <header class="sc-bar">
@@ -196,7 +210,16 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
   
 </div>
 
-<div class="layout">
+<div class="sc-builder-top">
+ <div><strong>Visual Website Builder</strong><div><small>Click your website preview to edit text, photos or design</small></div></div>
+ <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+ <button type="button" id="sc-builder-desktop" aria-pressed="true" onclick="setBuilderDevice('desktop')">Desktop</button>
+ <button type="button" id="sc-builder-mobile" aria-pressed="false" onclick="setBuilderDevice('mobile')">Mobile</button>
+ <button type="button" onclick="saveChanges()" style="background:#2464ff;color:white">Save Website</button>
+ </div>
+ </div>
+ <div class="sc-builder-help" role="status" id="sc-builder-help">Select a heading or section in the preview to edit it. Your changes are saved to your account.</div>
+ <div class="layout sc-builder-layout">
 
   <!-- EDITOR PANEL -->
   <div class="editor-panel">
@@ -797,6 +820,21 @@ window.showTab = (id, btn) => {
   window.dispatchEvent(new CustomEvent('sc-editor-tab-change',{detail:{id}}));
 };
 
+window.setBuilderDevice=device=>{
+ const panel=document.querySelector('.preview-panel');
+ panel?.classList.toggle('sc-builder-mobile',device==='mobile');
+ document.getElementById('sc-builder-desktop').setAttribute('aria-pressed',String(device!=='mobile'));
+ document.getElementById('sc-builder-mobile').setAttribute('aria-pressed',String(device==='mobile'));
+};
+window.addEventListener('sc-builder-edit',event=>{
+ const target=event.detail?.field;
+ const section=event.detail?.section||'content';
+ const tab=document.querySelector('.tab-bar .tab[onclick*="'+section+'"]');
+ if(tab)showTab(section,tab);
+ const input=target&&document.getElementById(target);
+ if(input){input.scrollIntoView({behavior:'smooth',block:'center'});input.focus();}
+ document.getElementById('sc-builder-help').textContent='Editing '+(event.detail?.label||'website section')+'. Make your change, then click Save Website.';
+});
 // Layout selection persists only a template identifier; no other fields are overwritten.
 window.addEventListener('sc-template-save-request',async event=>{
   const templateId=event.detail?.templateId;
