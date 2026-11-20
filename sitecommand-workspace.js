@@ -27,10 +27,8 @@ const ico=document.createElement('span');ico.className='sc-side-icon';ico.textCo
 });
 sidebar.append(nav);
 const footer=document.createElement('div');footer.className='sc-side-footer';
-const signIn=document.createElement('a');signIn.href='platform.html';signIn.textContent='Sign In';signIn.className='sc-side-link';signIn.id='sc-global-signin';
-const signOut=document.createElement('button');signOut.type='button';signOut.textContent='Sign Out';signOut.className='sc-side-link';signOut.id='sc-global-signout';signOut.hidden=true;
-signOut.addEventListener('click',()=>{window.dispatchEvent(new CustomEvent('sc-request-signout'));location.href='platform.html'});
-footer.append(signIn,signOut,document.createTextNode('SiteCommand · Business command center'));sidebar.append(footer);
+const account=document.createElement('a');account.href='platform.html';account.textContent='Account / Sign In or Out';account.className='sc-side-link';account.id='sc-global-account';
+footer.append(account,document.createTextNode('SiteCommand · Business command center'));sidebar.append(footer);
 const top=document.createElement('div');top.className='sc-workspace-top';
 const left=document.createElement('div');
 const eyebrow=document.createElement('div');eyebrow.className='sc-workspace-eyebrow';eyebrow.textContent='SiteCommand / Workspace';
