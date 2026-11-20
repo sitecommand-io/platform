@@ -26,7 +26,9 @@ const a=document.createElement('a');a.className='sc-side-link';a.href=href;if(hr
 const ico=document.createElement('span');ico.className='sc-side-icon';ico.textContent=icon;a.append(ico,document.createTextNode(name));nav.append(a)
 });
 sidebar.append(nav);
-const footer=document.createElement('div');footer.className='sc-side-footer';footer.textContent='SiteCommand  ·  Business command center';sidebar.append(footer);
+const footer=document.createElement('div');footer.className='sc-side-footer';
+const account=document.createElement('a');account.href='platform.html';account.textContent='Account / Sign In or Out';account.className='sc-side-link';account.id='sc-global-account';
+footer.append(account,document.createTextNode('SiteCommand · Business command center'));sidebar.append(footer);
 const top=document.createElement('div');top.className='sc-workspace-top';
 const left=document.createElement('div');
 const eyebrow=document.createElement('div');eyebrow.className='sc-workspace-eyebrow';eyebrow.textContent='SiteCommand / Workspace';
