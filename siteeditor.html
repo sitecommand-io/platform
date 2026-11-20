@@ -307,7 +307,13 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
     </div>
 
     <!-- PHOTOS TAB -->
-    <div id="tab-photos" style="display:none"><div class="ed-section" id="sc-slideshow-section">
+    <div id="tab-photos" style="display:none"><div class="ed-section" id="sc-media-library">
+  <div class="ed-section-title">My Photo Library</div>
+  <p style="font-size:.8rem;color:var(--mid);margin-bottom:.7rem">Use photos you already uploaded. Add any photo to your homepage slideshow or project gallery without uploading it again.</p>
+  <div id="sc-library-status" role="status" aria-live="polite" style="font-size:.78rem;margin-bottom:8px"></div>
+  <div id="sc-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px"></div>
+</div>
+<div class="ed-section" id="sc-slideshow-section">
 <div class="ed-section-title">Homepage Slideshow</div>
 <p>Upload up to 20 photos. Reorder and remove photos, then save to your website.</p>
 <label for="sc-slides-upload" class="save-btn" style="display:inline-block;padding:12px;cursor:pointer">+ Add Photos</label>
@@ -403,6 +409,7 @@ let previewPage = '/';
 let selectedColor = '#c8a96e';
 let projectPhotos = [];
 let heroSlides = [];
+let mediaLibrary = [];
 let selectedLogo  = null;
 let saveTimeout   = null;
 
@@ -463,6 +470,9 @@ function populateFields() {
     if (inp) inp.value = url;
   });
   renderServices();
+  mediaLibrary = Array.isArray(d.mediaLibrary) ? d.mediaLibrary.filter(isValidMediaUrl) : [];
+  mediaLibrary = [...new Set([...mediaLibrary,...heroSlides,...projectPhotos].filter(isValidMediaUrl))].slice(0,100);
+  renderMediaLibrary();
   renderPhotoGrid();
 }
 
@@ -522,6 +532,7 @@ window.uploadPhoto = async (i, input) => {
     await uploadBytes(fileRef,file,{contentType:file.type});
     const url=await getDownloadURL(fileRef);
     projectPhotos[i]=url;
+    rememberMedia(url);
     const saved = await saveChanges();
     if(!saved)throw new Error('Photo uploaded but the database did not confirm saving its URL.');
     renderPhotoGrid();
@@ -542,6 +553,29 @@ window.updatePhotoUrl = i => {
   if (url && /^https:\/\//i.test(url)) { projectPhotos[i] = url; renderPhotoGrid(); updatePreview(); scheduleSave(); }
 };
 
+function isValidMediaUrl(url){
+ if(typeof url!=='string')return false;
+ try{const parsed=new URL(url);return parsed.protocol==='https:'&&url.length<4096}catch{return false}
+}
+function rememberMedia(url){
+ if(!isValidMediaUrl(url))return;
+ mediaLibrary=[url,...mediaLibrary.filter(x=>x!==url)].slice(0,100);
+ renderMediaLibrary();
+}
+function renderMediaLibrary(){
+ const grid=document.getElementById('sc-library-grid'),status=document.getElementById('sc-library-status');
+ if(!grid||!status)return;
+ grid.replaceChildren();status.textContent=mediaLibrary.length?mediaLibrary.length+' reusable photos saved in your account':'Your uploaded photos will appear here.';
+ mediaLibrary.forEach((url,i)=>{
+  const card=document.createElement('div');card.style.cssText='border:1px solid var(--border);border-radius:9px;padding:6px;display:grid;gap:5px';
+  const img=document.createElement('img');img.src=url;img.alt='Library photo '+(i+1);img.loading='lazy';img.style.cssText='width:100%;height:105px;object-fit:cover;border-radius:6px';
+  card.append(img);
+  [['Add to Slideshow',()=>{if(heroSlides.includes(url))return;if(heroSlides.length>=20){showEditorNotice('Slideshow limit is 20 photos.');return}heroSlides.push(url);renderSlideshow();scheduleSave();}],
+   ['Add to Gallery',()=>{const slot=Array.from({length:6},(_,j)=>j).find(j=>!projectPhotos[j]);if(slot===undefined){showEditorNotice('Gallery has six photos. Remove one to make room.');return}projectPhotos[slot]=url;renderPhotoGrid();scheduleSave();}]].forEach(([label,action])=>{
+   const button=document.createElement('button');button.type='button';button.textContent=label;button.style.cssText='padding:7px;font-size:12px;border:1px solid var(--border);border-radius:6px;cursor:pointer';button.onclick=action;card.append(button);
+  });grid.append(card);
+ });
+}
 function renderSlideshow(){
  const grid=document.getElementById('sc-slides-grid'),status=document.getElementById('sc-slides-status');
  if(!grid||!status)return;
@@ -695,6 +729,7 @@ window.uploadLogo = async inp => {
     const url=await getDownloadURL(logoRef);
     const previous=userData.logoUrl;
     userData.logoUrl=url;
+    rememberMedia(url);
     const saved=await saveChanges();
     if(!saved){userData.logoUrl=previous;throw new Error('Logo uploaded but database save failed.');}
     const slot=document.getElementById('logoUploadSlot');
@@ -778,6 +813,7 @@ window.saveChanges = async () => {
     heroPhoto:       document.getElementById('eHeroPhoto').value.trim(),
     color:           selectedColor,
     services:        userData?.services || [],
+    mediaLibrary:    [...new Set(mediaLibrary.filter(isValidMediaUrl))].slice(0,100),
     heroSlides:      heroSlides.filter(x=>typeof x==='string'&&x.startsWith('https://')),
     projectPhotos:   projectPhotos.filter(x=>typeof x==='string'&&/^https:\/\//i.test(x)),
     projectPhotoUrls:[...Array(6)].map((_,i)=>document.getElementById('photoUrl'+i)?.value.trim()||'').filter(Boolean),
@@ -792,6 +828,7 @@ window.saveChanges = async () => {
     const verified = await getDocFromServer(doc(db,'contractors',userUID));
     if(!verified.exists())throw new Error('Saved record could not be reloaded');
     const persisted=verified.data();
+    if(JSON.stringify(persisted.mediaLibrary||[])!==JSON.stringify(updates.mediaLibrary))throw new Error('Photo library was not verified on the server.');
     if(JSON.stringify(persisted.heroSlides||[])!==JSON.stringify(updates.heroSlides))throw new Error('Slideshow was not verified on the server.');
     const expected=updates.projectPhotos;
     if(!Array.isArray(persisted.projectPhotos)||JSON.stringify(persisted.projectPhotos)!==JSON.stringify(expected))throw new Error('Saved photos could not be verified. Please retry.');
