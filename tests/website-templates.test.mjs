@@ -30,3 +30,13 @@ test('every displayed layout is accepted by the save handler and failures are re
   assert.match(handler,/sc-template-save-result/);
   assert.match(handler,/Please sign in to save your layout/);
 });
+
+test('Save Layout always emits save request even if auth has not loaded',()=>{
+  assert.match(js,/\$\('sc-template-save'\)\.addEventListener\('click',\(\)=>\{/);
+  const start=js.indexOf("$('sc-template-save').addEventListener('click'");
+  const end=js.indexOf("$('sc-template-preview').addEventListener",start);
+  const handler=js.slice(start,end);
+  assert.match(handler,/dispatchEvent\(new CustomEvent\('sc-template-save-request'/);
+  assert.doesNotMatch(handler,/if\(!user\)/);
+  assert.match(handler,/Save timed out/);
+});
