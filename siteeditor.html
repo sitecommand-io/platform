@@ -420,8 +420,7 @@ function showEditorNotice(message) {
   if(notice){notice.hidden=false;notice.textContent=message;}
   const el=document.getElementById('saveMsg');
   if(el){el.style.color='#d14f4f';el.textContent=message;el.style.maxWidth='420px';}
-  const frame=document.getElementById('previewFrame');
-  if(frame)frame.src='about:blank';
+  // Keep the preview available while an upload/save error is shown.
 }
 
 // ── LOAD DATA ──────────────────────────────────────────────────
@@ -546,7 +545,7 @@ window.uploadPhoto = async (i, input) => {
     updatePreview();
     msg.textContent='Photo uploaded and verified in your account';
   }catch(error){
-    showEditorNotice('Photo upload failed: '+error.message+'. Check Firebase Storage rules and permissions.');
+    showEditorNotice('Photo upload failed ('+(error.code||'unknown')+'): '+error.message+'. If storage/unauthorized, the Firebase Storage rules must be fixed by the project administrator.');
   }finally{input.disabled=false}
 };
 window.removePhoto = (i, e) => {
@@ -636,11 +635,11 @@ window.uploadSlideshowPhotos=async input=>{
    const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
    const ref=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-slide-'+safe);
    await uploadBytes(ref,file,{contentType:file.type});
-   heroSlides.push(await getDownloadURL(ref));renderSlideshow();
+   const url=await getDownloadURL(ref);heroSlides.push(url);rememberMedia(url);renderSlideshow();
   }
   if(!await saveChanges())throw new Error('Upload finished but saving slideshow failed.');
   status.textContent='Slideshow saved to your account';
- }catch(error){showEditorNotice('Slideshow upload failed: '+error.message)}
+ }catch(error){showEditorNotice('Slideshow upload failed ('+(error.code||'unknown')+'): '+error.message+'. Check Firebase Storage permissions.')}
  finally{input.disabled=false;input.value=''}
 };
 // ── LOGO GENERATION ───────────────────────────────────────────

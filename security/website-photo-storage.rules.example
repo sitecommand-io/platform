@@ -1,0 +1,10 @@
+// Integrate into existing Firebase Storage rules. Deploy and test before enabling uploads.
+// These are the paths currently used by Website Editor for project photos,
+// homepage slides and logos. Do not overwrite unrelated storage rules.
+match /contractors/{uid}/projects/{filename} {
+ allow read: if true; // Published contractor websites display these images publicly.
+ allow create: if request.auth != null && request.auth.uid == uid
+   && request.resource.size <= 10 * 1024 * 1024
+   && request.resource.contentType.matches('image/(jpeg|png|webp)');
+ allow update, delete: if request.auth != null && request.auth.uid == uid;
+}
