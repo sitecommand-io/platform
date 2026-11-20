@@ -163,11 +163,11 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 .preview-panel.sc-builder-mobile .ts-links{display:none}
 @media(min-width:900px){.layout.sc-builder-layout{display:grid;grid-template-columns:minmax(290px,360px) minmax(0,1fr)}.layout.sc-builder-layout .preview-panel{min-width:0}}
 </style>
-</head>
+<style>.sc-account-actions{display:flex;gap:9px;align-items:center;margin-left:auto;font-size:12px}.sc-account-actions a,.sc-account-actions button{padding:8px 12px;background:#1d2939;border:1px solid #4d6382;color:#fff;border-radius:7px;cursor:pointer;text-decoration:none}.sc-account-actions [hidden]{display:none!important}@media(max-width:800px){.sc-account-actions{margin-left:auto}.sc-account-actions #sc-account-label{display:none}}</style></head>
 <body>
 <header class="sc-bar">
   <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
-  <span class="sc-pg">Site Editor</span>
+  <span class="sc-pg">Site Editor</span><div class="sc-account-actions"><span id="sc-account-label">Checking session…</span><a id="sc-account-signin" href="platform.html" hidden>Sign In</a><button id="sc-account-signout" type="button" hidden>Sign Out</button></div>
   <nav class="sc-nav">
     <a href="platform.html" id="sc-n-home">🏠 Home</a>
     <a href="email-ai.html" id="sc-n-email">📧 Email</a>
@@ -382,7 +382,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 
 <script type="module">
 import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
 import { getFirestore, doc, getDoc, getDocFromServer, setDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -425,7 +425,11 @@ function showEditorNotice(message) {
 }
 
 // ── LOAD DATA ──────────────────────────────────────────────────
+document.getElementById('sc-account-signout').addEventListener('click',async()=>{const btn=document.getElementById('sc-account-signout');btn.disabled=true;try{await signOut(auth);window.location.assign('platform.html')}catch(err){btn.disabled=false;showEditorNotice('Sign out failed: '+err.message)}});
 onAuthStateChanged(auth, async user => {
+  document.getElementById('sc-account-label').textContent=user?(user.email||'Signed in'):'Not signed in';
+  document.getElementById('sc-account-signin').hidden=!!user;
+  document.getElementById('sc-account-signout').hidden=!user;
   if (!user) {
     showEditorNotice('Your SiteCommand session is not available in this tab. Open the dashboard and sign in, then return to Website Editor.');
     return;
