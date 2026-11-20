@@ -635,7 +635,7 @@ window.uploadSlideshowPhotos=async input=>{
    const safe=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
    const ref=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-slide-'+safe);
    await uploadBytes(ref,file,{contentType:file.type});
-   heroSlides.push(await getDownloadURL(ref));renderSlideshow();
+   const url=await getDownloadURL(ref);heroSlides.push(url);rememberMedia(url);renderSlideshow();
   }
   if(!await saveChanges())throw new Error('Upload finished but saving slideshow failed.');
   status.textContent='Slideshow saved to your account';
