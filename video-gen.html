@@ -193,7 +193,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
-</head>
+<style>.sc-video-account{display:flex;align-items:center;gap:8px;margin-left:auto}.sc-video-account a,.sc-video-account button{background:#1e293b;color:#fff;border:1px solid #4b607e;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer;font-size:12px}.sc-video-account [hidden]{display:none!important}@media(max-width:820px){.sc-video-account{position:fixed;top:8px;right:8px;z-index:1000}.sc-video-account #sc-video-account-email{display:none}}</style></head>
 <body>
 
 <header class="sc-header">
@@ -207,7 +207,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
     <a href="permits.html">🏛️ Permits</a>
     <a href="video-gen.html" class="active">🎬 Video</a>
   </nav>
-</header>
+<div class="sc-video-account"><span id="sc-video-account-email" style="font-size:11px"></span><a id="sc-video-signin" href="platform.html" hidden>Sign In</a><button id="sc-video-signout" type="button" hidden>Sign Out</button></div></header>
 <nav class="sc-bottom-nav">
   <a href="platform.html" class="sc-bn-item"><span class="sc-bn-icon">🏠</span>Home</a>
   <a href="email-ai.html" class="sc-bn-item"><span class="sc-bn-icon">📧</span>Email</a>
@@ -876,5 +876,13 @@ function resetAll() {
   document.getElementById("genBtn").textContent = "🎬 Generate Video";
 }
 </script>
-</body>
+<script type="module" id="sc-video-auth">
+import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import {getAuth,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+const config={apiKey:'AIzaSyBZbHlYkqVrpkB4U0tPWcg60maRWCmOg-8',authDomain:'sitecommand-saas.firebaseapp.com',projectId:'sitecommand-saas',appId:'1:309552233436:web:c1dcecb5ed8b9373862d19'};
+const auth=getAuth(getApps()[0]||initializeApp(config));
+const login=document.getElementById('sc-video-signin'),logout=document.getElementById('sc-video-signout'),email=document.getElementById('sc-video-account-email');
+onAuthStateChanged(auth,user=>{login.hidden=!!user;logout.hidden=!user;email.textContent=user?(user.email||'Signed in'):''});
+logout.addEventListener('click',async()=>{logout.disabled=true;try{await signOut(auth);window.location.assign('platform.html')}catch(err){logout.disabled=false;alert('Sign out failed: '+err.message)}});
+</script></body>
 </html>
