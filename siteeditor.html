@@ -605,6 +605,8 @@ function moveHomepageSection(from,to){
 }
 window.moveHomepageSection=moveHomepageSection;
 function renderSlideshow(){
+ window.scEditorHeroSlides=[...heroSlides];
+ window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
  const grid=document.getElementById('sc-slides-grid'),status=document.getElementById('sc-slides-status');
  if(!grid||!status)return;
  grid.replaceChildren();
