@@ -276,7 +276,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
         <p class="sc-template-info">Selected: <strong id="sc-template-selected">Classic Business</strong></p>
         <div class="sc-template-actions"><button id="sc-template-preview" type="button">Preview Layout</button><button id="sc-template-save" type="button" class="primary">Save Layout</button><button id="sc-template-site" type="button">View Current Website</button></div>
         <p class="sc-template-info" id="sc-template-status" role="status">Choose a layout to preview.</p>
-        <p class="sc-template-info">The design preview is illustrative. Publishing the selected layout to your public website also requires support in the website rendering service.</p>
+        <p class="sc-template-info">Preview Layout shows a sample concept only. The main preview shows your actual published website. Save your layout to compare the real result.</p>
       </div>
     </div>
 
@@ -374,7 +374,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 
   <!-- PREVIEW PANEL -->
   <div class="preview-panel">
-    <div class="preview-label" id="previewLabel">Live Preview</div>
+    <div class="preview-label" id="previewLabel">Published Website Preview — changes appear after saving</div>
     <div id="sc-template-stage" class="sc-template-stage" hidden aria-label="Selected layout preview"></div>
     <iframe id="previewFrame" class="preview-frame" src="about:blank"></iframe>
     <div class="preview-toolbar">
@@ -877,6 +877,8 @@ window.saveChanges = async () => {
     msg.style.color='var(--green)';
     msg.textContent = '✅ Saved and verified in your account';
     window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));
+    window.dispatchEvent(new CustomEvent('sc-editor-saved'));
+    updatePreview();
     setTimeout(()=>msg.textContent='',3000);
     btn.disabled=false;btn.textContent='Save Changes';
     return true;
