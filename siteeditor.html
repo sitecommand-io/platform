@@ -240,6 +240,13 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
     <div id="tab-content"><div class="ed-section"><div class="ed-section-title">Homepage Sections</div><p>Drag to reorder sections. Save Website to apply changes.</p><div id="sc-section-list"></div></div>
       <div class="ed-section">
         <div class="ed-section-title">Business Info</div>
+        <div class="fg"><label for="eTrade">Primary trade — choose the website content that fits your business</label>
+          <select id="eTrade" onchange="window.scTradeChanged()">
+            <option value="general">General contractor</option><option value="roofing">Roofing</option><option value="remodeling">Kitchen &amp; bathroom remodeling</option><option value="electrical">Electrical</option><option value="plumbing">Plumbing</option><option value="hvac">HVAC</option><option value="painting">Painting</option><option value="flooring">Flooring</option><option value="landscaping">Landscaping</option>
+          </select>
+          <p style="font-size:.75rem;margin:.45rem 0;color:var(--light)">New customers can start with trade-specific suggested copy. Your existing text and photos will not be overwritten.</p>
+          <button type="button" onclick="window.scApplyTradeSuggestions()" style="padding:.55rem .8rem;cursor:pointer">Fill empty fields with trade-specific suggestions</button>
+        </div>
         <div class="fg"><label>Company Name</label><input id="eCoName" oninput="liveUpdate()" placeholder="Smith Roofing LLC"/></div>
         <div class="fg"><label>Tagline</label><input id="eTagline" oninput="liveUpdate()" placeholder="Quality work, honest price"/></div>
         <div class="fg"><label>About Your Business</label><textarea id="eAbout" oninput="liveUpdate()" placeholder="Tell clients about your company, your experience, what makes you different..."></textarea></div>
@@ -453,6 +460,7 @@ onAuthStateChanged(auth, async user => {
 function populateFields() {
   const d = userData;
   document.getElementById('eCoName').value   = d.companyName  || '';
+  document.getElementById('eTrade').value = ['general','roofing','remodeling','electrical','plumbing','hvac','painting','flooring','landscaping'].includes(d.primaryTrade) ? d.primaryTrade : 'general';
   document.getElementById('eTagline').value  = d.tagline      || '';
   document.getElementById('eAbout').value    = d.about        || '';
   document.getElementById('ePhone').value    = d.bizPhone     || '';
@@ -835,6 +843,7 @@ window.saveChanges = async () => {
   
   const updates = {
     companyName:     document.getElementById('eCoName').value.trim(),
+    primaryTrade:    document.getElementById('eTrade').value,
     tagline:         document.getElementById('eTagline').value.trim(),
     about:           document.getElementById('eAbout').value.trim(),
     bizPhone:        document.getElementById('ePhone').value.trim(),
@@ -877,6 +886,35 @@ window.saveChanges = async () => {
     btn.disabled=false;btn.textContent='Save Changes';
     return false;
   }
+};
+
+// Trade-aware onboarding suggestions. Never overwrite a customer's existing content.
+const scTradeExamples={
+ general:['Construction and renovation services tailored to your project','General Contracting','Home Renovations','Repairs & Improvements'],
+ roofing:['Roof replacement, repairs and inspections','Roof Replacement','Roof Repairs','Roof Inspections'],
+ remodeling:['Beautiful kitchens, bathrooms and home renovations','Kitchen Remodeling','Bathroom Remodeling','Whole-Home Renovations'],
+ electrical:['Electrical installations, upgrades and repairs','Electrical Repairs','Panel Upgrades','Lighting Installation'],
+ plumbing:['Plumbing repairs, installations and maintenance','Plumbing Repairs','Fixture Installation','Water Heater Services'],
+ hvac:['Heating and cooling installation, service and repairs','AC Installation','Heating Repairs','HVAC Maintenance'],
+ painting:['Interior and exterior painting services','Interior Painting','Exterior Painting','Surface Preparation'],
+ flooring:['Quality flooring installation and replacement','Hardwood Flooring','Luxury Vinyl Plank','Tile Installation'],
+ landscaping:['Landscape design, maintenance and outdoor improvements','Landscape Design','Lawn Maintenance','Outdoor Improvements']
+};
+window.scTradeChanged=()=>{window.dispatchEvent(new CustomEvent('sc-editor-local-preview'));};
+window.scApplyTradeSuggestions=()=>{
+ const trade=document.getElementById('eTrade').value;
+ const example=scTradeExamples[trade]||scTradeExamples.general;
+ const headline=document.getElementById('eTagline');
+ const about=document.getElementById('eAbout');
+ if(!headline.value.trim())headline.value=example[0];
+ if(!about.value.trim())about.value='Tell customers about your experience, service area, and what makes your work different.';
+ // Services are suggested only for brand-new profiles with no services yet.
+ if(!Array.isArray(userData.services)||userData.services.length===0){
+   userData.services=example.slice(1);
+   if(typeof renderServices==='function')renderServices();
+ }
+ window.liveUpdate();
+ showEditorNotice('Suggested content added to empty fields. Review the details and click Save Changes.');
 };
 
 // ── TABS ─────────────────────────────────────────────────────
