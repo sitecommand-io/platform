@@ -1,15 +1,55 @@
-/* SiteCommand finance ledger: browser-local per-account records; no server writes. */
+/* SiteCommand finance ledger: Firebase-synced per-contractor records with local recovery. */
 (function(){
 'use strict';
 const sections=[['dashboard','Business Overview','◈'],['finance','Finances','▥'],['links','My Links','↗'],['aisetup','AI Setup','✧'],['domain','Domain','◎'],['settings','Settings','⚙']];
 let account=null;
 const selectedTransactionIds=new Set();
+let cloudReady=false,cloudBusy=false,cloudQueued=false,cloudRemote=null,cloudUid=null,cloudError=false;
+const migrationKey=()=>account?'sc_finance_cloud_migrated_v1_'+account:null;
+const pendingKey=()=>account?'sc_finance_cloud_pending_v1_'+account:null;
+function syncStatus(message,error=false){const el=document.getElementById('sc-fin-sync-status');if(el){el.textContent=message;el.style.color=error?'#b42318':'#176b45'}cloudError=error}
+function requestCloud(action,payload){return new Promise((resolve,reject)=>{const id=crypto.randomUUID();const timer=setTimeout(()=>{window.removeEventListener('sc-fin-cloud-result',handler);reject(Error('Cloud request timed out'))},30000);function handler(e){if(e.detail?.id!==id)return;clearTimeout(timer);window.removeEventListener('sc-fin-cloud-result',handler);if(e.detail.error)reject(Error(e.detail.error));else resolve(e.detail.data)}window.addEventListener('sc-fin-cloud-result',handler);window.dispatchEvent(new CustomEvent('sc-fin-cloud-request',{detail:{id,action,payload,uid:account}}))})}
+function localProjects(){try{const k=projectKey();const data=k?JSON.parse(localStorage.getItem(k)||'[]'):[];return Array.isArray(data)?data:[]}catch{return []}}
+function localRows(){try{const k=key();const data=k?JSON.parse(localStorage.getItem(k)||'[]'):[];return Array.isArray(data)?data.filter(valid):[]}catch{return []}}
+async function startCloud(uid){
+ cloudReady=false;cloudUid=uid;cloudRemote=null;syncStatus('Connecting to secure cloud storage…');showTotals();
+ try{
+  const data=await requestCloud('read');if(account!==uid)return;
+  const remoteRows=Array.isArray(data.transactions)?data.transactions.filter(valid):[],remoteProjects=Array.isArray(data.projects)?data.projects:[];
+  const migrated=localStorage.getItem(migrationKey())==='yes';
+  const pending=localStorage.getItem(pendingKey())==='yes';
+  const localR=localRows(),localP=localProjects();
+  // Import local records only once. Later logins must honor remote deletions.
+  const rows=pending?localR:migrated?remoteRows:[...new Map([...remoteRows,...localR].map(x=>[x.id,x])).values()];
+  const projects=pending?localP:migrated?remoteProjects:[...new Map([...remoteProjects,...localP].map(x=>[x.id,x])).values()];
+  cloudRemote={transactions:remoteRows,projects:remoteProjects};
+  localStorage.setItem(key(),JSON.stringify(rows));localStorage.setItem(projectKey(),JSON.stringify(projects));
+  cloudReady=true;showTotals();
+  if(!migrated||pending){cloudQueued=true;await flushCloud();if(account!==uid)return;if(localStorage.getItem(pendingKey())!=='yes')localStorage.setItem(migrationKey(),'yes')}
+  syncStatus('Saved securely to Firebase · synced across devices');
+ }catch(err){if(account!==uid)return;cloudReady=false;syncStatus('Cloud unavailable: local recovery copy only. Do not clear site data. '+err.message,true);showTotals()}
+}
+function scheduleCloud(){if(!account)return;try{localStorage.setItem(pendingKey(),'yes')}catch{}if(!cloudReady){syncStatus('Not synced: local recovery copy only. Do not clear site data.',true);return}cloudQueued=true;if(!cloudBusy)void flushCloud()}
+async function flushCloud(){
+ if(!cloudReady||cloudBusy)return;
+ cloudBusy=true;
+ try{
+  do{
+   cloudQueued=false;const rows=localRows(),projects=localProjects();
+   syncStatus('Saving changes to Firebase…');
+   await requestCloud('sync',{transactions:rows,projects,previous:cloudRemote});
+   if(!cloudQueued){cloudRemote={transactions:rows,projects};localStorage.removeItem(pendingKey());syncStatus('Saved securely to Firebase · synced across devices')}
+  }while(cloudQueued&&account===cloudUid);
+ }catch(err){cloudQueued=true;syncStatus('Cloud save failed: local recovery copy only. Retry Sync before clearing site data. '+err.message,true)}
+ finally{cloudBusy=false}
+}
+
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n||0);
 const key=()=>account?'sc_finance_local_v1_'+account:null;
-function load(){try{const k=key();const data=k?JSON.parse(localStorage.getItem(k)||'[]'):[];return Array.isArray(data)?data.filter(valid):[]}catch{return []}}
+function load(){return localRows()}
 function valid(x){return x&&['income','expense','receivable'].includes(x.type)&&typeof x.amount==='number'&&Number.isFinite(x.amount)&&x.amount>=0&&x.amount<=1e12&&typeof x.date==='string'}
-function save(rows){if(!key())return;try{localStorage.setItem(key(),JSON.stringify(rows))}catch{alert('This browser could not save the data. Export a CSV backup instead.')}}
+function save(rows){if(!key())return;try{localStorage.setItem(key(),JSON.stringify(rows));scheduleCloud()}catch{alert('This browser could not save the data. Export a CSV backup instead.')}}
 function totals(rows){return rows.reduce((a,x)=>{a[x.type]+=x.amount;return a},{income:0,expense:0,receivable:0})}
 function jobName(x){return String(x.jobName||'').trim()||'Unassigned'}
 function jobKey(name){return String(name||'').trim().toLowerCase().replace(/\b(street|st\.?|avenue|ave\.?|road|rd\.?|drive|dr\.?)\b/g,'').replace(/[^a-z0-9]/g,'')}
@@ -24,8 +64,8 @@ function showExpenseGroups(rows){
 function showJobTotals(rows){const body=$('sc-fin-job-rows');if(!body)return;const jobs=new Map();for(const x of rows){const name=jobName(x),v=jobs.get(name)||{income:0,expense:0,receivable:0,count:0};v[x.type]+=x.amount;v.count++;jobs.set(name,v)}body.replaceChildren();for(const [name,v] of [...jobs].sort((a,b)=>b[1].expense-a[1].expense)){const tr=document.createElement('tr');[name,money(v.expense),money(v.income),money(v.income-v.expense),String(v.count)].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.append(td)});body.append(tr)}if($('sc-fin-job-empty'))$('sc-fin-job-empty').hidden=jobs.size>0}
 
 const projectKey=()=>account?'sc_fin_projects_v1_'+account:null;
-function loadProjects(){try{const k=projectKey();const data=k?JSON.parse(localStorage.getItem(k)||'[]'):[];return Array.isArray(data)?data:[]}catch{return []}}
-function saveProjects(rows){try{if(projectKey())localStorage.setItem(projectKey(),JSON.stringify(rows))}catch{alert('Could not save projects in this browser. Export a backup.')}}
+function loadProjects(){return localProjects()}
+function saveProjects(rows){try{if(projectKey()){localStorage.setItem(projectKey(),JSON.stringify(rows));scheduleCloud()}}catch{alert('Could not save projects in this browser. Export a backup.')}}
 function projectNum(x){const n=Number(x);return Number.isFinite(n)&&n>=0?n:0}
 function showProjects(){
  const body=$('sc-project-rows');if(!body)return;body.replaceChildren();
@@ -198,7 +238,7 @@ function editTransactionJob(id){
   if(answer===null)return;row.jobName=answer.trim().slice(0,120);save(rows);showTotals();
 }
 function exportCSV(){const data=[['date','type','amount','category','description','job name'],...load().map(x=>[x.date,x.type,x.amount,x.category||'',x.description||'',x.jobName||''])];const content=data.map(row=>row.map(x=>{const s=String(x);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([content],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download='sitecommand-finances.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
-function clearAllFinances(){if(!account){alert('Sign in first');return}const rows=load();if(!rows.length){alert('There are no financial records to clear.');return}const answer=prompt('This will permanently delete ALL '+rows.length+' financial transactions for this account in this browser, including job totals and Home Depot imports. Export a CSV backup first if needed. Type DELETE to confirm:');if(answer!=='DELETE')return;try{localStorage.removeItem(key());showTotals();alert('All financial records in this browser have been cleared.')}catch{alert('Could not clear financial records in this browser.')}}
+function clearAllFinances(){if(!account){alert('Sign in first');return}const rows=load();if(!rows.length){alert('There are no financial records to clear.');return}const answer=prompt('This will permanently delete ALL '+rows.length+' financial transactions for this account in this browser, including job totals and Home Depot imports. Export a CSV backup first if needed. Type DELETE to confirm:');if(answer!=='DELETE')return;try{save([]);showTotals();alert('Financial records cleared locally. Check cloud sync status before closing this page.')}catch{alert('Could not clear financial records in this browser.')}}
 function setup(){const f=$('sc-fin-form');if(!f)return;const search=$('sc-fin-job-search');if(search)search.addEventListener('input',()=>renderRows(load()));f.addEventListener('submit',e=>{e.preventDefault();if(!account){alert('Sign in first');return}const data=new FormData(f);const row={id:crypto.randomUUID(),date:String(data.get('date')),type:String(data.get('type')),amount:Number(data.get('amount')),category:(String(data.get('expenseGroup')||'')==='Labor'?'Labor':String(data.get('expenseGroup')||'')==='Receipts & Materials'?'Materials':String(data.get('category')||'').slice(0,100)),description:String(data.get('description')||'').slice(0,200),jobName:String(data.get('jobName')||'').trim().slice(0,120)};if(!valid(row)||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))return alert('Check the transaction fields');save([...load(),row]);f.reset();$('sc-fin-date').value=new Date().toISOString().slice(0,10);showTotals()});$('sc-fin-date').value=new Date().toISOString().slice(0,10);$('sc-fin-import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw Error('CSV exceeds 2 MB');const imported=csvImport(await file.text());if(!assignImportJobs(imported.rows))return;const existing=load(),byFingerprint=new Map(existing.filter(x=>x.fingerprint).map(x=>[x.fingerprint,x]));
  const rows=[],repairs=[];
  for(const item of imported.rows){
@@ -209,6 +249,6 @@ function setup(){const f=$('sc-fin-form');if(!f)return;const search=$('sc-fin-jo
  }
  const duplicates=imported.rows.length-rows.length;
  if(!rows.length&&!repairs.length){alert('No new purchases or missing Job Names to update. '+duplicates+' purchases were already recorded.');return}if(confirm('Detected '+imported.format+'. Import '+rows.length+' new transactions and restore '+repairs.length+' missing Job Names from matching existing purchases? Existing assigned Job Names will not be overwritten.'+(duplicates?' '+duplicates+' already-recorded purchases will not be duplicated.':'')+(imported.skipped?' '+imported.skipped+' invalid/empty rows skipped.':''))){for(const fix of repairs)fix.match.jobName=fix.name;save([...existing,...rows]);showTotals();alert('Import complete: '+rows.length+' new purchases, '+repairs.length+' existing Job Names restored.')}}catch(err){alert(err.message)}finally{e.target.value=''}});$('sc-fin-export').addEventListener('click',exportCSV);$('sc-fin-clear-all').addEventListener('click',clearAllFinances);$('sc-fin-template').addEventListener('click',()=>{const a=document.createElement('a');a.href='data:text/csv,date%2Ctype%2Camount%2Ccategory%2Cdescription%2Cjob%20name%0A2026-11-01%2Cincome%2C2500%2CProject%2CInvoice%20payment%2CExample%20Job';a.download='finance-template.csv';a.click()});$('sc-finance-open').addEventListener('click',()=>section('finance'))}
-function boot(){setup();setupBulkJobs();setupProjects();const observer=new MutationObserver(()=>{if(document.body.classList.contains('sc-workspace'))addSidebar()});observer.observe(document.body,{attributes:true,attributeFilter:['class']});addSidebar();window.addEventListener('sc-account-ready',e=>{account=e.detail.uid;showTotals()});window.addEventListener('sc-account-signed-out',()=>{account=null;showTotals()})}
+function boot(){setup();setupBulkJobs();setupProjects();const observer=new MutationObserver(()=>{if(document.body.classList.contains('sc-workspace'))addSidebar()});observer.observe(document.body,{attributes:true,attributeFilter:['class']});addSidebar();window.addEventListener('sc-account-ready',e=>{account=e.detail.uid;showTotals();void startCloud(account)});window.addEventListener('sc-account-signed-out',()=>{account=null;cloudReady=false;cloudUid=null;cloudRemote=null;selectedTransactionIds.clear();showTotals();syncStatus('Sign in to sync finances')});$('sc-fin-retry-sync')?.addEventListener('click',()=>{if(!account)return alert('Sign in first');if(cloudReady)void flushCloud();else void startCloud(account)})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
