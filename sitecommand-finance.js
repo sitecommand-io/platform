@@ -3,6 +3,7 @@
 'use strict';
 const sections=[['dashboard','Business Overview','◈'],['finance','Finances','▥'],['links','My Links','↗'],['aisetup','AI Setup','✧'],['domain','Domain','◎'],['settings','Settings','⚙']];
 let account=null;
+const selectedTransactionIds=new Set();
 const $=id=>document.getElementById(id);
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n||0);
 const key=()=>account?'sc_finance_local_v1_'+account:null;
@@ -31,22 +32,25 @@ function showProjects(){
  const ledger=load(),projects=loadProjects();
  for(const p of projects){
   const related=ledger.filter(x=>jobKey(jobName(x))===jobKey(p.name));
-  const spent=related.filter(x=>x.type==='expense').reduce((a,x)=>a+x.amount,0);
+  const expense=related.filter(x=>x.type==='expense');
+  const sum=g=>expense.filter(x=>expenseGroup(x)===g).reduce((a,x)=>a+x.amount,0);
+  const materials=sum('Receipts & Materials'),labor=sum('Labor'),other=sum('Other Expenses'),spent=materials+labor+other;
   const received=related.filter(x=>x.type==='income').reduce((a,x)=>a+x.amount,0);
   const expected=projectNum(p.target),fixed=p.type==='flip'?projectNum(p.purchase):0;
   const saleCosts=p.type==='flip'?expected*projectNum(p.salePct)/100:0;
-  const estimatedRemaining=projectNum(p.budget);
-  // Budget is the remaining estimated cost; actual ledger costs are counted separately.
-  const projected=expected-fixed-spent-estimatedRemaining-saleCosts;
+  const remaining=projectNum(p.budget);
+  const projected=expected-fixed-spent-remaining-saleCosts;
   const realized=received-fixed-spent-(p.type==='flip'?received*projectNum(p.salePct)/100:0);
   const tr=document.createElement('tr');
-  [p.name,p.type==='flip'?'House Flip':'Contractor Job',money(expected),money(spent),money(projected),money(realized)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
+  [p.name,p.type==='flip'?'House Flip':'Contractor Job',money(expected),money(materials),money(labor),money(other),money(spent),money(projected),money(realized)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
   const td=document.createElement('td'),edit=document.createElement('button');edit.type='button';edit.className='sc-finance-action secondary';edit.textContent='Edit';edit.addEventListener('click',()=>{const form=$('sc-project-form');for(const k of ['name','type','target','purchase','budget','salePct']){if(form.elements[k])form.elements[k].value=p[k]??''}form.elements.projectId.value=p.id;form.scrollIntoView({behavior:'smooth',block:'center'})});
+  const report=document.createElement('button');report.type='button';report.className='sc-finance-action secondary';report.textContent='Export Report';report.style.marginLeft='5px';report.addEventListener('click',()=>exportProjectReport(p));
   const del=document.createElement('button');del.type='button';del.className='sc-finance-action secondary';del.textContent='Remove';del.style.marginLeft='5px';del.addEventListener('click',()=>{if(confirm('Remove project '+p.name+'? Transactions will be kept.')){saveProjects(loadProjects().filter(x=>x.id!==p.id));showProjects()}});
-  td.append(edit,del);tr.append(td);body.append(tr);
+  td.append(edit,report,del);tr.append(td);body.append(tr);
  }
  $('sc-project-empty').hidden=projects.length>0;
 }
+
 function setupProjects(){
  const form=$('sc-project-form');if(!form)return;
  const type=form.elements.type;
@@ -57,8 +61,57 @@ function setupProjects(){
  $('sc-project-export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({projects:loadProjects(),transactions:load()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='sitecommand-projects-and-finances.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 }
 
-function showTotals(){const rows=load(),t=totals(rows);[['sc-revenue',t.income],['sc-expenses',t.expense],['sc-profit',t.income-t.expense],['sc-outstanding',t.receivable],['sc-fin-revenue',t.income],['sc-fin-expenses',t.expense],['sc-fin-profit',t.income-t.expense],['sc-fin-outstanding',t.receivable]].forEach(([id,n])=>{if($(id))$(id).textContent=money(n)});if($('sc-fin-count'))$('sc-fin-count').textContent=rows.length+' recorded transactions';renderRows(rows);showJobTotals(rows);showExpenseGroups(rows);showProjects()}
-function renderRows(rows){const body=$('sc-fin-rows');if(!body)return;body.replaceChildren();const search=String($('sc-fin-job-search')?.value||'').trim().toLocaleLowerCase();const matches=search?rows.filter(x=>jobName(x).toLocaleLowerCase().includes(search)):rows;const sorted=matches.slice().sort((a,b)=>b.date.localeCompare(a.date));const shown=sorted.slice(0,search?sorted.length:100);if($('sc-fin-search-count'))$('sc-fin-search-count').textContent=search?matches.length+' matching transactions'+(matches.length?' · '+money(matches.reduce((sum,x)=>sum+(x.type==='expense'?x.amount:0),0))+' expenses':''):'Showing '+Math.min(rows.length,100)+' of '+rows.length+' transactions';shown.forEach(x=>{const tr=document.createElement('tr');[x.date,x.type==='income'?'Income':x.type==='expense'?'Expense':'Unpaid invoice',jobName(x),x.category||'—',x.description||'—',money(x.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});const td=document.createElement('td'),btn=document.createElement('button');btn.type='button';btn.className='sc-finance-action secondary';btn.textContent='Remove';btn.setAttribute('aria-label','Remove transaction');btn.addEventListener('click',()=>{if(confirm('Remove this transaction from this browser?')){save(load().filter(row=>row.id!==x.id));showTotals()}});const edit=document.createElement('button');edit.type='button';edit.className='sc-finance-action secondary';edit.textContent='Edit Job';edit.style.marginRight='6px';edit.addEventListener('click',()=>editTransactionJob(x.id));td.append(edit,btn);tr.append(td);body.append(tr)});$('sc-fin-empty').hidden=rows.length>0}
+function showTotals(){const rows=load(),t=totals(rows);const options=$('sc-fin-job-options');if(options){options.replaceChildren();const names=[...new Set([...loadProjects().map(p=>p.name),...rows.map(x=>String(x.jobName||'').trim())].filter(Boolean))].sort();for(const name of names){const opt=document.createElement('option');opt.value=name;options.append(opt)}}for(const id of selectedTransactionIds)if(!rows.some(x=>x.id===id))selectedTransactionIds.delete(id);[['sc-revenue',t.income],['sc-expenses',t.expense],['sc-profit',t.income-t.expense],['sc-outstanding',t.receivable],['sc-fin-revenue',t.income],['sc-fin-expenses',t.expense],['sc-fin-profit',t.income-t.expense],['sc-fin-outstanding',t.receivable]].forEach(([id,n])=>{if($(id))$(id).textContent=money(n)});if($('sc-fin-count'))$('sc-fin-count').textContent=rows.length+' recorded transactions';renderRows(rows);showJobTotals(rows);showExpenseGroups(rows);showProjects()}
+function visibleTransactions(rows){
+ const q=String($('sc-fin-job-search')?.value||'').trim().toLocaleLowerCase();
+ return (q?rows.filter(x=>jobName(x).toLocaleLowerCase().includes(q)):rows).slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,q?undefined:100);
+}
+function renderRows(rows){
+ const body=$('sc-fin-rows');if(!body)return;body.replaceChildren();
+ const q=String($('sc-fin-job-search')?.value||'').trim().toLocaleLowerCase();
+ const matching=q?rows.filter(x=>jobName(x).toLocaleLowerCase().includes(q)):rows;
+ const shown=visibleTransactions(rows);
+ if($('sc-fin-search-count'))$('sc-fin-search-count').textContent=q?matching.length+' matching transactions · '+money(matching.reduce((sum,x)=>sum+(x.type==='expense'?x.amount:0),0))+' expenses':'Showing '+shown.length+' of '+rows.length+' transactions';
+ for(const x of shown){
+  const tr=document.createElement('tr');
+  const selectCell=document.createElement('td'),cb=document.createElement('input');cb.type='checkbox';cb.checked=selectedTransactionIds.has(x.id);cb.setAttribute('aria-label','Select transaction for '+jobName(x));cb.addEventListener('change',()=>{if(cb.checked)selectedTransactionIds.add(x.id);else selectedTransactionIds.delete(x.id);updateBulkControls(rows)});selectCell.append(cb);tr.append(selectCell);
+  [x.date,x.type==='income'?'Income':x.type==='expense'?'Expense':'Unpaid invoice',jobName(x),x.category||'—',x.description||'—',money(x.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td)});
+  const td=document.createElement('td'),btn=document.createElement('button');btn.type='button';btn.className='sc-finance-action secondary';btn.textContent='Remove';btn.setAttribute('aria-label','Remove transaction');btn.addEventListener('click',()=>{if(confirm('Remove this transaction from this browser?')){save(load().filter(row=>row.id!==x.id));selectedTransactionIds.delete(x.id);showTotals()}});
+  const edit=document.createElement('button');edit.type='button';edit.className='sc-finance-action secondary';edit.textContent='Edit Job';edit.style.marginRight='6px';edit.addEventListener('click',()=>editTransactionJob(x.id));td.append(edit,btn);tr.append(td);body.append(tr);
+ }
+ if($('sc-fin-empty')){const empty=$('sc-fin-empty');empty.hidden=matching.length>0;empty.textContent=rows.length?'No transactions match that job name.':'No transactions recorded yet. Add one above or upload a CSV.'}
+ updateBulkControls(rows);
+}
+function updateBulkControls(rows){
+ const count=$('sc-fin-selected-count'),apply=$('sc-fin-bulk-apply'),selectAll=$('sc-fin-select-all');
+ const shown=visibleTransactions(rows),selected=shown.filter(x=>selectedTransactionIds.has(x.id)).length;
+ if(count)count.textContent=selectedTransactionIds.size+' selected';
+ if(apply)apply.disabled=selectedTransactionIds.size===0;
+ if(selectAll){selectAll.checked=shown.length>0&&selected===shown.length;selectAll.indeterminate=selected>0&&selected<shown.length}
+}
+function setupBulkJobs(){
+ const selectAll=$('sc-fin-select-all'),apply=$('sc-fin-bulk-apply'),clear=$('sc-fin-bulk-clear'),job=$('sc-fin-bulk-job');
+ if(!selectAll||!apply||!clear||!job)return;
+ selectAll.addEventListener('change',()=>{for(const x of visibleTransactions(load())){if(selectAll.checked)selectedTransactionIds.add(x.id);else selectedTransactionIds.delete(x.id)}renderRows(load())});
+ clear.addEventListener('click',()=>{selectedTransactionIds.clear();renderRows(load())});
+ apply.addEventListener('click',()=>{if(!account)return alert('Sign in first');const name=job.value.trim().slice(0,120);if(!name)return alert('Enter a job name or project address');const rows=load(),chosen=rows.filter(x=>selectedTransactionIds.has(x.id));if(!chosen.length)return alert('Select transactions first');if(!confirm('Assign '+chosen.length+' selected transactions to "'+name+'"? Existing Job Names on those transactions will be replaced.'))return;for(const x of chosen)x.jobName=name;save(rows);selectedTransactionIds.clear();job.value='';showTotals()});
+}
+function csvEscape(v){const s=String(v??'');return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}
+function downloadCSV(filename,records){const content=records.map(row=>row.map(csvEscape).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportProjectReport(p){
+ const rows=load().filter(x=>jobKey(jobName(x))===jobKey(p.name));
+ const expenses=rows.filter(x=>x.type==='expense');
+ const sum=g=>expenses.filter(x=>expenseGroup(x)===g).reduce((total,x)=>total+x.amount,0);
+ const materials=sum('Receipts & Materials'),labor=sum('Labor'),other=sum('Other Expenses'),spent=materials+labor+other;
+ const received=rows.filter(x=>x.type==='income').reduce((total,x)=>total+x.amount,0),outstanding=rows.filter(x=>x.type==='receivable').reduce((total,x)=>total+x.amount,0);
+ const target=projectNum(p.target),purchase=p.type==='flip'?projectNum(p.purchase):0,remaining=projectNum(p.budget),saleCost=p.type==='flip'?target*projectNum(p.salePct)/100:0;
+ const projected=target-purchase-spent-remaining-saleCost;
+ const report=[['SiteCommand Project Financial Report'],['Project',p.name],['Type',p.type==='flip'?'House Flip':'Contractor Job'],['Expected revenue',target],['Income received',received],['Outstanding invoices',outstanding],['House purchase price',purchase],['Materials and receipts',materials],['Labor',labor],['Other expenses',other],['Total recorded expenses',spent],['Estimated remaining costs',remaining],['Estimated selling costs',saleCost],['Projected profit',projected],[],['Date','Type','Job Name','Expense Group','Category','Description','Amount','Source']];
+ for(const x of rows.slice().sort((a,b)=>a.date.localeCompare(b.date)))report.push([x.date,x.type,jobName(x),expenseGroup(x),x.category||'',x.description||'',x.amount,x.source||'Manual']);
+ report.push([],['Note','Projected profit is an estimate, not realized profit. Purchase price should not also be recorded as an expense.']);
+ downloadCSV('sitecommand-'+p.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,60)+'-report.csv',report);
+}
+
 function section(id){const el=$('sec-'+id);if(!el)return;document.querySelectorAll('.p-section').forEach(s=>s.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.sc-side-link[data-section]').forEach(a=>{a.classList.toggle('sc-section-current',a.dataset.section===id);if(a.dataset.section===id)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});document.querySelectorAll('.p-nav-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim().toLowerCase()===(id==='aisetup'?'ai setup':id)));const title=document.querySelector('.sc-workspace-title');if(title)title.textContent=id==='dashboard'?'Business Overview':sections.find(x=>x[0]===id)?.[1]||'Dashboard';showTotals()}
 function addSidebar(){const nav=document.querySelector('.sc-side-nav');if(!nav||nav.querySelector('[data-section]'))return;const head=document.createElement('div');head.className='sc-side-label';head.textContent='Business management';nav.prepend(head);for(const [id,name,icon] of sections.slice().reverse()){const a=document.createElement('a');a.href='#'+id;a.className='sc-side-link';a.dataset.section=id;const ico=document.createElement('span');ico.className='sc-side-icon';ico.textContent=icon;a.append(ico,document.createTextNode(name));a.addEventListener('click',e=>{e.preventDefault();section(id);document.body.classList.remove('sc-menu-open')});head.after(a)}const footer=document.querySelector('.sc-side-footer');if(footer&&!document.getElementById('sc-side-logout')){const out=document.createElement('button');out.type='button';out.id='sc-side-logout';out.className='sc-side-link';out.style.width='100%';out.style.textAlign='left';out.textContent='↪  Log Out';out.addEventListener('click',()=>{if(typeof window.doLogout==='function')window.doLogout()});footer.before(out)}section('dashboard')}
 function parseCSV(input){const lines=[];let row=[],field='',quote=false;for(let i=0;i<input.length;i++){const c=input[i];if(c==='"'){if(quote&&input[i+1]==='"'){field+='"';i++}else quote=!quote}else if(c===','&&!quote){row.push(field);field=''}else if((c==='\n'||c==='\r')&&!quote){if(c==='\r'&&input[i+1]==='\n')i++;row.push(field);if(row.some(x=>x.trim()))lines.push(row);row=[];field=''}else field+=c}if(quote)throw Error('Unclosed quoted CSV field');row.push(field);if(row.some(x=>x.trim()))lines.push(row);return lines}
@@ -156,6 +209,6 @@ function setup(){const f=$('sc-fin-form');if(!f)return;const search=$('sc-fin-jo
  }
  const duplicates=imported.rows.length-rows.length;
  if(!rows.length&&!repairs.length){alert('No new purchases or missing Job Names to update. '+duplicates+' purchases were already recorded.');return}if(confirm('Detected '+imported.format+'. Import '+rows.length+' new transactions and restore '+repairs.length+' missing Job Names from matching existing purchases? Existing assigned Job Names will not be overwritten.'+(duplicates?' '+duplicates+' already-recorded purchases will not be duplicated.':'')+(imported.skipped?' '+imported.skipped+' invalid/empty rows skipped.':''))){for(const fix of repairs)fix.match.jobName=fix.name;save([...existing,...rows]);showTotals();alert('Import complete: '+rows.length+' new purchases, '+repairs.length+' existing Job Names restored.')}}catch(err){alert(err.message)}finally{e.target.value=''}});$('sc-fin-export').addEventListener('click',exportCSV);$('sc-fin-clear-all').addEventListener('click',clearAllFinances);$('sc-fin-template').addEventListener('click',()=>{const a=document.createElement('a');a.href='data:text/csv,date%2Ctype%2Camount%2Ccategory%2Cdescription%2Cjob%20name%0A2026-11-01%2Cincome%2C2500%2CProject%2CInvoice%20payment%2CExample%20Job';a.download='finance-template.csv';a.click()});$('sc-finance-open').addEventListener('click',()=>section('finance'))}
-function boot(){setup();setupProjects();const observer=new MutationObserver(()=>{if(document.body.classList.contains('sc-workspace'))addSidebar()});observer.observe(document.body,{attributes:true,attributeFilter:['class']});addSidebar();window.addEventListener('sc-account-ready',e=>{account=e.detail.uid;showTotals()});window.addEventListener('sc-account-signed-out',()=>{account=null;showTotals()})}
+function boot(){setup();setupBulkJobs();setupProjects();const observer=new MutationObserver(()=>{if(document.body.classList.contains('sc-workspace'))addSidebar()});observer.observe(document.body,{attributes:true,attributeFilter:['class']});addSidebar();window.addEventListener('sc-account-ready',e=>{account=e.detail.uid;showTotals()});window.addEventListener('sc-account-signed-out',()=>{account=null;showTotals()})}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
