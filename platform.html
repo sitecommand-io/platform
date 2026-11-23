@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=11"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=12"></script>
 </head>
 <body>
 
@@ -540,7 +540,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label>Date<input id="sc-fin-date" type="date" name="date" required></label>
 <label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
 <label>Amount ($)<input type="number" name="amount" min="0" max="1000000000000" step=".01" required></label>
-<label>Expense section<select name="expenseGroup"><option value="Receipts & Materials">Receipts & Materials</option><option value="Labor">Labor</option><option value="Other Expenses">Other Expenses</option></select></label>
+<label>Expense section<select name="expenseGroup"><option value="Receipts & Materials">Receipts & Materials</option><option value="Labor">Labor</option><option value="Labor + Materials">Labor + Materials</option><option value="Other Expenses">Other Expenses</option></select></label>
 <label>Category / details<input name="category" maxlength="100" placeholder="e.g. electrician, dumpster, materials"></label>
 <label>Job Name<input name="jobName" maxlength="120" placeholder="e.g. 836 Kirkwood St"></label>
 <label style="grid-column:span 2">Description<input name="description" maxlength="200" placeholder="Project or transaction details"></label>
@@ -558,16 +558,18 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label id="sc-project-purchase">House purchase price ($)<input name="purchase" type="number" min="0" step=".01" value="0"></label>
 <label><span id="sc-project-budget-label">Estimated remaining renovation/labor costs ($)</span><input name="budget" type="number" min="0" step=".01" value="0"></label>
 <label id="sc-project-sale">Estimated selling costs (%)<input name="salePct" type="number" min="0" max="100" step=".1" value="7.5"></label>
+<label>Project status<select name="status"><option value="active">Active / In Progress</option><option value="completed">Completed</option><option value="sold">Sold (House Flip)</option></select></label>
+<label id="sc-project-sold-price" hidden>Actual sale price ($)<input name="soldPrice" type="number" min="0" step=".01" placeholder="Enter the closing sale price"></label>
 <div class="sc-finance-actions"><button type="submit" class="sc-finance-action">Save Project</button><button type="button" id="sc-project-new" class="sc-finance-action secondary">New / Cancel Edit</button><button type="button" id="sc-project-export" class="sc-finance-action secondary">Export Projects + Finances</button></div>
 </form>
-<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Project / Address</th><th>Type</th><th>Expected Revenue</th><th>Materials &amp; Receipts</th><th>Labor</th><th>Other</th><th>Total Spent</th><th>Projected Profit</th><th>Cash Profit So Far*</th><th>Action</th></tr></thead><tbody id="sc-project-rows"></tbody></table></div>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Project / Address</th><th>Type</th><th>Status</th><th>Expected / Actual Revenue</th><th>Materials &amp; Receipts</th><th>Labor</th><th>Labor + Materials</th><th>Other</th><th>Total Spent</th><th>Projected Profit</th><th>Cash Profit So Far*</th><th>Action</th></tr></thead><tbody id="sc-project-rows"></tbody></table></div>
 <p id="sc-project-empty" class="sc-finance-empty">No projects yet. Create a house flip or contractor job above.</p>
 <p><small>*Cash profit so far = income received minus recorded expenses (and purchase price for flips); it is not final profit. Selling costs are estimated for flips. Project purchase price should not also be entered as a transaction.</small></p>
 </div>
 <div class="sc-finance-panel" style="margin-bottom:18px">
 <h3>Project Expense Breakdown</h3>
-<p>Home Depot and Lowe's imports go into Receipts &amp; Materials automatically. Enter payroll and subcontractor payments as Labor; enter permits, utilities, disposal and other costs as Other Expenses. All sections count toward project profit.</p>
-<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Job Name</th><th>Receipts &amp; Materials</th><th>Labor</th><th>Other Expenses</th><th>Total Expenses</th><th>Transactions</th></tr></thead><tbody id="sc-fin-group-rows"></tbody></table></div>
+<p>Home Depot and Lowe's imports go into Receipts &amp; Materials automatically. Enter payroll and subcontractor payments as Labor; use Labor + Materials for a single combined contractor invoice; enter permits, utilities, disposal and other costs as Other Expenses. Do not enter the same bill in multiple sections. All sections count toward project profit.</p>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Job Name</th><th>Receipts &amp; Materials</th><th>Labor</th><th>Labor + Materials</th><th>Other Expenses</th><th>Total Expenses</th><th>Transactions</th></tr></thead><tbody id="sc-fin-group-rows"></tbody></table></div>
 <p id="sc-fin-group-empty" class="sc-finance-empty">No project expenses recorded yet.</p>
 </div>
 <div class="sc-finance-panel" style="margin-bottom:18px">
