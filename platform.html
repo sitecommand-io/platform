@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=1"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=2"></script>
 </head>
 <body>
 
@@ -547,9 +547,9 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </div>
 <div class="sc-finance-panel">
 <h3>Import or export financial records</h3>
-<p>CSV format: date, type, amount, category, description. Dates use YYYY-MM-DD; type must be income, expense, or receivable. Importing adds rows; it does not automatically detect duplicates.</p>
+<p>Upload a SiteCommand CSV or a Home Depot Purchase History CSV export. Home Depot purchases are automatically categorized as expenses using the discounted net unit price and quantity. Re-imported Home Depot purchases are checked for duplicates. Records remain local to this browser; export backups regularly.</p>
 <div class="sc-finance-actions">
-<label class="sc-finance-action" style="cursor:pointer">Upload CSV<input id="sc-fin-import" type="file" accept=".csv,text/csv" style="display:none"></label>
+<label class="sc-finance-action" style="cursor:pointer">Upload CSV / Home Depot<input id="sc-fin-import" type="file" accept=".csv,text/csv" style="display:none"></label>
 <button id="sc-fin-template" type="button" class="sc-finance-action secondary">Download template</button>
 <button id="sc-fin-export" type="button" class="sc-finance-action secondary">Export backup</button>
 </div>
