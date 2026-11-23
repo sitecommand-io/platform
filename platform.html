@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=5"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=4"><script defer src="sitecommand-finance.js?v=17"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=4"><script defer src="sitecommand-finance.js?v=18"></script><script defer src="sitecommand-receipts.js?v=1"></script>
 <link rel="manifest" href="/sitecommand.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="SiteCommand"><link rel="apple-touch-icon" href="/sitecommand-icon.svg"></head>
 <body>
 
@@ -534,7 +534,20 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <div class="sc-finance-kpi"><span>Net Profit</span><strong id="sc-fin-profit">$0</strong></div>
 <div class="sc-finance-kpi"><span>Outstanding</span><strong id="sc-fin-outstanding">$0</strong></div>
 </div>
-<div class="sc-finance-panel" style="margin-bottom:18px"><h3>Receipt scanner temporarily unavailable</h3><p>We are repairing the receipt scanner. Your existing transactions, projects, CSV imports and Firebase synchronization remain available. Please use Add a transaction or CSV import for now. Do not clear browser data.</p></div><div class="sc-finance-panel" style="margin-bottom:18px"><h3>Add a transaction</h3>
+<div class="sc-finance-panel" style="margin-bottom:18px">
+<h3>📷 Scan a receipt (1–10 pages)</h3>
+<p>Choose all photos from ONE receipt. Arrange them, scan them together, and review extracted items before saving one expense. The original photos stay on your device and are not uploaded.</p>
+<div class="sc-finance-actions" style="display:flex;flex-wrap:wrap;gap:10px">
+<label class="sc-finance-action" style="cursor:pointer">Add receipt pages <input id="sc-receipt-files" type="file" accept="image/jpeg,image/png,image/webp" multiple style="position:absolute;opacity:0;width:1px;height:1px"></label>
+<button id="sc-receipt-scan" type="button" class="sc-finance-action" disabled>Scan all pages</button>
+<button id="sc-receipt-clear" type="button" class="sc-finance-action secondary">Start new receipt</button></div>
+<div id="sc-receipt-pages" style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0"></div>
+<p id="sc-receipt-status" role="status" aria-live="polite">Choose the pages of one purchase. No transaction is saved automatically.</p>
+<div id="sc-receipt-review" hidden><h4>Review extracted line items</h4><p>Check quantities, prices, taxes and total against the receipt. OCR suggestions may be inaccurate.</p>
+<div class="sc-finance-table-wrap" style="overflow-x:auto"><table class="sc-finance-table"><thead><tr><th>Item</th><th>Quantity</th><th>Line total ($)</th><th></th></tr></thead><tbody id="sc-receipt-items"></tbody></table></div>
+<div class="sc-finance-actions"><button id="sc-receipt-add-item" type="button" class="sc-finance-action secondary">Add item</button></div>
+<p id="sc-receipt-reconcile"></p></div></div>
+<div class="sc-finance-panel" style="margin-bottom:18px"><h3>Add a transaction</h3>
 <form id="sc-fin-form" class="sc-finance-form">
 <label>Date<input id="sc-fin-date" type="date" name="date" required></label>
 <label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
