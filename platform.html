@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=9"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=10"></script>
 </head>
 <body>
 
@@ -560,7 +560,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label id="sc-project-sale">Estimated selling costs (%)<input name="salePct" type="number" min="0" max="100" step=".1" value="7.5"></label>
 <div class="sc-finance-actions"><button type="submit" class="sc-finance-action">Save Project</button><button type="button" id="sc-project-new" class="sc-finance-action secondary">New / Cancel Edit</button><button type="button" id="sc-project-export" class="sc-finance-action secondary">Export Projects + Finances</button></div>
 </form>
-<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Project / Address</th><th>Type</th><th>Expected Revenue</th><th>Recorded Expenses</th><th>Projected Profit</th><th>Cash Profit So Far*</th><th>Action</th></tr></thead><tbody id="sc-project-rows"></tbody></table></div>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Project / Address</th><th>Type</th><th>Expected Revenue</th><th>Materials &amp; Receipts</th><th>Labor</th><th>Other</th><th>Total Spent</th><th>Projected Profit</th><th>Cash Profit So Far*</th><th>Action</th></tr></thead><tbody id="sc-project-rows"></tbody></table></div>
 <p id="sc-project-empty" class="sc-finance-empty">No projects yet. Create a house flip or contractor job above.</p>
 <p><small>*Cash profit so far = income received minus recorded expenses (and purchase price for flips); it is not final profit. Selling costs are estimated for flips. Project purchase price should not also be entered as a transaction.</small></p>
 </div>
@@ -586,7 +586,8 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <button id="sc-fin-clear-all" type="button" class="sc-finance-action secondary" style="color:#b42318;border-color:#f1b8b2" title="Permanently clear all finance records in this browser">Clear All / Reset Finances</button>
 </div>
 <div style="display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:18px 0 12px"><label for="sc-fin-job-search" style="display:flex;flex-direction:column;gap:6px;font-weight:600;color:#263e61">Search by Job Name<input id="sc-fin-job-search" type="search" placeholder="e.g. 836 Kirkwood" autocomplete="off" style="width:min(100%,360px);min-width:240px;padding:12px;border:1px solid #cbd6e6;border-radius:8px;font:inherit"></label><span id="sc-fin-search-count" role="status" aria-live="polite" style="color:#637b9c;font-size:14px"></span></div>
-<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Date</th><th>Type</th><th>Job Name</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="sc-fin-rows"></tbody></table></div>
+<div class="sc-finance-actions" style="align-items:end;gap:10px;flex-wrap:wrap;margin:12px 0"><label style="font-weight:600;color:#263e61">Assign selected to Job Name<input id="sc-fin-bulk-job" type="text" maxlength="120" placeholder="e.g. 836 Kirkwood St" list="sc-fin-job-options" style="display:block;margin-top:6px;padding:11px;border:1px solid #cbd6e6;border-radius:8px;min-width:240px;font:inherit"></label><datalist id="sc-fin-job-options"></datalist><button id="sc-fin-bulk-apply" type="button" class="sc-finance-action" disabled>Update Selected Jobs</button><button id="sc-fin-bulk-clear" type="button" class="sc-finance-action secondary">Clear Selection</button><span id="sc-fin-selected-count" role="status">0 selected</span></div>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th><input id="sc-fin-select-all" type="checkbox" aria-label="Select all visible transactions"></th><th>Date</th><th>Type</th><th>Job Name</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="sc-fin-rows"></tbody></table></div>
 <p id="sc-fin-empty" class="sc-finance-empty">No transactions recorded yet. Add one above or upload a CSV.</p>
 </div>
 </div>
