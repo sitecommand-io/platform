@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=6"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=7"></script>
 </head>
 <body>
 
@@ -540,7 +540,8 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label>Date<input id="sc-fin-date" type="date" name="date" required></label>
 <label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
 <label>Amount ($)<input type="number" name="amount" min="0" max="1000000000000" step=".01" required></label>
-<label>Category<input name="category" maxlength="100" placeholder="Materials, labor, sales"></label>
+<label>Expense section<select name="expenseGroup"><option value="Receipts & Materials">Receipts & Materials</option><option value="Labor">Labor</option><option value="Other Expenses">Other Expenses</option></select></label>
+<label>Category / details<input name="category" maxlength="100" placeholder="e.g. electrician, dumpster, materials"></label>
 <label>Job Name<input name="jobName" maxlength="120" placeholder="e.g. 836 Kirkwood St"></label>
 <label style="grid-column:span 2">Description<input name="description" maxlength="200" placeholder="Project or transaction details"></label>
 <div><button type="submit" class="sc-finance-action">Save transaction</button></div>
@@ -564,6 +565,12 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <p><small>*Cash profit so far = income received minus recorded expenses (and purchase price for flips); it is not final profit. Selling costs are estimated for flips. Project purchase price should not also be entered as a transaction.</small></p>
 </div>
 <div class="sc-finance-panel" style="margin-bottom:18px">
+<h3>Project Expense Breakdown</h3>
+<p>Home Depot and Lowe's imports go into Receipts &amp; Materials automatically. Enter payroll and subcontractor payments as Labor; enter permits, utilities, disposal and other costs as Other Expenses. All sections count toward project profit.</p>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Job Name</th><th>Receipts &amp; Materials</th><th>Labor</th><th>Other Expenses</th><th>Total Expenses</th><th>Transactions</th></tr></thead><tbody id="sc-fin-group-rows"></tbody></table></div>
+<p id="sc-fin-group-empty" class="sc-finance-empty">No project expenses recorded yet.</p>
+</div>
+<div class="sc-finance-panel" style="margin-bottom:18px">
 <h3>Expenses by Job Name</h3>
 <p>Compare material and other costs for each project. Home Depot imports use the Job Name from your purchase history; transactions without a job appear as Unassigned.</p>
 <div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Job Name</th><th>Expenses</th><th>Income</th><th>Net</th><th>Transactions</th></tr></thead><tbody id="sc-fin-job-rows"></tbody></table></div>
@@ -571,7 +578,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </div>
 <div class="sc-finance-panel">
 <h3>Import or export financial records</h3>
-<p>Upload a SiteCommand CSV, Home Depot Purchase History CSV, or a supported Lowe's purchase CSV. Store purchases are categorized as expenses. Missing job names can be assigned during import, and each transaction has an Edit Job button. Re-imported store purchases are checked for duplicates. Records remain local to this browser; export backups regularly.</p>
+<p>Upload a SiteCommand CSV, Home Depot Purchase History CSV, or a supported Lowe's purchase CSV. Store purchases are categorized as expenses. Job Names are imported directly from the sheet; blank values remain Unassigned and can be changed using Edit Job. Re-imported store purchases are checked for duplicates. Records remain local to this browser; export backups regularly.</p>
 <div class="sc-finance-actions">
 <label class="sc-finance-action" style="cursor:pointer">Upload CSV / Home Depot / Lowe's<input id="sc-fin-import" type="file" accept=".csv,text/csv" style="display:none"></label>
 <button id="sc-fin-template" type="button" class="sc-finance-action secondary">Download template</button>
