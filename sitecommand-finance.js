@@ -28,7 +28,7 @@ function homeDepotImport(table){
     const date=rawDate,description=at(r,'skudescription'),transaction=at(r,'transactionid'),store=at(r,'storenumber');
     if(!description&&!transaction){skipped++;continue}
     const qtyRaw=at(r,'quantity'),qty=Number(qtyRaw.replace(/,/g,''))||1;
-    const net=at(r,'netunitprice'),retail=at(r,'extendedretailbeforediscount'),unit=at(r,'unitprice');
+    const net=at(r,'netunitprice'),unit=at(r,'unitprice');
     const numeric=x=>{const v=Number(String(x).replace(/[$,\s]/g,'').replace(/^\((.*)\)$/,'-$1'));return Number.isFinite(v)?v:NaN};
     // Home Depot's Net Unit Price is per item; extended retail is before discounts.
     // Prefer quantity x net unit price to avoid ignoring discounts on multi-unit purchases.
