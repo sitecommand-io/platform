@@ -239,7 +239,51 @@ function editTransactionJob(id){
 }
 function exportCSV(){const data=[['date','type','amount','category','description','job name','expense group'],...load().map(x=>[x.date,x.type,x.amount,x.category||'',x.description||'',x.jobName||'',x.expenseGroup||expenseGroup(x)])];const content=data.map(row=>row.map(x=>{const s=String(x);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([content],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download='sitecommand-finances.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
 function clearAllFinances(){if(!account){alert('Sign in first');return}const rows=load();if(!rows.length){alert('There are no financial records to clear.');return}const answer=prompt('This will permanently delete ALL '+rows.length+' financial transactions for this account in this browser, including job totals and Home Depot imports. Export a CSV backup first if needed. Type DELETE to confirm:');if(answer!=='DELETE')return;try{save([]);showTotals();alert('Financial records cleared locally. Check cloud sync status before closing this page.')}catch{alert('Could not clear financial records in this browser.')}}
-function setup(){const f=$('sc-fin-form');if(!f)return;const search=$('sc-fin-job-search');if(search)search.addEventListener('input',()=>renderRows(load()));f.addEventListener('submit',e=>{e.preventDefault();if(!account){alert('Sign in first');return}const data=new FormData(f);const row={id:crypto.randomUUID(),date:String(data.get('date')),type:String(data.get('type')),amount:Number(data.get('amount')),expenseGroup:String(data.get('expenseGroup')||'Other Expenses'),category:String(data.get('category')||'').slice(0,100)||String(data.get('expenseGroup')||'Other Expenses'),description:String(data.get('description')||'').slice(0,200),jobName:String(data.get('jobName')||'').trim().slice(0,120)};if(!valid(row)||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))return alert('Check the transaction fields');save([...load(),row]);f.reset();$('sc-fin-date').value=new Date().toISOString().slice(0,10);showTotals()});$('sc-fin-date').value=new Date().toISOString().slice(0,10);$('sc-fin-import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw Error('CSV exceeds 2 MB');const imported=csvImport(await file.text());if(!assignImportJobs(imported.rows))return;const existing=load(),byFingerprint=new Map(existing.filter(x=>x.fingerprint).map(x=>[x.fingerprint,x]));
+function setupReceiptScan(){
+ const input=$('sc-receipt-photo'),status=$('sc-receipt-scan-status'),form=$('sc-fin-form');
+ if(!input||!status||!form)return;
+ input.addEventListener('change',async()=>{
+  const file=input.files?.[0];if(!file)return;
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)||file.size>10*1024*1024){status.textContent='Choose a JPG, PNG or WebP photo under 10 MB.';input.value='';return}
+  status.textContent='Reading receipt photo…';
+  try{
+   if(!window.Tesseract)await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';script.onload=resolve;script.onerror=()=>reject(new Error('Scanner could not load'));document.head.append(script)});
+   const result=await window.Tesseract.recognize(file,'eng');
+   const raw=String(result.data?.text||'');
+   const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+   const amounts=lines.map(line=>({line,values:line.match(/(?:\$\s*)?\d{1,6}[,.]\d{2}\b/g)})).filter(x=>x.values);
+   const totals=amounts.filter(x=>/\b(grand total|amount paid|total due|total)\b/i.test(x.line)&&!/subtotal|tax total|total savings/i.test(x.line));
+   const found=totals.at(-1)||amounts.at(-1);
+   const amount=found?Number(found.values.at(-1).replace(/[^0-9.,]/g,'').replace(/,/g,'')):0;
+   const match=raw.match(/\b(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4})\b/);
+   let date='';
+   if(match){const p=match[1].split(/[\/-]/);let y=Number(p[2]);if(y<100)y+=2000;const m=Number(p[0]),d=Number(p[1]);if(y>=2000&&y<=2100&&m>=1&&m<=12&&d>=1&&d<=31)date=y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')}
+   const store=lines.find(x=>/home depot|lowe'?s|menards|ace hardware|harbor freight|sherwin.williams|floor & decor/i.test(x))||lines[0]||'Receipt';
+   form.elements.type.value='expense';form.elements.expenseGroup.value='Receipts & Materials';
+   if(date)form.elements.date.value=date;
+   if(amount>0&&Number.isFinite(amount))form.elements.amount.value=amount.toFixed(2);
+   form.elements.category.value=store.slice(0,100);
+   form.elements.description.value=('Receipt photo: '+store).slice(0,200);
+   status.textContent='Scan finished. '+(amount>0?'Suggested total: const search=$('sc-fin-job-search');if(search)search.addEventListener('input',()=>renderRows(load()));f.addEventListener('submit',e=>{e.preventDefault();if(!account){alert('Sign in first');return}const data=new FormData(f);const row={id:crypto.randomUUID(),date:String(data.get('date')),type:String(data.get('type')),amount:Number(data.get('amount')),expenseGroup:String(data.get('expenseGroup')||'Other Expenses'),category:String(data.get('category')||'').slice(0,100)||String(data.get('expenseGroup')||'Other Expenses'),description:String(data.get('description')||'').slice(0,200),jobName:String(data.get('jobName')||'').trim().slice(0,120)};if(!valid(row)||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))return alert('Check the transaction fields');save([...load(),row]);f.reset();$('sc-fin-date').value=new Date().toISOString().slice(0,10);showTotals()});$('sc-fin-date').value=new Date().toISOString().slice(0,10);$('sc-fin-import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw Error('CSV exceeds 2 MB');const imported=csvImport(await file.text());if(!assignImportJobs(imported.rows))return;const existing=load(),byFingerprint=new Map(existing.filter(x=>x.fingerprint).map(x=>[x.fingerprint,x]));
+ const rows=[],repairs=[];
+ for(const item of imported.rows){
+   const match=item.fingerprint?byFingerprint.get(item.fingerprint):null;
+   if(match){
+     if(!String(match.jobName||'').trim()&&String(item.jobName||'').trim())repairs.push({match,name:item.jobName});
+   }else{rows.push(item);if(item.fingerprint)byFingerprint.set(item.fingerprint,item)}
+ }
+ const duplicates=imported.rows.length-rows.length;
+ if(!rows.length&&!repairs.length){alert('No new purchases or missing Job Names to update. '+duplicates+' purchases were already recorded.');return}if(confirm('Detected '+imported.format+'. Import '+rows.length+' new transactions and restore '+repairs.length+' missing Job Names from matching existing purchases? Existing assigned Job Names will not be overwritten.'+(duplicates?' '+duplicates+' already-recorded purchases will not be duplicated.':'')+(imported.skipped?' '+imported.skipped+' invalid/empty rows skipped.':''))){for(const fix of repairs)fix.match.jobName=fix.name;save([...existing,...rows]);showTotals();alert('Import complete: '+rows.length+' new purchases, '+repairs.length+' existing Job Names restored.')}}catch(err){alert(err.message)}finally{e.target.value=''}});$('sc-fin-export').addEventListener('click',exportCSV);$('sc-fin-clear-all').addEventListener('click',clearAllFinances);$('sc-fin-template').addEventListener('click',()=>{const a=document.createElement('a');a.href='data:text/csv,date%2Ctype%2Camount%2Ccategory%2Cdescription%2Cjob%20name%0A2026-11-01%2Cincome%2C2500%2CProject%2CInvoice%20payment%2CExample%20Job';a.download='finance-template.csv';a.click()});$('sc-finance-open').addEventListener('click',()=>section('finance'))}
+function boot(){setup();setupBulkJobs();setupProjects();const observer=new MutationObserver(()=>{if(document.body.classList.contains('sc-workspace'))addSidebar()});observer.observe(document.body,{attributes:true,attributeFilter:['class']});addSidebar();window.addEventListener('sc-account-ready',e=>{account=e.detail.uid;showTotals();void startCloud(account)});window.addEventListener('sc-account-signed-out',()=>{account=null;cloudReady=false;cloudUid=null;cloudRemote=null;selectedTransactionIds.clear();showTotals();syncStatus('Sign in to sync finances')});$('sc-fin-retry-sync')?.addEventListener('click',()=>{if(!account)return alert('Sign in first');if(cloudReady)void flushCloud();else void startCloud(account)})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
++amount.toFixed(2)+'. ':'Total not found. ')+(date?'Suggested date: '+date+'. ':'Date not found. ')+'Check every field, enter Job Name, and press Save transaction. The photo is not stored.';
+   form.scrollIntoView({behavior:'smooth',block:'center'});
+  }catch(err){status.textContent='Could not scan this photo: '+(err?.message||'unknown error')+'. Enter details manually.'}
+  finally{input.value=''}
+ });
+}
+function setup(){const f=$('sc-fin-form');if(!f)return;setupReceiptScan();const search=$('sc-fin-job-search');if(search)search.addEventListener('input',()=>renderRows(load()));f.addEventListener('submit',e=>{e.preventDefault();if(!account){alert('Sign in first');return}const data=new FormData(f);const row={id:crypto.randomUUID(),date:String(data.get('date')),type:String(data.get('type')),amount:Number(data.get('amount')),expenseGroup:String(data.get('expenseGroup')||'Other Expenses'),category:String(data.get('category')||'').slice(0,100)||String(data.get('expenseGroup')||'Other Expenses'),description:String(data.get('description')||'').slice(0,200),jobName:String(data.get('jobName')||'').trim().slice(0,120)};if(!valid(row)||!/^\d{4}-\d{2}-\d{2}$/.test(row.date))return alert('Check the transaction fields');save([...load(),row]);f.reset();$('sc-fin-date').value=new Date().toISOString().slice(0,10);showTotals()});$('sc-fin-date').value=new Date().toISOString().slice(0,10);$('sc-fin-import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2e6)throw Error('CSV exceeds 2 MB');const imported=csvImport(await file.text());if(!assignImportJobs(imported.rows))return;const existing=load(),byFingerprint=new Map(existing.filter(x=>x.fingerprint).map(x=>[x.fingerprint,x]));
  const rows=[],repairs=[];
  for(const item of imported.rows){
    const match=item.fingerprint?byFingerprint.get(item.fingerprint):null;

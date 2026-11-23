@@ -185,7 +185,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=4"></script>
 <link rel="stylesheet" href="sitecommand-finance.css?v=2"><script defer src="sitecommand-finance.js?v=13"></script>
-</head>
+<link rel="manifest" href="/sitecommand.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="SiteCommand"><link rel="apple-touch-icon" href="/sitecommand-icon.svg"></head>
 <body>
 
 
@@ -534,8 +534,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <div class="sc-finance-kpi"><span>Net Profit</span><strong id="sc-fin-profit">$0</strong></div>
 <div class="sc-finance-kpi"><span>Outstanding</span><strong id="sc-fin-outstanding">$0</strong></div>
 </div>
-<div class="sc-finance-panel" style="margin-bottom:18px">
-<h3>Add a transaction</h3>
+<div class="sc-finance-panel" style="margin-bottom:18px"><h3>Scan a receipt photo</h3><p>Take a photo or choose an image. SiteCommand reads the receipt on your device and suggests the store, date and total. Review every field before saving to Firebase. The photo itself is not uploaded or stored.</p><div class="sc-finance-actions"><label class="sc-finance-action" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer">📷 Choose receipt photo<input id="sc-receipt-photo" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" style="position:absolute;width:1px;height:1px;opacity:0"></label></div><p id="sc-receipt-scan-status" role="status" aria-live="polite" class="sc-finance-note" style="margin-top:10px">No photo selected. Scanning requires an internet connection the first time.</p></div><div class="sc-finance-panel" style="margin-bottom:18px"><h3>Add a transaction</h3>
 <form id="sc-fin-form" class="sc-finance-form">
 <label>Date<input id="sc-fin-date" type="date" name="date" required></label>
 <label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
