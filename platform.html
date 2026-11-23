@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=5"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=6"></script>
 </head>
 <body>
 
@@ -545,6 +545,23 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label style="grid-column:span 2">Description<input name="description" maxlength="200" placeholder="Project or transaction details"></label>
 <div><button type="submit" class="sc-finance-action">Save transaction</button></div>
 </form>
+</div>
+<div class="sc-finance-panel" style="margin-bottom:18px">
+<h3>Current Projects — House Flips & Contractor Jobs</h3>
+<p>Create a project using the same Job Name you use for purchases. Expenses imported from Home Depot and Lowe's will be included automatically. Projected profit subtracts recorded expenses, the estimated <strong>remaining</strong> budget, acquisition cost for flips, and estimated selling costs. Avoid entering the same purchase twice.</p>
+<form id="sc-project-form" class="sc-finance-form">
+<input type="hidden" name="projectId" value="">
+<label>Project type<select name="type"><option value="flip">House Flip</option><option value="job">Contractor Job</option></select></label>
+<label>Project name / property address<input name="name" maxlength="120" placeholder="836 Kirkwood St" required></label>
+<label><span id="sc-project-target-label">Expected sale price ($)</span><input name="target" type="number" min="0" step=".01" required></label>
+<label id="sc-project-purchase">House purchase price ($)<input name="purchase" type="number" min="0" step=".01" value="0"></label>
+<label><span id="sc-project-budget-label">Estimated remaining renovation/labor costs ($)</span><input name="budget" type="number" min="0" step=".01" value="0"></label>
+<label id="sc-project-sale">Estimated selling costs (%)<input name="salePct" type="number" min="0" max="100" step=".1" value="7.5"></label>
+<div class="sc-finance-actions"><button type="submit" class="sc-finance-action">Save Project</button><button type="button" id="sc-project-new" class="sc-finance-action secondary">New / Cancel Edit</button><button type="button" id="sc-project-export" class="sc-finance-action secondary">Export Projects + Finances</button></div>
+</form>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Project / Address</th><th>Type</th><th>Expected Revenue</th><th>Recorded Expenses</th><th>Projected Profit</th><th>Cash Profit So Far*</th><th>Action</th></tr></thead><tbody id="sc-project-rows"></tbody></table></div>
+<p id="sc-project-empty" class="sc-finance-empty">No projects yet. Create a house flip or contractor job above.</p>
+<p><small>*Cash profit so far = income received minus recorded expenses (and purchase price for flips); it is not final profit. Selling costs are estimated for flips. Project purchase price should not also be entered as a transaction.</small></p>
 </div>
 <div class="sc-finance-panel" style="margin-bottom:18px">
 <h3>Expenses by Job Name</h3>
