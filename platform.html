@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=2"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=3"></script>
 </head>
 <body>
 
@@ -541,9 +541,16 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <label>Type<select name="type" required><option value="income">Income received</option><option value="expense">Expense paid</option><option value="receivable">Unpaid invoice</option></select></label>
 <label>Amount ($)<input type="number" name="amount" min="0" max="1000000000000" step=".01" required></label>
 <label>Category<input name="category" maxlength="100" placeholder="Materials, labor, sales"></label>
+<label>Job Name<input name="jobName" maxlength="120" placeholder="e.g. 836 Kirkwood St"></label>
 <label style="grid-column:span 2">Description<input name="description" maxlength="200" placeholder="Project or transaction details"></label>
 <div><button type="submit" class="sc-finance-action">Save transaction</button></div>
 </form>
+</div>
+<div class="sc-finance-panel" style="margin-bottom:18px">
+<h3>Expenses by Job Name</h3>
+<p>Compare material and other costs for each project. Home Depot imports use the Job Name from your purchase history; transactions without a job appear as Unassigned.</p>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Job Name</th><th>Expenses</th><th>Income</th><th>Net</th><th>Transactions</th></tr></thead><tbody id="sc-fin-job-rows"></tbody></table></div>
+<p id="sc-fin-job-empty" class="sc-finance-empty">No job costs recorded yet.</p>
 </div>
 <div class="sc-finance-panel">
 <h3>Import or export financial records</h3>
@@ -553,7 +560,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <button id="sc-fin-template" type="button" class="sc-finance-action secondary">Download template</button>
 <button id="sc-fin-export" type="button" class="sc-finance-action secondary">Export backup</button>
 </div>
-<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="sc-fin-rows"></tbody></table></div>
+<div class="sc-finance-table-wrap"><table class="sc-finance-table"><thead><tr><th>Date</th><th>Type</th><th>Job Name</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="sc-fin-rows"></tbody></table></div>
 <p id="sc-fin-empty" class="sc-finance-empty">No transactions recorded yet. Add one above or upload a CSV.</p>
 </div>
 </div>
