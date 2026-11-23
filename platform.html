@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=3"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=10"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=1"><script defer src="sitecommand-finance.js?v=11"></script>
 </head>
 <body>
 
@@ -548,7 +548,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </form>
 </div>
 <div class="sc-finance-panel" style="margin-bottom:18px">
-<h3>Current Projects — House Flips & Contractor Jobs</h3>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px"><strong id="sc-fin-sync-status" role="status">Connecting to secure cloud storage…</strong><button id="sc-fin-retry-sync" type="button" class="sc-finance-action secondary">Retry Sync</button></div><h3>Current Projects — House Flips & Contractor Jobs</h3>
 <p>Create a project using the same Job Name you use for purchases. Expenses imported from Home Depot and Lowe's will be included automatically. Projected profit subtracts recorded expenses, the estimated <strong>remaining</strong> budget, acquisition cost for flips, and estimated selling costs. Avoid entering the same purchase twice.</p>
 <form id="sc-project-form" class="sc-finance-form">
 <input type="hidden" name="projectId" value="">
@@ -640,7 +640,7 @@ import { getAuth, signInWithEmailAndPassword,
          onAuthStateChanged }             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, getDoc,
          setDoc, updateDoc, collection,
-         getDocs, serverTimestamp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+         getDocs, writeBatch, serverTimestamp }        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 // ── FIREBASE (SiteCommand's own project — replace with your new Firebase config) ──
 const FB_CONFIG = {
@@ -660,6 +660,43 @@ const BASE_URL     = 'https://sitecommand-io.github.io/platform';
 const app  = initializeApp(FB_CONFIG);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+
+// Finance cloud bridge: Firebase Auth identity is verified again by Firestore security rules.
+// Never accept an arbitrary contractor UID from the caller.
+window.addEventListener('sc-fin-cloud-request',async event=>{
+ const {id,action,payload,uid}=event.detail||{};
+ const reply=(data,error)=>window.dispatchEvent(new CustomEvent('sc-fin-cloud-result',{detail:{id,data,error}}));
+ if(!id||!currentUser||uid!==currentUser.uid)return reply(null,'Sign-in mismatch');
+ try{
+  const base=collection(db,'contractors',currentUser.uid,'financeRecords');
+  if(action==='read'){
+   const snapshot=await getDocs(base),transactions=[],projects=[];
+   snapshot.forEach(s=>{const d=s.data();if(s.id.startsWith('txn_')&&d.record)transactions.push(d.record);if(s.id.startsWith('prj_')&&d.record)projects.push(d.record)});
+   return reply({transactions,projects});
+  }
+  if(action==='sync'){
+   const records=[...(payload?.transactions||[]).map(record=>({kind:'txn',record})),...(payload?.projects||[]).map(record=>({kind:'prj',record}))];
+   if(records.length>20000)return reply(null,'Too many records for a single sync');
+   const wanted=new Map(records.map(({kind,record})=>[kind+'_'+record.id,record]));
+   const previous=[...(payload?.previous?.transactions||[]).map(record=>'txn_'+record.id),...(payload?.previous?.projects||[]).map(record=>'prj_'+record.id)];
+   // Read current cloud state to avoid deleting unrelated or newly-added records.
+   const current=await getDocs(base);
+   const existing=new Map();current.forEach(s=>existing.set(s.id,s.data()));
+   const operations=[];
+   for(const [id,record] of wanted){const old=existing.get(id)?.record;if(JSON.stringify(old)!==JSON.stringify(record))operations.push({type:'set',id,record})}
+   // Delete only records known to this client, not unseen records from another device.
+   for(const id of previous)if(!wanted.has(id)&&existing.has(id))operations.push({type:'delete',id});
+   for(let i=0;i<operations.length;i+=350){
+    const batch=writeBatch(db);
+    for(const op of operations.slice(i,i+350)){const ref=doc(base,op.id);if(op.type==='delete')batch.delete(ref);else batch.set(ref,{record:op.record,updatedAt:serverTimestamp()})}
+    await batch.commit();
+   }
+   return reply({saved:operations.length});
+  }
+  reply(null,'Unknown finance action');
+ }catch(err){reply(null,err?.message||'Firestore operation failed')}
+});
+
 
 let currentUser = null;
 let userData    = null;
