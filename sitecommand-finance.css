@@ -26,3 +26,37 @@ body.sc-workspace .sc-side-link[data-section].sc-section-current{background:#eaf
 .sc-finance-empty{padding:24px;text-align:center;color:#7c8ca4}
 @media(max-width:1050px){.sc-finance-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-finance-grid{grid-template-columns:1fr}.sc-finance-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){body.sc-workspace #platform .p-body{padding:18px!important}.sc-finance-kpis{grid-template-columns:1fr 1fr;gap:9px}.sc-finance-kpi,.sc-finance-panel{padding:16px;border-radius:14px}.sc-finance-form{grid-template-columns:1fr}}
+
+/* iPhone / small-screen workspace: keep page at viewport width; tables scroll locally. */
+@media(max-width:950px){
+ html,body.sc-workspace{width:100%;max-width:100%;overflow-x:clip}
+ body.sc-workspace #platform{width:100%;min-width:0;max-width:100%;overflow-x:clip}
+ body.sc-workspace #platform .p-body{width:100%;max-width:100%;min-width:0;padding:18px 14px!important}
+ body.sc-workspace .sc-workspace-top{position:sticky;top:0;z-index:10001;width:100%;min-width:0;padding:0 14px!important}
+ body.sc-workspace .sc-mobile-toggle{flex:none;min-width:44px;min-height:44px;font-size:21px;touch-action:manipulation}
+ body.sc-workspace .sc-sidebar{width:min(300px,86vw)!important;max-width:86vw;z-index:10003;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+ body.sc-workspace.sc-menu-open .sc-sidebar{transform:translateX(0)!important;visibility:visible}
+ body.sc-workspace .sc-mobile-backdrop{display:none;position:fixed;inset:0;background:rgba(14,29,50,.55);z-index:10002}
+ body.sc-workspace.sc-menu-open .sc-mobile-backdrop{display:block}
+ body.sc-workspace.sc-menu-open{overflow:hidden!important}
+ body.sc-workspace .sc-side-nav{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+ body.sc-workspace #platform .p-section,body.sc-workspace #platform .sc-finance-panel,body.sc-workspace #platform .sc-finance-kpi{min-width:0;max-width:100%}
+ body.sc-workspace #platform .sc-finance-table-wrap{display:block;width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+ body.sc-workspace #platform .sc-finance-table{width:max-content;min-width:100%}
+ body.sc-workspace #platform .sc-finance-table th,body.sc-workspace #platform .sc-finance-table td{white-space:nowrap}
+ body.sc-workspace #platform .sc-finance-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.sc-workspace #platform .sc-finance-form>*{min-width:0}
+ body.sc-workspace #platform .sc-finance-actions{max-width:100%}
+ body.sc-workspace #platform .sc-finance-actions button{max-width:100%;white-space:normal}
+}
+@media(max-width:650px){
+ body.sc-workspace #platform .sc-finance-form{grid-template-columns:minmax(0,1fr)}
+ body.sc-workspace #platform .sc-finance-grid{grid-template-columns:minmax(0,1fr)}
+ body.sc-workspace #platform .sc-finance-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.sc-workspace .sc-workspace-title{font-size:clamp(15px,4.5vw,20px);overflow-wrap:anywhere}
+ body.sc-workspace #platform .sc-finance-panel{padding:14px}
+ body.sc-workspace #platform .sc-finance-kpi{padding:13px}
+}
+
+@media(min-width:951px){.sc-mobile-close,.sc-mobile-backdrop{display:none!important}}
+@media(max-width:950px){body.sc-workspace .sc-mobile-close{display:block;align-self:flex-end;border:1px solid #dce5f2;background:#eef3ff;color:#284a87;border-radius:10px;padding:10px 14px;margin:0 0 10px;font-weight:700;font-size:14px;min-height:44px}}
