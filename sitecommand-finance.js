@@ -6,6 +6,7 @@ let account=null;
 const selectedTransactionIds=new Set();
 let cloudReady=false,cloudBusy=false,cloudQueued=false,cloudRemote=null,cloudUid=null,cloudError=false;
 const migrationKey=()=>account?'sc_finance_cloud_migrated_v1_'+account:null;
+const pendingKey=()=>account?'sc_finance_cloud_pending_v1_'+account:null;
 function syncStatus(message,error=false){const el=document.getElementById('sc-fin-sync-status');if(el){el.textContent=message;el.style.color=error?'#b42318':'#176b45'}cloudError=error}
 function requestCloud(action,payload){return new Promise((resolve,reject)=>{const id=crypto.randomUUID();const timer=setTimeout(()=>{window.removeEventListener('sc-fin-cloud-result',handler);reject(Error('Cloud request timed out'))},30000);function handler(e){if(e.detail?.id!==id)return;clearTimeout(timer);window.removeEventListener('sc-fin-cloud-result',handler);if(e.detail.error)reject(Error(e.detail.error));else resolve(e.detail.data)}window.addEventListener('sc-fin-cloud-result',handler);window.dispatchEvent(new CustomEvent('sc-fin-cloud-request',{detail:{id,action,payload,uid:account}}))})}
 function localProjects(){try{const k=projectKey();const data=k?JSON.parse(localStorage.getItem(k)||'[]'):[];return Array.isArray(data)?data:[]}catch{return []}}
@@ -16,18 +17,19 @@ async function startCloud(uid){
   const data=await requestCloud('read');if(account!==uid)return;
   const remoteRows=Array.isArray(data.transactions)?data.transactions.filter(valid):[],remoteProjects=Array.isArray(data.projects)?data.projects:[];
   const migrated=localStorage.getItem(migrationKey())==='yes';
+  const pending=localStorage.getItem(pendingKey())==='yes';
   const localR=localRows(),localP=localProjects();
   // Import local records only once. Later logins must honor remote deletions.
-  const rows=migrated?remoteRows:[...new Map([...remoteRows,...localR].map(x=>[x.id,x])).values()];
-  const projects=migrated?remoteProjects:[...new Map([...remoteProjects,...localP].map(x=>[x.id,x])).values()];
+  const rows=pending?localR:migrated?remoteRows:[...new Map([...remoteRows,...localR].map(x=>[x.id,x])).values()];
+  const projects=pending?localP:migrated?remoteProjects:[...new Map([...remoteProjects,...localP].map(x=>[x.id,x])).values()];
   cloudRemote={transactions:remoteRows,projects:remoteProjects};
   localStorage.setItem(key(),JSON.stringify(rows));localStorage.setItem(projectKey(),JSON.stringify(projects));
   cloudReady=true;showTotals();
-  if(!migrated){await flushCloud();if(account!==uid)return;localStorage.setItem(migrationKey(),'yes')}
+  if(!migrated||pending){cloudQueued=true;await flushCloud();if(account!==uid)return;if(localStorage.getItem(pendingKey())!=='yes')localStorage.setItem(migrationKey(),'yes')}
   syncStatus('Saved securely to Firebase · synced across devices');
  }catch(err){if(account!==uid)return;cloudReady=false;syncStatus('Cloud unavailable: local recovery copy only. Do not clear site data. '+err.message,true);showTotals()}
 }
-function scheduleCloud(){if(!account)return;if(!cloudReady){syncStatus('Not synced: local recovery copy only. Do not clear site data.',true);return}cloudQueued=true;if(!cloudBusy)void flushCloud()}
+function scheduleCloud(){if(!account)return;try{localStorage.setItem(pendingKey(),'yes')}catch{}if(!cloudReady){syncStatus('Not synced: local recovery copy only. Do not clear site data.',true);return}cloudQueued=true;if(!cloudBusy)void flushCloud()}
 async function flushCloud(){
  if(!cloudReady||cloudBusy)return;
  cloudBusy=true;
@@ -36,7 +38,7 @@ async function flushCloud(){
    cloudQueued=false;const rows=localRows(),projects=localProjects();
    syncStatus('Saving changes to Firebase…');
    await requestCloud('sync',{transactions:rows,projects,previous:cloudRemote});
-   if(!cloudQueued){cloudRemote={transactions:rows,projects};syncStatus('Saved securely to Firebase · synced across devices')}
+   if(!cloudQueued){cloudRemote={transactions:rows,projects};localStorage.removeItem(pendingKey());syncStatus('Saved securely to Firebase · synced across devices')}
   }while(cloudQueued&&account===cloudUid);
  }catch(err){cloudQueued=true;syncStatus('Cloud save failed: local recovery copy only. Retry Sync before clearing site data. '+err.message,true)}
  finally{cloudBusy=false}
