@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const pages=[
-['platform.html','Dashboard','◈'],['email-ai.html','Email AI','✉'],['lead-finder.html','Lead Finder','⌕'],['social-media.html','Social Media','▦'],['marketing.html','Marketing & SEO','↗'],['permits.html','Permits','▤'],['video-gen.html','Video Studio','▶'],['youtube-studio.html','YouTube Studio','▷'],['real-estate.html','Real Estate','⌂'],['deal-finder.html','Deal Finder','◇'],['ai-assistant.html','AI Assistant','✧'],['siteeditor.html','Website Editor','▣'],['client-portal.html','Client Portal','♧'],['admin.html','Administration','⚙']];
+['platform.html','Dashboard','◈'],['platform.html#dashboard','Business Overview','◈'],['platform.html#finance','Finances','▥'],['platform.html#links','My Links','↗'],['platform.html#aisetup','AI Setup','✧'],['platform.html#domain','Domain','◎'],['platform.html#settings','Settings','⚙'],['email-ai.html','Email AI','✉'],['lead-finder.html','Lead Finder','⌕'],['social-media.html','Social Media','▦'],['marketing.html','Marketing & SEO','↗'],['permits.html','Permits','▤'],['video-gen.html','Video Studio','▶'],['youtube-studio.html','YouTube Studio','▷'],['real-estate.html','Real Estate','⌂'],['deal-finder.html','Deal Finder','◇'],['ai-assistant.html','AI Assistant','✧'],['siteeditor.html','Website Editor','▣'],['client-portal.html','Client Portal','♧'],['admin.html','Administration','⚙']];
 const filename=location.pathname.split('/').pop()||'platform.html';
 const selected=pages.find(p=>p[0]===filename);
 if(!selected)return;
@@ -21,7 +21,7 @@ const nav=document.createElement('nav');nav.className='sc-side-nav';nav.setAttri
 const label=document.createElement('div');label.className='sc-side-label';label.textContent='Workspace';nav.append(label);
 pages.forEach(([href,name,icon],i)=>{
 if(filename==='platform.html'&&href==='platform.html')return;
-if(href==='email-ai.html'||href==='real-estate.html'||href==='client-portal.html'){const section=document.createElement('div');section.className='sc-side-label';section.textContent=href==='email-ai.html'?'AI tools':href==='real-estate.html'?'Real estate':'Management';nav.append(section)}
+if(href==='platform.html#dashboard'||href==='email-ai.html'||href==='real-estate.html'||href==='client-portal.html'){const section=document.createElement('div');section.className='sc-side-label';section.textContent=href==='platform.html#dashboard'?'Business management':href==='email-ai.html'?'AI tools':href==='real-estate.html'?'Real estate':'Management';nav.append(section)}
 const a=document.createElement('a');a.className='sc-side-link';a.href=href;if(href===filename)a.setAttribute('aria-current','page');
 const ico=document.createElement('span');ico.className='sc-side-icon';ico.textContent=icon;a.append(ico,document.createTextNode(name));nav.append(a)
 });
