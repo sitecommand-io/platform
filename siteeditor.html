@@ -164,7 +164,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 @media(min-width:900px){.layout.sc-builder-layout{display:grid;grid-template-columns:minmax(290px,360px) minmax(0,1fr)}.layout.sc-builder-layout .preview-panel{min-width:0}}
  .sc-inline-mobile .sc-template-site{max-width:390px;margin:auto}.sc-inline-mobile .ts-links{display:none}.sc-inline-mobile .ts-services{grid-template-columns:1fr!important}.sc-inline-mobile .ts-hero{min-height:400px!important}.sc-inline-mobile .sc-arch-stats{grid-template-columns:1fr!important}
 </style>
-<style>.sc-account-actions{display:flex;gap:9px;align-items:center;margin-left:auto;font-size:12px}.sc-account-actions a,.sc-account-actions button{padding:8px 12px;background:#1d2939;border:1px solid #4d6382;color:#fff;border-radius:7px;cursor:pointer;text-decoration:none}.sc-account-actions [hidden]{display:none!important}@media(max-width:800px){.sc-account-actions{margin-left:auto}.sc-account-actions #sc-account-label{display:none}}</style></head>
+<style>.sc-account-actions{display:flex;gap:9px;align-items:center;margin-left:auto;font-size:12px}.sc-account-actions a,.sc-account-actions button{padding:8px 12px;background:#1d2939;border:1px solid #4d6382;color:#fff;border-radius:7px;cursor:pointer;text-decoration:none}.sc-account-actions [hidden]{display:none!important}@media(max-width:800px){.sc-account-actions{margin-left:auto}.sc-account-actions #sc-account-label{display:none}}</style><style>.sc-drop-zone{display:block;border:2px dashed #8da5c7;border-radius:12px;padding:18px;text-align:center;cursor:pointer;margin:10px 0;overflow-wrap:anywhere}.sc-drop-zone.sc-drag,.photo-slot.sc-drag{outline:3px solid #386aff;background:#e9f0ff;color:#234578}</style></head>
 <body>
 <header class="sc-bar">
   <a href="platform.html" class="sc-logo"><span>Site</span>Command</a>
@@ -325,7 +325,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
 <div class="ed-section" id="sc-slideshow-section">
 <div class="ed-section-title">Homepage Slideshow</div>
 <p>Upload up to 20 photos. Reorder and remove photos, then save to your website.</p>
-<label for="sc-slides-upload" class="save-btn" style="display:inline-block;padding:12px;cursor:pointer">+ Add Photos</label>
+<label for="sc-slides-upload" class="sc-drop-zone" id="sc-slide-drop">Drop slideshow photos here or tap to browse</label>
 <input id="sc-slides-upload" type="file" accept="image/jpeg,image/png,image/webp" multiple style="position:absolute;width:1px;height:1px;opacity:0" onchange="uploadSlideshowPhotos(this)"/>
 <p id="sc-slides-status" role="status" aria-live="polite">No slideshow photos yet.</p>
 <div id="sc-slides-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px"></div>
@@ -334,7 +334,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
       <div class="ed-section">
         <div class="ed-section-title">Project Photos</div>
         <p style="font-size:.78rem;color:var(--mid);margin-bottom:.85rem;line-height:1.6">Upload photos of your completed projects. They appear in your website gallery and project pages automatically.</p>
-        <div class="photo-grid" id="photoGrid"></div>
+        <label class="sc-drop-zone" id="sc-project-drop">Drop completed job photos here or tap to browse<input type="file" accept="image/jpeg,image/png,image/webp" multiple id="sc-project-files" style="position:absolute;opacity:0;width:1px;height:1px"></label><div class="photo-grid" id="photoGrid"></div>
         <button type="button" class="save-btn" style="margin-top:1rem;width:100%;padding:.85rem" onclick="saveChanges()">Save Photos to My Account</button>
         <p style="font-size:.75rem;color:var(--mid);margin-top:.6rem">Photos upload to your account first. Save Photos confirms the latest gallery is stored.</p>
         <p style="font-size:.72rem;color:var(--mid);margin-top:.6rem">Tap any slot to upload. JPG or PNG, max 10MB.</p>
@@ -518,7 +518,7 @@ window.addService = () => {
 // ── PHOTOS ────────────────────────────────────────────────────
 function renderPhotoGrid() {
   const grid = document.getElementById('photoGrid');
-  const slots = 6;
+  const slots = Math.min(50,Math.max(6,projectPhotos.length+1));
   grid.innerHTML = Array.from({length:slots},(_,i) => {
     const url = projectPhotos[i] || '';
     return `<div class="photo-slot" id="photoSlot${i}">
@@ -828,6 +828,29 @@ window.setPreviewPage = (page, btn) => {
   updatePreview();
 };
 
+
+function scBindDrop(zone,handler){
+ if(!zone)return;
+ zone.addEventListener('dragover',e=>{if(!Array.from(e.dataTransfer.types).includes('Files'))return;e.preventDefault();zone.classList.add('sc-drag')});
+ zone.addEventListener('dragleave',()=>zone.classList.remove('sc-drag'));
+ zone.addEventListener('drop',e=>{if(!e.dataTransfer.files.length)return;e.preventDefault();e.stopPropagation();zone.classList.remove('sc-drag');handler({files:Array.from(e.dataTransfer.files),disabled:false,value:''})});
+}
+let scPhotoQueue=Promise.resolve();
+function scQueueUpload(fn){scPhotoQueue=scPhotoQueue.then(fn,fn);return scPhotoQueue}
+async function scAddProjects(input){
+ const files=Array.from(input.files||[]);input.value='';
+ if(!files.length)return;
+ if(!userUID){showEditorNotice('Sign in before uploading photos.');return}
+ if(files.some(f=>!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>10485760)){showEditorNotice('Choose JPG, PNG or WebP photos under 10 MB each.');return}
+ await scQueueUpload(async()=>{
+ if(projectPhotos.filter(Boolean).length+files.length>50){showEditorNotice('Maximum 50 project photos.');return}
+ for(const file of files){let i=projectPhotos.findIndex(x=>!x);if(i<0)i=projectPhotos.length;await window.uploadPhoto(i,{files:[file],disabled:false});}
+ });
+}
+scBindDrop(document.getElementById('sc-project-drop'),scAddProjects);
+document.getElementById('sc-project-files')?.addEventListener('change',e=>scAddProjects(e.target));
+scBindDrop(document.getElementById('sc-slide-drop'),input=>scQueueUpload(()=>window.uploadSlideshowPhotos(input)));
+scBindDrop(document.getElementById('logoUploadSlot'),input=>scQueueUpload(()=>window.uploadLogo(input)));
 // ── SAVE ─────────────────────────────────────────────────────
 function scheduleSave() {
   if (saveTimeout) clearTimeout(saveTimeout);
