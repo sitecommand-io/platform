@@ -184,7 +184,7 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=5"></script>
-<link rel="stylesheet" href="sitecommand-finance.css?v=4"><script defer src="sitecommand-finance.js?v=18"></script><script defer src="sitecommand-receipts.js?v=1"></script>
+<link rel="stylesheet" href="sitecommand-finance.css?v=4"><script defer src="sitecommand-finance.js?v=18"></script><script defer src="sitecommand-receipts.js?v=2"></script>
 <link rel="manifest" href="/sitecommand.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="SiteCommand"><link rel="apple-touch-icon" href="/sitecommand-icon.svg"></head>
 <body>
 
@@ -543,10 +543,10 @@ min-height:100vh;font-family:'DM Sans',system-ui,sans-serif}
 <button id="sc-receipt-clear" type="button" class="sc-finance-action secondary">Start new receipt</button></div>
 <div id="sc-receipt-pages" style="display:flex;gap:10px;flex-wrap:wrap;margin:12px 0"></div>
 <p id="sc-receipt-status" role="status" aria-live="polite">Choose the pages of one purchase. No transaction is saved automatically.</p>
-<div id="sc-receipt-review" hidden><h4>Review extracted line items</h4><p>Check quantities, prices, taxes and total against the receipt. OCR suggestions may be inaccurate.</p>
+<button id="sc-receipt-manual" type="button" class="sc-finance-action secondary">Enter receipt manually</button><div id="sc-receipt-review" hidden><div class="sc-finance-form" id="sc-receipt-fields"></div><h4>Review extracted line items</h4><p>Check quantities, prices, taxes and total against the receipt. OCR suggestions may be inaccurate.</p>
 <div class="sc-finance-table-wrap" style="overflow-x:auto"><table class="sc-finance-table"><thead><tr><th>Item</th><th>Quantity</th><th>Line total ($)</th><th></th></tr></thead><tbody id="sc-receipt-items"></tbody></table></div>
 <div class="sc-finance-actions"><button id="sc-receipt-add-item" type="button" class="sc-finance-action secondary">Add item</button></div>
-<p id="sc-receipt-reconcile"></p></div></div>
+<p id="sc-receipt-reconcile"></p><button type="button" id="sc-receipt-save" class="sc-finance-action">Save receipt</button></div></div>
 <div class="sc-finance-panel" style="margin-bottom:18px"><h3>Add a transaction</h3>
 <form id="sc-fin-form" class="sc-finance-form">
 <label>Date<input id="sc-fin-date" type="date" name="date" required></label>
