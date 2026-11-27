@@ -4,6 +4,16 @@ function init(){
 const input=document.getElementById('sc-receipt-files'),status=document.getElementById('sc-receipt-status'),pages=document.getElementById('sc-receipt-pages'),scan=document.getElementById('sc-receipt-scan'),review=document.getElementById('sc-receipt-review'),tbody=document.getElementById('sc-receipt-items'),form=document.getElementById('sc-fin-form');
 if(!input||!status||!form)return;
 let files=[],draft=null;
+const fields=document.getElementById('sc-receipt-fields');
+const editors={};
+for(const [name,label,type] of [['jobName','Job name','text'],['date','Purchase date','date'],['category','Vendor','text'],['receiptNumber','Receipt number','text'],['amount','Receipt total ($)','number'],['tax','Sales tax ($)','number'],['discount','Discount ($)','number'],['description','Notes','text']]){
+ const l=document.createElement('label'),el=document.createElement('input');l.textContent=label;el.type=type;if(type==='number'){el.min='0';el.step='.01'}l.append(el);fields.append(l);editors[name]=el;
+ el.addEventListener('input',()=>{if(form.elements[name])form.elements[name].value=el.value;if(draft){if(name==='receiptNumber')draft.receiptNumber=el.value;if(name==='category')draft.merchant=el.value;if(name==='amount')draft.total=el.value===''?null:Number(el.value);if(name==='tax'||name==='discount')draft[name]=Number(el.value)||0;reconcile()}});
+}
+function fillEditors(){for(const [name,el] of Object.entries(editors))el.value=form.elements[name]?.value??draft?.[name]??''}
+document.getElementById('sc-receipt-manual').onclick=()=>{setDraft({merchant:'',receiptNumber:'',pageCount:files.length,total:null,items:[]});form.elements.type.value='expense';form.elements.expenseGroup.value='Receipts & Materials';form.elements.amount.value='';form.elements.category.value='';form.elements.description.value='';review.hidden=false;fillEditors();drawItems()};
+document.getElementById('sc-receipt-save').onclick=()=>{if(!draft)return;if(!editors.jobName.value.trim()||!editors.category.value.trim()||!editors.amount.value){status.textContent='Enter job name, vendor and receipt total before saving.';return}form.elements.type.value='expense';form.requestSubmit()};
+
 const setDraft=value=>{draft=value;window.scReceiptDraft=value};
 function drawPages(){
 pages.replaceChildren();scan.disabled=!files.length;
@@ -39,7 +49,7 @@ if(dateMatch){let y=Number(dateMatch[3]);if(y<100)y+=2000;const m=Number(dateMat
 const itemRows=entries.filter(x=>!/\b(total|subtotal|tax|change|balance|tender|cash|visa|mastercard|credit|debit|discount|savings|payment|amount due)\b/i.test(x.line));
 setDraft({merchant:merchant.slice(0,100),receiptNumber,pageCount:files.length,total,items:itemRows.slice(0,120).map(x=>({description:x.line.replace(x.prices.at(-1),'').trim().slice(0,120)||'Unidentified item',quantity:1,lineTotal:number(x.prices.at(-1))}))});
 form.elements.type.value='expense';form.elements.expenseGroup.value='Receipts & Materials';form.elements.category.value=draft.merchant;if(date)form.elements.date.value=date;if(total!==null)form.elements.amount.value=total.toFixed(2);else form.elements.amount.value='';form.elements.description.value=('Receipt '+receiptNumber+' · '+files.length+' pages · '+draft.merchant).slice(0,200);
-review.hidden=false;drawItems();status.textContent='Scanned '+files.length+' pages as ONE receipt. Review items and enter the Job Name, then save ONE transaction. Original photos are not stored.';
+review.hidden=false;fillEditors();drawItems();status.textContent='Scanned '+files.length+' pages as ONE receipt. Review items and enter the Job Name, then save ONE transaction. Original photos are not stored.';
 }catch(err){status.textContent='Scanner failed: '+err.message+'. Please enter the expense manually.'}finally{scan.disabled=!files.length}});
 window.addEventListener('sc-receipt-transaction-saved',()=>{files=[];setDraft(null);review.hidden=true;drawPages()});
 }
