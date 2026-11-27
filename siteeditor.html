@@ -322,7 +322,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
   <div id="sc-library-status" role="status" aria-live="polite" style="font-size:.78rem;margin-bottom:8px"></div>
   <div id="sc-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px"></div>
 </div>
-<div class="ed-section" id="sc-slideshow-section">
+<div class="ed-section"><div class="ed-section-title">We Buy Houses (optional)</div><label><input type="checkbox" id="sc-buy-enabled" onchange="liveUpdate()"> Enable cash offer page</label><div class="fg"><label>Headline</label><input id="sc-buy-headline" maxlength="100" oninput="liveUpdate()" placeholder="We Buy Houses for Cash"></div><div class="fg"><label>Service area</label><input id="sc-buy-area" maxlength="100" oninput="liveUpdate()" placeholder="Delaware"></div><p>Inquiries are sent to your configured business email. <a id="sc-buy-link" target="_blank" rel="noopener">View published page</a></p></div><div class="ed-section" id="sc-slideshow-section">
 <div class="ed-section-title">Homepage Slideshow</div>
 <p>Upload up to 20 photos. Reorder and remove photos, then save to your website.</p>
 <label for="sc-slides-upload" class="sc-drop-zone" id="sc-slide-drop">Drop slideshow photos here or tap to browse</label>
@@ -461,6 +461,10 @@ onAuthStateChanged(auth, async user => {
 
 function populateFields() {
   const d = userData;
+  document.getElementById('sc-buy-enabled').checked=d.buyHousesEnabled===true;
+  document.getElementById('sc-buy-headline').value=d.buyHousesHeadline||'';
+  document.getElementById('sc-buy-area').value=d.buyHousesArea||'';
+  if(d.slug)document.getElementById('sc-buy-link').href='https://'+d.slug+'.sitecommand.net/we-buy-houses.html';
   document.getElementById('eCoName').value   = d.companyName  || '';
   document.getElementById('eTrade').value = ['general','roofing','remodeling','electrical','plumbing','hvac','painting','flooring','landscaping'].includes(d.primaryTrade) ? d.primaryTrade : 'general';
   document.getElementById('eTagline').value  = d.tagline      || '';
@@ -867,6 +871,9 @@ window.saveChanges = async () => {
   btn.disabled = true; btn.textContent = 'Saving...';
   
   const updates = {
+    buyHousesEnabled:document.getElementById('sc-buy-enabled').checked,
+    buyHousesHeadline:document.getElementById('sc-buy-headline').value.trim(),
+    buyHousesArea:document.getElementById('sc-buy-area').value.trim(),
     companyName:     document.getElementById('eCoName').value.trim(),
     primaryTrade:    document.getElementById('eTrade').value,
     tagline:         document.getElementById('eTagline').value.trim(),
