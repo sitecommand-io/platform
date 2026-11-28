@@ -761,16 +761,20 @@ async function scExtractCardLogo(canvas){
  if(!window.Tesseract){
   await new Promise((resolve,reject)=>{const tag=document.createElement('script');tag.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';tag.onload=resolve;tag.onerror=reject;document.head.append(tag)});
  }
- const result=await window.Tesseract.recognize(canvas,'eng');
- const lines=result.data.lines||[];
+ const worker=await window.Tesseract.createWorker('eng');
+ let result;
+ try{result=await worker.recognize(canvas,{}, {text:true,blocks:true});}
+ finally{await worker.terminate();}
+ const lines=result.data.lines?.length?result.data.lines:(result.data.blocks||[]).flatMap(b=>(b.paragraphs||[]).flatMap(p=>p.lines||[]));
+ if(!lines.length&&result.data.text?.trim())throw Error('Logo text detected but its position could not be identified');
  const contacts=lines.filter(l=>/[\w.+-]+@[\w.-]+|(?:\d[\s().-]*){7,}|(?:phone|email|www\.|https?:)/i.test(l.text));
  if(!contacts.length)return canvas;
  const first=Math.min(...contacts.map(l=>l.bbox.y0));
  const above=lines.filter(l=>l.bbox.y1<=first&&l.confidence>=45);
  const company=above.filter(l=>/\b(?:construction|roofing|contracting|services|llc|inc|company|corp)\b/i.test(l.text)&&!/\b(?:and more|free estimate|gutters|siding)\b/i.test(l.text));
- if(!company.length)return canvas;
+ if(!company.length)throw Error('Business card detected, but company logo could not be isolated');
  const end=Math.max(...company.map(l=>l.bbox.y1));
- if(end<canvas.height*.15||end>first||first-end>canvas.height*.4)return canvas;
+ if(end<canvas.height*.15||end>first||first-end>canvas.height*.4)throw Error('Business card logo boundaries are uncertain');
  const last=company.find(l=>l.bbox.y1===end);
  const center=(last.bbox.x0+last.bbox.x1)/2;
  const width=Math.min(canvas.width,Math.max(last.bbox.x1-last.bbox.x0,canvas.width*.42)*1.18);
@@ -788,7 +792,7 @@ async function scOptimizeLogo(file){
   const scale=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight));
   let c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));
   c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-  try{c=await scExtractCardLogo(c)}catch(e){console.warn('Logo extraction unavailable; preserving original',e)}
+  c=await scExtractCardLogo(c);
   const ctx=c.getContext('2d');
   // Trim transparent padding only; never erase opaque brand colors or text.
   const pixels=ctx.getImageData(0,0,c.width,c.height).data;let l=c.width,t=c.height,r=-1,b=-1;
