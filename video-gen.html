@@ -40,7 +40,35 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
 </style>
 <link rel="stylesheet" href="sitecommand-3d.css?v=20261119" />
 <link rel="stylesheet" href="sitecommand-navy.css?v=3"><script defer src="sitecommand-workspace.js?v=2"></script>
-<style>.sc-video-account{display:flex;align-items:center;gap:8px;margin-left:auto}.sc-video-account a,.sc-video-account button{background:#1e293b;color:#fff;border:1px solid #4b607e;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer;font-size:12px}.sc-video-account [hidden]{display:none!important}@media(max-width:820px){.sc-video-account{position:fixed;top:8px;right:8px;z-index:1000}.sc-video-account #sc-video-account-email{display:none}}</style></head>
+<style>.sc-video-account{display:flex;align-items:center;gap:8px;margin-left:auto}.sc-video-account a,.sc-video-account button{background:#1e293b;color:#fff;border:1px solid #4b607e;border-radius:8px;padding:8px 12px;text-decoration:none;cursor:pointer;font-size:12px}.sc-video-account [hidden]{display:none!important}@media(max-width:820px){.sc-video-account{position:fixed;top:8px;right:8px;z-index:1000}.sc-video-account #sc-video-account-email{display:none}}</style><style id="sc-video-mobile-fix">
+:root{--black:#edf2f9;--white:#172b47;--mid:#52647b;--accent:#244b80;--border:#d6e0ed}
+body{margin:0;overflow-x:hidden;background:#edf2f9;color:#172b47}
+.sc-bottom-nav{display:none!important}
+.body{width:100%;max-width:1200px;margin:0 auto;padding:24px;box-sizing:border-box}
+.page-title{font-size:26px;font-weight:750;line-height:1.25;margin-bottom:8px}
+.page-sub{font-size:14px;line-height:1.55;color:#52647b;margin-bottom:24px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+.main-grid>div{min-width:0}
+.body .card{background:white;border:1px solid #d6e0ed;border-radius:16px;padding:20px;margin:0 0 16px;box-shadow:0 3px 12px #142b4908}
+.card-title{font-size:17px;font-weight:700;margin-bottom:16px}
+.upload-zone{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;min-height:160px;border:2px dashed #9eb3ce;border-radius:12px;padding:18px;background:#f5f8fc;cursor:pointer}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.photo-grid img{width:100%;height:100px;object-fit:cover;border-radius:8px}
+.style-grid,.music-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.style-btn,.music-btn{min-width:0;min-height:72px;padding:12px 8px;background:#f5f8fc;color:#172b47;border:1px solid #cdd9e9;border-radius:10px;white-space:normal;text-align:center;cursor:pointer}
+.style-btn.on,.music-btn.on{border:2px solid #244b80;background:#e7effb}
+.style-btn-name,.music-btn-name{font-weight:700;font-size:14px}
+.style-btn-desc,.music-btn-desc{font-size:12px;color:#52647b;line-height:1.4}
+.fg{display:flex;flex-direction:column;gap:7px;margin:14px 0}
+.fg label{font-size:14px;font-weight:600}
+.fg input,.fg select{width:100%;min-width:0;min-height:46px;border:1px solid #c5d2e3;border-radius:9px;padding:10px 12px;background:#fff;color:#172b47;font-size:16px;box-sizing:border-box}
+.gen-btn,.dl-btn{display:block;width:100%;min-height:48px;border:0;border-radius:10px;background:#183b68;color:#fff;font-size:16px;font-weight:700;padding:14px;margin-top:10px;cursor:pointer}
+.gen-btn:disabled{opacity:.55}
+#videoOutput{width:100%;max-height:65vh;background:#0f172a;border-radius:10px}
+.progress-bar{height:8px;background:#dce5f1;border-radius:8px;overflow:hidden}.progress-fill{height:100%;background:#244b80}
+@media(max-width:820px){.body{padding:16px 14px 32px}.main-grid{grid-template-columns:minmax(0,1fr);gap:0}.body .card{padding:16px}.page-title{font-size:23px}.sc-header{max-width:100%}.sc-nav{display:none!important}}
+</style></head>
 <body>
 
 <header class="sc-header">
