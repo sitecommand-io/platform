@@ -261,7 +261,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
       </div>
       <div class="ed-section">
         <div class="ed-section-title">Services</div>
-        <div class="svc-list" id="svcList"></div>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="checkbox" id="sc-hide-service-numbers" onchange="scheduleSave()"/> Hide service numbers on website</label><div class="svc-list" id="svcList"></div>
         <div class="add-svc-row">
           <input class="add-svc-input" id="addSvcInput" placeholder="Add a service..." onkeydown="if(event.key==='Enter')addService()"/>
           <button class="add-svc-btn" onclick="addService()">+ Add</button>
@@ -472,6 +472,7 @@ onAuthStateChanged(auth, async user => {
 
 function populateFields() {
   const d = userData;
+  document.getElementById('sc-hide-service-numbers').checked=d.hideServiceNumbers===true;
   document.getElementById('sc-buy-enabled').checked=d.buyHousesEnabled===true;
   document.getElementById('sc-buy-headline').value=d.buyHousesHeadline||'';
   document.getElementById('sc-buy-area').value=d.buyHousesArea||'';
@@ -536,14 +537,17 @@ function renderPhotoGrid() {
   const slots = Math.min(50,Math.max(6,projectPhotos.length+1));
   grid.innerHTML = Array.from({length:slots},(_,i) => {
     const url = projectPhotos[i] || '';
-    return `<div class="photo-slot" id="photoSlot${i}">
+    return `<div class="photo-slot" id="photoSlot${i}" draggable="${!!url}" ondragstart="scPhotoDrag(event,${i})" ondragover="if(event.dataTransfer.types.includes('application/x-sc-photo'))event.preventDefault()" ondrop="scPhotoDrop(event,${i})">
       <input type="file" accept="image/*" onchange="uploadPhoto(${i},this)"/>
       ${url ? `<img src="${url}" alt="Project ${i+1}"/>
-        <button class="photo-del" onclick="removePhoto(${i},event)">✕</button>` :
+        <button class="photo-del" onclick="removePhoto(${i},event)" aria-label="Remove photo">✕</button><div style="position:absolute;bottom:4px;left:4px;z-index:3;display:flex;gap:4px"><button type="button" onclick="scMovePhoto(${i},-1,event)" aria-label="Move photo earlier">←</button><button type="button" onclick="scMovePhoto(${i},1,event)" aria-label="Move photo later">→</button></div>` :
         `<div class="photo-slot-add">📷</div>`}
     </div>`;
   }).join('');
 }
+window.scPhotoDrag=(e,i)=>{e.dataTransfer.setData('application/x-sc-photo',String(i));e.dataTransfer.effectAllowed='move'};
+window.scPhotoDrop=(e,i)=>{const raw=e.dataTransfer.getData('application/x-sc-photo');if(!raw)return;e.preventDefault();e.stopPropagation();const from=Number(raw);if(!Number.isInteger(from)||!projectPhotos[from]||from===i)return;const [photo]=projectPhotos.splice(from,1);projectPhotos.splice(Math.min(i,projectPhotos.length),0,photo);renderPhotoGrid();updatePreview();scheduleSave()};
+window.scMovePhoto=(i,d,e)=>{e.preventDefault();e.stopPropagation();const j=i+d;if(j<0||j>=projectPhotos.length||!projectPhotos[j])return;[projectPhotos[i],projectPhotos[j]]=[projectPhotos[j],projectPhotos[i]];renderPhotoGrid();updatePreview();scheduleSave()};
 window.uploadPhoto = async (i, input) => {
   const file=input.files?.[0];
   if(!file)return;
@@ -575,6 +579,7 @@ window.removePhoto = (i, e) => {
   e.preventDefault(); e.stopPropagation();
   projectPhotos[i]='';
   renderPhotoGrid();
+  updatePreview();
   scheduleSave();
 };
 window.updatePhotoUrl = i => {
@@ -600,7 +605,7 @@ function renderMediaLibrary(){
   const img=document.createElement('img');img.src=url;img.alt='Library photo '+(i+1);img.loading='lazy';img.style.cssText='width:100%;height:105px;object-fit:cover;border-radius:6px';
   card.append(img);
   [['Add to Slideshow',()=>{if(heroSlides.includes(url))return;if(heroSlides.length>=20){showEditorNotice('Slideshow limit is 20 photos.');return}heroSlides.push(url);renderSlideshow();scheduleSave();}],
-   ['Add to Gallery',()=>{const slot=Array.from({length:6},(_,j)=>j).find(j=>!projectPhotos[j]);if(slot===undefined){showEditorNotice('Gallery has six photos. Remove one to make room.');return}projectPhotos[slot]=url;renderPhotoGrid();scheduleSave();}]].forEach(([label,action])=>{
+   ['Add to Gallery',()=>{const slot=Array.from({length:50},(_,j)=>j).find(j=>!projectPhotos[j]);if(slot===undefined){showEditorNotice('Gallery has 50 photos. Remove one to make room.');return}projectPhotos[slot]=url;renderPhotoGrid();scheduleSave();}]].forEach(([label,action])=>{
    const button=document.createElement('button');button.type='button';button.textContent=label;button.style.cssText='padding:7px;font-size:12px;border:1px solid var(--border);border-radius:6px;cursor:pointer';button.onclick=action;card.append(button);
   });grid.append(card);
  });
@@ -943,6 +948,7 @@ window.saveChanges = async () => {
   btn.disabled = true; btn.textContent = 'Saving...';
   
   const updates = {
+    hideServiceNumbers:document.getElementById('sc-hide-service-numbers').checked,
     buyHousesEnabled:document.getElementById('sc-buy-enabled').checked,
     buyHousesHeadline:document.getElementById('sc-buy-headline').value.trim(),
     buyHousesArea:document.getElementById('sc-buy-area').value.trim(),
