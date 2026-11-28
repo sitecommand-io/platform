@@ -576,7 +576,7 @@ window.uploadPhoto = async (i, input) => {
 };
 window.removePhoto = (i, e) => {
   e.preventDefault(); e.stopPropagation();
-  projectPhotos.splice(i,1);
+  projectPhotos[i]='';
   renderPhotoGrid();
   updatePreview();
   scheduleSave();
