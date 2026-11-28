@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {defaults,normalize,move,duplicate,render} from '../visual-builder-model.mjs';
+test('reorder without mutation',()=>{const a=[1,2,3];assert.deepEqual(move(a,0,2),[2,3,1]);assert.deepEqual(a,[1,2,3])});
+test('duplicate and hide',()=>{const d=defaults();const s=duplicate(d.pages[0].sections[0],'new');s.title='Hidden content';s.hidden=true;d.pages[0].sections.push(s);assert.ok(!render(d).includes('Hidden content'));assert.equal(s.id,'new')});
+test('navigation and service photos',()=>{const d=defaults();d.pages.push({slug:'roofing',title:'Roofing',nav:true,sections:[]});d.services.push({title:'Roof repair',photo:'https://example.com/photo.jpg'});assert.ok(render(d).includes('href="/roofing"'));assert.ok(render(d).includes('Roof repair'));assert.ok(render(d).includes('https://example.com/photo.jpg'))});
+test('unsafe content',()=>{const d=defaults();d.pages[0].sections[0].title='<script>alert(1)</script>';d.pages[0].sections[0].photo='javascript:alert(1)';assert.equal(normalize(d).pages[0].sections[0].photo,'');assert.ok(!render(d).includes('<script>'))});
+test('draft round trip',()=>{const d=defaults();d.theme.font='Georgia';d.theme.background='#123456';assert.deepEqual(normalize(JSON.parse(JSON.stringify(d))),d);assert.ok(render(d).includes('background:#123456'))});
