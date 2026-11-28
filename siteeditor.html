@@ -756,6 +756,21 @@ window.selectLogo = (i, svgEncoded) => {
   scheduleSave();
 };
 
+async function scOptimizeLogo(file){
+ const img=new Image(),url=URL.createObjectURL(file);
+ try{
+  img.src=url;await img.decode();
+  const scale=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));
+  const ctx=c.getContext('2d');ctx.drawImage(img,0,0,c.width,c.height);
+  // Trim transparent padding only; never erase opaque brand colors or text.
+  const pixels=ctx.getImageData(0,0,c.width,c.height).data;let l=c.width,t=c.height,r=-1,b=-1;
+  for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++)if(pixels[(y*c.width+x)*4+3]>8){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y)}
+  if(r<l)throw Error('Logo is completely transparent');
+  const out=document.createElement('canvas');out.width=r-l+1;out.height=b-t+1;out.getContext('2d').drawImage(c,l,t,out.width,out.height,0,0,out.width,out.height);
+  return await new Promise((resolve,reject)=>out.toBlob(blob=>blob?resolve(blob):reject(Error('Logo optimization failed')),'image/png'));
+ }finally{URL.revokeObjectURL(url)}
+}
 window.uploadLogo = async inp => {
   const file=inp.files?.[0];
   if(!file)return;
@@ -768,8 +783,9 @@ window.uploadLogo = async inp => {
   inp.disabled=true;
   try{
     const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
-    const logoRef=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-logo-'+safeName);
-    await uploadBytes(logoRef,file,{contentType:file.type});
+    const optimized=await scOptimizeLogo(file);
+    const logoRef=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-logo.png');
+    await uploadBytes(logoRef,optimized,{contentType:'image/png'});
     const url=await getDownloadURL(logoRef);
     const previous=userData.logoUrl;
     userData.logoUrl=url;
@@ -777,7 +793,8 @@ window.uploadLogo = async inp => {
     const saved=await saveChanges();
     if(!saved){userData.logoUrl=previous;throw new Error('Logo uploaded but database save failed.');}
     const slot=document.getElementById('logoUploadSlot');
-    slot.innerHTML='<img src="'+url+'" alt="Uploaded logo" style="width:100%;height:100%;object-fit:contain;padding:.5rem"/>';
+    slot.querySelectorAll(':scope > :not(input)').forEach(el=>el.remove());
+    const image=document.createElement('img');image.src=url;image.alt='Uploaded logo';image.style.cssText='width:100%;height:100%;object-fit:contain;padding:.5rem;pointer-events:none';slot.append(image);inp.value='';updatePreview();
     msg.textContent='Logo uploaded and saved';
   }catch(error){showEditorNotice('Logo upload failed: '+error.message);}
   finally{inp.disabled=false;}
