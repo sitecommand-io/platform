@@ -35,159 +35,6 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
 
 
 
-<div class="body">
-  <div class="page-title">🎬 Video Generator</div>
-  <div class="page-sub">1. Add photos · 2. Arrange the story · 3. Choose a style · 4. Generate and download. Your video is created in your browser.</div>
-
-  <div class="main-grid">
-    <div>
-      <!-- Upload -->
-      <div class="card">
-        <div class="card-title">📸 Upload Photos</div>
-        <div class="upload-zone" id="uploadZone"
-          ondragover="event.preventDefault();this.classList.add('drag')"
-          ondragleave="this.classList.remove('drag')"
-          ondrop="handleDrop(event)">
-          <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)"/>
-          <div style="font-size:2rem;margin-bottom:.5rem">📸</div>
-          <div style="font-size:.88rem;color:var(--light)">Drop photos here or click to upload</div>
-          <div style="font-size:.74rem;color:var(--mid);margin-top:.25rem">JPG, PNG · Up to 20 photos · Higher res = better video</div>
-        </div>
-        <p style="font-size:.76rem;color:var(--mid);margin:12px 0">Drag photos to reorder, or use the arrow buttons on mobile.</p><div class="photo-grid" id="photoGrid"></div>
-        <div style="font-size:.76rem;color:var(--mid);margin-top:.5rem" id="photoCount"></div>
-      </div>
-
-      <!-- Progress + Output -->
-      <div class="card" id="progressCard" style="display:none">
-        <div class="card-title">⚙️ Generating</div>
-        <div style="font-size:.84rem;color:var(--light);margin-bottom:.4rem" id="progressStatus">Starting...</div>
-        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        <div style="font-size:.74rem;color:var(--mid);margin-top:.3rem" id="progressDetail"></div>
-      </div>
-
-      <div class="card" id="outputCard" style="display:none">
-        <div class="card-title">✅ Your Video</div>
-        <video id="videoOutput" controls playsinline style="width:100%;border-radius:8px;background:#000;max-height:500px"></video>
-        <button class="dl-btn" onclick="downloadVideo()">⬇️ Download Video (MP4)</button>
-        <div style="display:flex;gap:.5rem;margin-top:.5rem">
-          <button onclick="shareInstructions()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">📱 Post to Social</button>
-          <button onclick="resetAll()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">🔄 New Video</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div>
-      <div class="card">
-        <div class="card-title">🎞️ Video Style</div>
-        <div class="style-grid">
-          <button class="style-btn on" onclick="setStyle('slideshow',this)">
-            <div class="style-btn-name">🎞️ Slideshow</div>
-            <div class="style-btn-desc">Clean crossfade</div>
-          </button>
-          <button class="style-btn" onclick="setStyle('zoom',this)">
-            <div class="style-btn-name">🔍 Ken Burns</div>
-            <div class="style-btn-desc">Cinematic zoom</div>
-          </button>
-          <button class="style-btn" onclick="setStyle('before_after',this)">
-            <div class="style-btn-name">↔️ Before/After</div>
-            <div class="style-btn-desc">Wipe reveal</div>
-          </button>
-          <button class="style-btn" onclick="setStyle('fast',this)">
-            <div class="style-btn-name">⚡ Fast Cuts</div>
-            <div class="style-btn-desc">High energy</div>
-          </button>
-        </div>
-
-        <div class="fg">
-          <label>Duration</label>
-          <select id="videoDuration">
-            <option value="15">15s — Instagram Reel / TikTok</option>
-            <option value="30" selected>30s — Facebook / Google</option>
-            <option value="60">60s — YouTube / LinkedIn</option>
-            <option value="90">90s — Full Showcase</option>
-          </select>
-        </div>
-
-        <div class="fg">
-          <label>Video Quality</label>
-          <select id="videoQuality">
-            <option value="1080">1080×1080 (Square — best for social)</option>
-            <option value="1920">1920×1080 (Widescreen — YouTube)</option>
-            <option value="1080v">1080×1920 (Vertical — TikTok/Reels)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🎵 Background Music</div>
-        <div class="music-grid">
-          <button class="music-btn on" onclick="setMusic('none',this)">
-            <span class="music-btn-icon">🔇</span>
-            <div><div class="music-btn-name">No Music</div><div class="music-btn-desc">Silent</div></div>
-          </button>
-          <button class="music-btn" onclick="setMusic('upbeat',this)">
-            <span class="music-btn-icon">🎸</span>
-            <div><div class="music-btn-name">Upbeat</div><div class="music-btn-desc">Energetic</div></div>
-          </button>
-          <button class="music-btn" onclick="setMusic('corporate',this)">
-            <span class="music-btn-icon">💼</span>
-            <div><div class="music-btn-name">Corporate</div><div class="music-btn-desc">Professional</div></div>
-          </button>
-          <button class="music-btn" onclick="setMusic('inspiring',this)">
-            <span class="music-btn-icon">🌟</span>
-            <div><div class="music-btn-name">Inspiring</div><div class="music-btn-desc">Motivational</div></div>
-          </button>
-          <button class="music-btn" onclick="setMusic('acoustic',this)">
-            <span class="music-btn-icon">🎵</span>
-            <div><div class="music-btn-name">Acoustic</div><div class="music-btn-desc">Warm & friendly</div></div>
-          </button>
-          <button class="music-btn" onclick="setMusic('upload',this)" id="music-upload">
-            <span class="music-btn-icon">📁</span>
-            <div><div class="music-btn-name">Upload</div><div class="music-btn-desc">Your own MP3</div></div>
-          </button>
-        </div>
-        <input type="file" id="musicFile" accept="audio/*" style="display:none" onchange="handleMusicUpload(this)"/>
-        <div id="musicNote" style="font-size:.72rem;color:var(--mid);margin-top:.35rem;display:none"></div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">✏️ Text Overlay</div>
-        <div class="fg">
-          <label>Title (on video)</label>
-          <input id="videoTitle" placeholder="Kitchen Renovation Complete!" value="Professional Renovation Complete!"/>
-        </div>
-        <div class="fg">
-          <label>Subtitle</label>
-          <input id="videoSubtitle" placeholder="Licensed & Insured · Free Estimates" value="Licensed & Insured · Free Estimates"/>
-        </div>
-        <div class="fg">
-          <label>Phone Number</label>
-          <input id="videoPhone" placeholder="(302) 555-0000"/>
-        </div>
-        <div class="fg">
-          <label>Color Theme</label>
-          <select id="textTheme">
-            <option value="gold">Gold (Professional)</option>
-            <option value="white">White</option>
-            <option value="green">Green</option>
-            <option value="none">No Text Overlay</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="gen-btn" id="genBtn" onclick="generateVideo()">🎬 Generate Video</button>
-      <div style="font-size:.7rem;color:var(--mid);text-align:center;margin-top:.4rem">Free · No upload · Runs in browser · Full quality preserved</div>
-    </div>
-  </div>
-</div>
-
-<!-- Hidden canvas for rendering -->
-<canvas id="videoCanvas" style="display:none"></canvas>
-<!-- Hidden audio for music mixing -->
-<audio id="musicAudio" style="display:none" loop></audio>
-
-
 @media(max-width:480px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
 
 </style>
@@ -250,7 +97,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--black);color:var(--white)
       <div class="card" id="outputCard" style="display:none">
         <div class="card-title">✅ Your Video</div>
         <video id="videoOutput" controls playsinline style="width:100%;border-radius:8px;background:#000;max-height:500px"></video>
-        <button class="dl-btn" onclick="downloadVideo()">⬇️ Download Video (MP4)</button>
+        <button class="dl-btn" onclick="downloadVideo()">⬇️ Download Video</button>
         <div style="display:flex;gap:.5rem;margin-top:.5rem">
           <button onclick="shareInstructions()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">📱 Post to Social</button>
           <button onclick="resetAll()" style="flex:1;background:var(--surface);border:1px solid var(--border);color:var(--light);border-radius:7px;font-size:.8rem;font-weight:600;padding:.5rem;cursor:pointer">🔄 New Video</button>
@@ -513,6 +360,7 @@ async function generateVideo() {
     });
   }));
   imgs = imgs.filter(function(i){ return i !== null; });
+  if(imgs.length<2){setProgress("At least two readable photos are required.",0);btn.disabled=false;btn.textContent="🎬 Generate Video";return;}
 
   setProgress("Setting up recorder...", 12);
 
@@ -547,14 +395,13 @@ async function generateVideo() {
     }
   }
 
-  // Setup canvas stream + audio
-  var canvasStream = canvas.captureStream(30);
-  audioTracks.forEach(function(t){ canvasStream.addTrack(t); });
 
   if (!window.MediaRecorder || !canvas.captureStream) {
     setProgress("This browser cannot record canvas video. Try current Chrome or Edge on desktop.",0);
     btn.disabled=false;btn.textContent="🎬 Generate Video";return;
   }
+  var canvasStream = canvas.captureStream(30);
+  audioTracks.forEach(function(t){ canvasStream.addTrack(t); });
   var mimeType = ["video/mp4;codecs=avc1.42E01E","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"].find(function(m){
     return MediaRecorder.isTypeSupported(m);
   });
@@ -569,6 +416,7 @@ async function generateVideo() {
   recorder.onerror=function(event){setProgress("Recording failed. Try fewer photos or a smaller resolution.",0);btn.disabled=false;btn.textContent="🎬 Generate Video";};
   recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
   recorder.onstop = function() {
+    canvasStream.getTracks().forEach(function(t){t.stop()});
     if (audioSource) try{ audioSource.stop(); }catch(e){}
     if (audioCtx) try{ audioCtx.close(); }catch(e){}
     if(!chunks.length){setProgress("No video was recorded. Try Chrome or Edge.",0);btn.disabled=false;btn.textContent="🎬 Generate Video";return;}
@@ -585,7 +433,7 @@ async function generateVideo() {
   // Timing
   var fps          = 30;
   var totalPhotos  = imgs.length;
-  var msPerPhoto   = Math.max(1500, (duration * 1000) / totalPhotos);
+  var msPerPhoto   = (duration * 1000) / totalPhotos;
   var framesPerPh  = Math.floor(msPerPhoto / 1000 * fps);
   var transFrames  = Math.floor(fps * 0.6);
 
@@ -677,7 +525,7 @@ async function generateVideo() {
         drawDots(ctx, W, H, pi, totalPhotos);
       }
 
-      await nextFrame();
+      await sleep(1000/fps);
     }
   }
 
@@ -859,10 +707,11 @@ function downloadVideo() {
   a.href  = URL.createObjectURL(videoBlob);
   a.download = "sitecommand-video-" + Date.now() + "." + ext;
   a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href)},60000);
 }
 
 function shareInstructions() {
-  alert("Video ready to post!\n\n📘 Facebook: Create Post → Add Photo/Video\n📸 Instagram: New Post → select video\n🔍 Google Business: Add Update → Photo/Video\n💼 LinkedIn: Start a post → Video\n\nTip: Square (1080×1080) works on all platforms!");
+  alert("Video ready to post!\n\n📘 Facebook: Create Post → Add Photo/Video\n📸 Instagram: New Post → select video\n🎵 TikTok: Upload → select video\n🔍 Google Business: Add Update → Photo/Video\n💼 LinkedIn: Start a post → Video\n\nTip: Square (1080×1080) works on all platforms!");
   downloadVideo();
 }
 
