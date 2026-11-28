@@ -370,6 +370,17 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
           <div class="photo-slot-add">🖼️</div>
           <div style="font-size:.72rem;color:var(--mid);margin-top:.25rem;pointer-events:none">Upload logo image</div>
         </div>
+        <p id="sc-logo-status" role="status" style="margin-top:12px;font-size:.85rem"></p>
+        <div id="sc-logo-review" hidden style="margin-top:12px">
+          <p style="font-weight:600">Extracted logo preview</p>
+          <img id="sc-logo-result" alt="Extracted logo" style="width:100%;height:140px;object-fit:contain;background:#eee"/>
+          <p style="margin:12px 0 6px">Website header preview</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;background:white;color:#222;padding:10px;border:1px solid #ddd;border-radius:6px">
+            <img id="sc-logo-header" alt="Header logo" style="width:120px;height:56px;object-fit:contain"/>
+            <span style="font-size:12px">Home · Services · ☰</span>
+          </div>
+          <button id="sc-logo-publish" type="button" class="save-btn" style="margin-top:12px;width:100%" onclick="scPublishLogo()">Approve &amp; Publish Logo</button>
+        </div>
       </div>
     </div>
   </div>
@@ -768,7 +779,10 @@ async function scExtractCardLogo(canvas){
  const lines=result.data.lines?.length?result.data.lines:(result.data.blocks||[]).flatMap(b=>(b.paragraphs||[]).flatMap(p=>p.lines||[]));
  if(!lines.length&&result.data.text?.trim())throw Error('Logo text detected but its position could not be identified');
  const contacts=lines.filter(l=>/[\w.+-]+@[\w.-]+|(?:\d[\s().-]*){7,}|(?:phone|email|www\.|https?:)/i.test(l.text));
- if(!contacts.length)return canvas;
+ if(!contacts.length){
+ if(/@|(?:\d[\s().-]*){7,}|\b(?:phone|email)\b/i.test(result.data.text||''))throw Error('Contact details detected but could not be located. Try a clearer image.');
+ return canvas;
+}
  const first=Math.min(...contacts.map(l=>l.bbox.y0));
  const above=lines.filter(l=>l.bbox.y1<=first&&l.confidence>=45);
  const company=above.filter(l=>/\b(?:construction|roofing|contracting|services|llc|inc|company|corp)\b/i.test(l.text)&&!/\b(?:and more|free estimate|gutters|siding)\b/i.test(l.text));
@@ -779,7 +793,7 @@ async function scExtractCardLogo(canvas){
  const center=(last.bbox.x0+last.bbox.x1)/2;
  const width=Math.min(canvas.width,Math.max(last.bbox.x1-last.bbox.x0,canvas.width*.42)*1.18);
  const left=Math.max(0,Math.min(canvas.width-width,center-width/2));
- const bottom=Math.min(first,Math.ceil(end+canvas.height*.018));
+ const bottom=Math.min(first,Math.ceil(end+canvas.height*.008));
  const out=document.createElement('canvas');out.width=Math.round(width);out.height=bottom;
  const ctx=out.getContext('2d');ctx.drawImage(canvas,left,0,width,bottom,0,0,out.width,out.height);
  // Preserve opaque background: removing it can erase black or white logo artwork.
@@ -802,33 +816,43 @@ async function scOptimizeLogo(file){
   return await new Promise((resolve,reject)=>out.toBlob(blob=>blob?resolve(blob):reject(Error('Logo optimization failed')),'image/png'));
  }finally{URL.revokeObjectURL(url)}
 }
+let scPendingLogo=null,scPendingLogoUrl='',scLogoBusy=false;
 window.uploadLogo = async inp => {
-  const file=inp.files?.[0];
-  if(!file)return;
-  if(!userUID){showEditorNotice('Sign in before uploading a logo.');return;}
-  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){
-    showEditorNotice('Choose a JPG, PNG or WebP logo smaller than 10 MB.');return;
-  }
-  const msg=document.getElementById('saveMsg');
-  msg.textContent='Identifying logo and optimizing image…';
-  inp.disabled=true;
-  try{
-    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
-    const optimized=await scOptimizeLogo(file);
-    const logoRef=storageRef(storage,'contractors/'+userUID+'/projects/'+crypto.randomUUID()+'-logo.png');
-    await uploadBytes(logoRef,optimized,{contentType:'image/png'});
-    const url=await getDownloadURL(logoRef);
-    const previous=userData.logoUrl;
-    userData.logoUrl=url;
-    rememberMedia(url);
-    const saved=await saveChanges();
-    if(!saved){userData.logoUrl=previous;throw new Error('Logo uploaded but database save failed.');}
-    const slot=document.getElementById('logoUploadSlot');
-    slot.querySelectorAll(':scope > :not(input)').forEach(el=>el.remove());
-    const image=document.createElement('img');image.src=url;image.alt='Uploaded logo';image.style.cssText='width:100%;height:100%;object-fit:contain;padding:.5rem;pointer-events:none';slot.append(image);inp.value='';updatePreview();
-    msg.textContent='Logo uploaded and saved';
-  }catch(error){showEditorNotice('Logo upload failed: '+error.message);}
-  finally{inp.disabled=false;}
+ const file=inp.files?.[0];if(!file||scLogoBusy)return;
+ if(!userUID){showEditorNotice('Sign in before uploading a logo.');return;}
+ if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10485760){showEditorNotice('Choose JPG, PNG or WebP under 10 MB.');return;}
+ const msg=document.getElementById('sc-logo-status');
+ scLogoBusy=true;inp.disabled=true;msg.textContent='Extracting logo…';
+ try{
+  const optimized=await scOptimizeLogo(file);
+  if(scPendingLogoUrl)URL.revokeObjectURL(scPendingLogoUrl);
+  scPendingLogo=optimized;scPendingLogoUrl=URL.createObjectURL(optimized);
+  document.getElementById('sc-logo-result').src=scPendingLogoUrl;
+  document.getElementById('sc-logo-header').src=scPendingLogoUrl;
+  document.getElementById('sc-logo-review').hidden=false;
+  msg.textContent='Review the extracted logo below. Your live website has not changed.';
+ }catch(error){msg.textContent='Logo extraction failed: '+error.message;}
+ finally{scLogoBusy=false;inp.disabled=false;inp.value='';}
+};
+window.scPublishLogo=async()=>{
+ if(!scPendingLogo||scLogoBusy||!userUID)return;
+ const msg=document.getElementById('sc-logo-status'),btn=document.getElementById('sc-logo-publish');
+ scLogoBusy=true;btn.disabled=true;
+ try{
+  const uid=userUID, file=scPendingLogo;
+  const logoRef=storageRef(storage,'contractors/'+uid+'/projects/'+crypto.randomUUID()+'-logo.png');
+  await uploadBytes(logoRef,file,{contentType:'image/png'});
+  const url=await getDownloadURL(logoRef);
+  await setDoc(doc(db,'contractors',uid),{logoUrl:url,logoSvg:'',updatedAt:serverTimestamp()},{merge:true});
+  const verified=await getDocFromServer(doc(db,'contractors',uid));
+  if(verified.data()?.logoUrl!==url)throw Error('Logo save could not be verified');
+  userData.logoUrl=url;selectedLogo=null;userData.logoSvg='';
+  rememberMedia(url);updatePreview();
+  scPendingLogo=null;URL.revokeObjectURL(scPendingLogoUrl);scPendingLogoUrl='';
+  document.getElementById('sc-logo-result').src=url;document.getElementById('sc-logo-header').src=url;
+  msg.textContent='Logo published and verified.';
+ }catch(error){msg.textContent='Logo publish failed: '+error.message;}
+ finally{scLogoBusy=false;btn.disabled=false;}
 };
 
 // ── COLORS ────────────────────────────────────────────────────
