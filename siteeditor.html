@@ -261,7 +261,7 @@ body{font-family:"DM Sans",system-ui,sans-serif;background:var(--sc-black);color
       </div>
       <div class="ed-section">
         <div class="ed-section-title">Services</div>
-        <div class="svc-list" id="svcList"></div>
+        <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="checkbox" id="sc-hide-service-numbers" onchange="scheduleSave()"/> Hide service numbers on website</label><div class="svc-list" id="svcList"></div>
         <div class="add-svc-row">
           <input class="add-svc-input" id="addSvcInput" placeholder="Add a service..." onkeydown="if(event.key==='Enter')addService()"/>
           <button class="add-svc-btn" onclick="addService()">+ Add</button>
@@ -472,6 +472,7 @@ onAuthStateChanged(auth, async user => {
 
 function populateFields() {
   const d = userData;
+  document.getElementById('sc-hide-service-numbers').checked=d.hideServiceNumbers===true;
   document.getElementById('sc-buy-enabled').checked=d.buyHousesEnabled===true;
   document.getElementById('sc-buy-headline').value=d.buyHousesHeadline||'';
   document.getElementById('sc-buy-area').value=d.buyHousesArea||'';
@@ -947,6 +948,7 @@ window.saveChanges = async () => {
   btn.disabled = true; btn.textContent = 'Saving...';
   
   const updates = {
+    hideServiceNumbers:document.getElementById('sc-hide-service-numbers').checked,
     buyHousesEnabled:document.getElementById('sc-buy-enabled').checked,
     buyHousesHeadline:document.getElementById('sc-buy-headline').value.trim(),
     buyHousesArea:document.getElementById('sc-buy-area').value.trim(),
